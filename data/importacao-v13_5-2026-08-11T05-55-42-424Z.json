@@ -1,0 +1,83 @@
+{
+  "versao": "13.5.0",
+  "publicadoEm": "2026-08-11T05:55:42.424Z",
+  "adicionados": 8,
+  "imagensAtualizadas": 0,
+  "totalCatalogo": 533,
+  "backup": "backups\\v13_5\\2026-08-11T05-55-41-249Z",
+  "avisos": [],
+  "produtos": [
+    {
+      "acao": "adicionado",
+      "id": "tablet-vaio-tl10-8gb-128gb-octa-core-tela-10-4-2k-4g-wifi-camera-8mp-selfie-5mp-7000mah-andr",
+      "nome": "Tablet VAIO TL10 8GB 128GB Octa-Core, Tela 10.4” 2K, 4G WiFi, Câmera 8MP + Selfie 5MP, 7000mAh, Android 13, com Teclado de Conexão Inteligente – Preto",
+      "tipo": "tablet",
+      "linkAfiliado": "https://meli.la/2N3yZFG",
+      "imagem": "assets/produtos/tablet-vaio-tl10-8gb-128gb-octa-core-tela-10-4-2k-4g-wifi-camera-8mp-selfie-5mp-7000mah-andr-anuncio.webp",
+      "imagemTipo": "anuncio"
+    },
+    {
+      "acao": "adicionado",
+      "id": "notebook-samsung-galaxy-book4-intel-u300-1-20-ghz-ate-4-4ghz-8-mb-l3-cache-windows-11-home-8",
+      "nome": "Notebook Samsung Galaxy Book4 Intel® U300 (1.20 Ghz, até 4.4GHz, 8 MB L3 Cache), Windows 11 Home, 8GB, 256GB SSD, UHD Graphics, 15.6'' Full HD LED, 1.55kg",
+      "tipo": "notebook",
+      "linkAfiliado": "https://meli.la/2EvDUaG",
+      "imagem": "assets/produtos/notebook-samsung-galaxy-book4-intel-u300-1-20-ghz-ate-4-4ghz-8-mb-l3-cache-windows-11-home-8-anuncio.webp",
+      "imagemTipo": "anuncio"
+    },
+    {
+      "acao": "adicionado",
+      "id": "notebook-gamer-lenovo-loq-15irx9-intel-core-i7-13645hx-16gb-512gb-ssd-rtx-4050-linux-15-6-83",
+      "nome": "Notebook Gamer Lenovo Loq 15irx9 Intel Core i7-13645hx 16gb 512gb Ssd Rtx 4050 Linux 15.6 - 83khs00600 Luna Grey",
+      "tipo": "notebook",
+      "linkAfiliado": "https://meli.la/1mcEaQm",
+      "imagem": "assets/produtos/notebook-gamer-lenovo-loq-15irx9-intel-core-i7-13645hx-16gb-512gb-ssd-rtx-4050-linux-15-6-83-anuncio.webp",
+      "imagemTipo": "anuncio"
+    },
+    {
+      "acao": "adicionado",
+      "id": "computador-completo-facil-intel-core-i7-16gb-ssd-240gb-16-gb",
+      "nome": "Computador Completo Fácil Intel Core I7 16gb Ssd 240gb 16 Gb",
+      "tipo": "gamer",
+      "linkAfiliado": "https://meli.la/1pCst9r",
+      "imagem": "assets/produtos/computador-completo-facil-intel-core-i7-16gb-ssd-240gb-16-gb-anuncio.webp",
+      "imagemTipo": "anuncio"
+    },
+    {
+      "acao": "adicionado",
+      "id": "placa-mae-asus-p-amd-am4-b550m-plus-tuf-gaming-4xddr4-matx",
+      "nome": "Placa-mãe Asus P/amd Am4 B550m-plus Tuf Gaming 4xddr4 Matx",
+      "tipo": "gamer",
+      "linkAfiliado": "https://meli.la/2vxujse",
+      "imagem": "assets/produtos/placa-mae-asus-p-amd-am4-b550m-plus-tuf-gaming-4xddr4-matx-anuncio.webp",
+      "imagemTipo": "anuncio"
+    },
+    {
+      "acao": "adicionado",
+      "id": "tablet-positivo-vision-tab-10-4gb-ram-128gb-armazenamento-octa-core-13mp-selfie-5mp-bateria-",
+      "nome": "Tablet Positivo Vision Tab 10 4GB Ram 128GB Armazenamento, Octa-Core, 13MP + Selfie 5MP, Bateria 6000mAh, Tela 10.1 HD, Wi-Fi AC E 4G, Full Lamination",
+      "tipo": "tablet",
+      "linkAfiliado": "https://meli.la/2UHp64f",
+      "imagem": "assets/produtos/tablet-positivo-vision-tab-10-4gb-ram-128gb-armazenamento-octa-core-13mp-selfie-5mp-bateria--anuncio.webp",
+      "imagemTipo": "anuncio"
+    },
+    {
+      "acao": "adicionado",
+      "id": "monitor-lg-ultragear-24g411a-b-24-fhd-144hz-1ms-mbr-nvidia-g-sync-amd-freesync-hdr10",
+      "nome": "Monitor LG UltraGear™ 24G411A-B 24\",FHD, 144Hz, 1ms (MBR), NVIDIA G-SYNC, AMD FreeSync, HDR10",
+      "tipo": "monitor",
+      "linkAfiliado": "https://meli.la/1R4rpHH",
+      "imagem": "assets/produtos/monitor-lg-ultragear-24g411a-b-24-fhd-144hz-1ms-mbr-nvidia-g-sync-amd-freesync-hdr10-anuncio.webp",
+      "imagemTipo": "anuncio"
+    },
+    {
+      "acao": "adicionado",
+      "id": "notebook-dell-inspiron-i15-i1300-a30p-15-6-i5-8gb-512gb-w11-preto",
+      "nome": "Notebook Dell Inspiron I15-i1300-a30p 15.6 I5 8gb 512gb W11 Preto",
+      "tipo": "notebook",
+      "linkAfiliado": "https://meli.la/2GVTQHY",
+      "imagem": "assets/produtos/notebook-dell-inspiron-i15-i1300-a30p-15-6-i5-8gb-512gb-w11-preto-anuncio.webp",
+      "imagemTipo": "anuncio"
+    }
+  ]
+}

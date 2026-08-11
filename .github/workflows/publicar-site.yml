@@ -32,10 +32,14 @@ jobs:
             mkdir -p _site/data
             cp data/produtos.js _site/data/produtos.js
           fi
-          if [ -d assets/produtos ]; then
-            mkdir -p _site/assets/produtos
-            rsync -a assets/produtos/ _site/assets/produtos/
+          if [ -d assets ]; then
+            mkdir -p _site/assets
+            rsync -a assets/ _site/assets/
           fi
+          for arquivo in ./*.html; do
+            [ -f "$arquivo" ] || continue
+            cp "$arquivo" _site/"$(basename "$arquivo")"
+          done
           touch _site/.nojekyll
 
       - name: Preparar Google e outros buscadores
