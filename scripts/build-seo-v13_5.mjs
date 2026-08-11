@@ -13,6 +13,14 @@ const LOCAL_ONLY_PAGES = new Set([
   'gerenciador.html',
   'importador.html'
 ]);
+const zipUpdate = (args) => {
+  try {
+    execFileSync('zip', args, { cwd: ROOT });
+  } catch (error) {
+    // O código 12 significa apenas que todos os arquivos já estavam atualizados.
+    if (error.status !== 12) throw error;
+  }
+};
 
 const archiveEntries = execFileSync('unzip', ['-Z1', 'site-base.zip'], {
   cwd: ROOT,
@@ -72,11 +80,9 @@ const xml = [
 ].join('\n');
 writeFileSync(resolve(ROOT, 'sitemap.xml'), xml);
 
-execFileSync('zip', ['-q', '-u', 'site-base.zip', ...htmlPages, 'robots.txt', 'sitemap.xml'], {
-  cwd: ROOT
-});
-execFileSync('zip', ['-q', '-u', 'site-base.zip', 'data/produtos.js', 'data/experiencias.js'], { cwd: ROOT });
-execFileSync('zip', ['-q', '-r', '-u', 'site-base.zip', 'assets'], { cwd: ROOT });
+zipUpdate(['-q', '-u', 'site-base.zip', ...htmlPages, 'robots.txt', 'sitemap.xml']);
+zipUpdate(['-q', '-u', 'site-base.zip', 'data/produtos.js', 'data/experiencias.js']);
+zipUpdate(['-q', '-r', '-u', 'site-base.zip', 'assets']);
 
 console.log(JSON.stringify({
   paginasIndexaveis: publicPages.length,
