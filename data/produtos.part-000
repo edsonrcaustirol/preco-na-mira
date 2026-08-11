@@ -9320,3 +9320,676 @@ const PRODUTOS = [
       "🇧🇷 Intelbras",
       "🏠 Rede"
     ],
+    "paraQuem": "Quem quer atualizar o roteador principal para Wi‑Fi 6 dentro do ecossistema Intelbras.",
+    "atencao": "Cobertura depende do ambiente. Para casas grandes, compare roteador único com soluções Mesh e extensores.",
+    "pontos": [
+      "Wi‑Fi 6.",
+      "Classe de velocidade AX3000.",
+      "Uso residencial."
+    ],
+    "especificacoes": {
+      "Tipo": "Roteador",
+      "Padrão": "Wi‑Fi 6",
+      "Classe": "AX3000",
+      "Mesh": "Confirmar recursos/compatibilidade"
+    },
+    "veredito": "Bom ponto de partida para uma casa conectada; o comparador ajuda a decidir entre um roteador forte e uma rede Mesh distribuída.",
+    "fonteTecnica": "https://www.intelbras.com.br/",
+    "fonteNome": "Intelbras",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "rede",
+    "ecosistemas": [],
+    "wifi": "Wi‑Fi 6",
+    "hub": "É infraestrutura de rede",
+    "ambiente": "Interno"
+  },
+  {
+    "id": "intelbras-ex1500",
+    "nome": "Intelbras EX 1500 Extensor Mesh Wi‑Fi 6",
+    "marca": "Intelbras",
+    "categoria": "Rede doméstica",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Complemento",
+    "imagem": "assets/house-router.svg",
+    "imagemAlt": "Ilustração de Intelbras EX 1500 Extensor Mesh Wi‑Fi 6; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1bF29BY",
+    "loja": "Mercado Livre",
+    "resumo": "Extensor Wi‑Fi 6 com suporte Mesh para ampliar cobertura em conjunto com rede compatível.",
+    "chamada": "Extensor Wi‑Fi 6 com suporte Mesh para ampliar cobertura em conjunto com rede compatível.",
+    "chips": [
+      "📶 Extensor",
+      "🕸️ Mesh",
+      "📡 Wi‑Fi 6",
+      "🏠 Cobertura"
+    ],
+    "paraQuem": "Quem já tem roteador compatível e precisa eliminar pontos de sombra sem trocar toda a rede.",
+    "atencao": "Extensor não é equivalente a roteador principal. Confirme compatibilidade Mesh com o equipamento que você já possui.",
+    "pontos": [
+      "Função de extensor.",
+      "Wi‑Fi 6.",
+      "Suporte Mesh conforme ecossistema compatível."
+    ],
+    "especificacoes": {
+      "Tipo": "Extensor de sinal",
+      "Padrão": "Wi‑Fi 6",
+      "Mesh": "Sim, com equipamentos compatíveis",
+      "Papel": "Expansão de cobertura"
+    },
+    "veredito": "Vale mais como complemento de uma rede existente do que como solução isolada.",
+    "fonteTecnica": "https://www.intelbras.com.br/",
+    "fonteNome": "Intelbras",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "rede",
+    "ecosistemas": [],
+    "wifi": "Wi‑Fi 6",
+    "hub": "Depende da rede principal",
+    "ambiente": "Interno"
+  },
+  {
+    "id": "wap-robot-w90",
+    "nome": "WAP Robot W90",
+    "marca": "WAP",
+    "categoria": "Robô aspirador",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Entrada",
+    "imagem": "assets/house-robot.svg",
+    "imagemAlt": "Ilustração de WAP Robot W90; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/17ViJJd",
+    "loja": "Mercado Livre",
+    "resumo": "Varre, aspira e passa pano; corpo baixo e sensores básicos.",
+    "chamada": "Varre, aspira e passa pano; corpo baixo e sensores básicos.",
+    "chips": [
+      "🧹 3 em 1",
+      "🪶 8 cm",
+      "🔋 até ~2 h",
+      "💰 Entrada"
+    ],
+    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
+    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
+    "pontos": [
+      "Varre, aspira e passa pano; corpo baixo e sensores básicos.",
+      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
+    ],
+    "especificacoes": {
+      "Navegação": "Sensores / aleatória",
+      "Mop": "Sim",
+      "Base automática": "Não",
+      "App": "Não informado",
+      "Autonomia": "Até ~2 h (fabricante/blog)"
+    },
+    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
+    "fonteTecnica": "https://loja.wap.ind.br/robo-aspirador-de-po-wap-robot-w90/p",
+    "fonteNome": "WAP",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "robot",
+    "ecosistemas": [],
+    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
+    "hub": "Não",
+    "ambiente": "Pisos internos"
+  },
+  {
+    "id": "wap-robot-w310",
+    "nome": "WAP Robot W310",
+    "marca": "WAP",
+    "categoria": "Robô aspirador",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Intermediário",
+    "imagem": "assets/produtos/wap-robot-w310.webp",
+    "imagemAlt": "Imagem oficial de WAP Robot W310",
+    "linkAfiliado": "https://meli.la/2P1AcKm",
+    "loja": "Mercado Livre",
+    "resumo": "Robô 3 em 1 com base carregadora e controle remoto.",
+    "chamada": "Robô 3 em 1 com base carregadora e controle remoto.",
+    "chips": [
+      "🧹 3 em 1",
+      "🔌 Base",
+      "🎛️ Controle",
+      "🏠 Rotina"
+    ],
+    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
+    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
+    "pontos": [
+      "Robô 3 em 1 com base carregadora e controle remoto.",
+      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
+    ],
+    "especificacoes": {
+      "Navegação": "Sensores",
+      "Mop": "Sim",
+      "Base automática": "Carregamento",
+      "Controle": "Remoto",
+      "App": "Confirmar"
+    },
+    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
+    "fonteTecnica": "https://loja.wap.ind.br/aspirador-de-po/robo-aspirador-de-po",
+    "fonteNome": "WAP",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "robot",
+    "ecosistemas": [],
+    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
+    "hub": "Não",
+    "ambiente": "Pisos internos",
+    "imagemFallback": "assets/house-robot.svg",
+    "imagemTipo": "oficial",
+    "imagemFonte": "https://loja.wap.ind.br/aspirador-de-po/robo-aspirador-de-po",
+    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
+  },
+  {
+    "id": "wap-robot-w1000",
+    "nome": "WAP Robot W1000",
+    "marca": "WAP",
+    "categoria": "Robô aspirador",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Mais completo",
+    "imagem": "assets/produtos/wap-robot-w1000.webp",
+    "imagemAlt": "Imagem oficial de WAP Robot W1000",
+    "linkAfiliado": "https://meli.la/1hVKmPS",
+    "loja": "Mercado Livre",
+    "resumo": "Modelo WAP mais avançado da leva, com programação e base de carregamento.",
+    "chamada": "Modelo WAP mais avançado da leva, com programação e base de carregamento.",
+    "chips": [
+      "🧹 Robô",
+      "⏱️ Programação",
+      "🔌 Base",
+      "🏠 Automação"
+    ],
+    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
+    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
+    "pontos": [
+      "Modelo WAP mais avançado da leva, com programação e base de carregamento.",
+      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
+    ],
+    "especificacoes": {
+      "Navegação": "Confirmar no fabricante",
+      "Mop": "Confirmar",
+      "Programação": "Sim",
+      "Base": "Carregamento",
+      "App": "Confirmar"
+    },
+    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
+    "fonteTecnica": "https://loja.wap.ind.br/aspirador-de-po/robo-aspirador-de-po",
+    "fonteNome": "WAP",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "robot",
+    "ecosistemas": [],
+    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
+    "hub": "Não",
+    "ambiente": "Pisos internos",
+    "imagemFallback": "assets/house-robot.svg",
+    "imagemTipo": "oficial",
+    "imagemFonte": "https://loja.wap.ind.br/aspirador-de-po/robo-aspirador-de-po",
+    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
+  },
+  {
+    "id": "xiaomi-robot-vacuum-s40",
+    "nome": "Xiaomi Robot Vacuum S40",
+    "marca": "Xiaomi",
+    "categoria": "Robô aspirador",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Na mira",
+    "imagem": "assets/produtos/xiaomi-robot-vacuum-s40.webp",
+    "imagemAlt": "Imagem oficial de Xiaomi Robot Vacuum S40",
+    "linkAfiliado": "https://meli.la/2RWGWEh",
+    "loja": "Mercado Livre",
+    "resumo": "Robô com sucção de até 10.000 Pa, navegação LDS, bateria de 5200 mAh e função aspirar + passar pano.",
+    "chamada": "Robô com sucção de até 10.000 Pa, navegação LDS, bateria de 5200 mAh e função aspirar + passar pano.",
+    "chips": [
+      "💨 10.000 Pa",
+      "🧭 LDS",
+      "🔋 5200 mAh",
+      "🧹 Mop"
+    ],
+    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
+    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
+    "pontos": [
+      "Robô com sucção de até 10.000 Pa, navegação LDS, bateria de 5200 mAh e função aspirar + passar pano.",
+      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
+    ],
+    "especificacoes": {
+      "Sucção": "até 10.000 Pa",
+      "Navegação": "LDS laser",
+      "Bateria": "5200 mAh",
+      "Mop": "Sim",
+      "App": "Xiaomi Home"
+    },
+    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
+    "fonteTecnica": "https://www.mi.com/global/product/xiaomi-robot-vacuum-s40/",
+    "fonteNome": "Xiaomi",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "robot",
+    "ecosistemas": [
+      "Alexa",
+      "Google Assistente"
+    ],
+    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
+    "hub": "Não",
+    "ambiente": "Pisos internos",
+    "imagemFallback": "assets/house-robot.svg",
+    "imagemTipo": "oficial",
+    "imagemFonte": "https://www.mi.com/global/product/xiaomi-robot-vacuum-s40/",
+    "imagemNota": "Imagem de referência obtida em fonte oficial do fabricante. Cor, acabamento e configuração do anúncio podem variar."
+  },
+  {
+    "id": "xiaomi-robot-vacuum-h40",
+    "nome": "Xiaomi Robot Vacuum H40",
+    "marca": "Xiaomi",
+    "categoria": "Robô aspirador",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Autoesvaziamento",
+    "imagem": "assets/produtos/xiaomi-robot-vacuum-h40.webp",
+    "imagemAlt": "Imagem oficial de Xiaomi Robot Vacuum H40",
+    "linkAfiliado": "https://meli.la/1KBV5G7",
+    "loja": "Mercado Livre",
+    "resumo": "Robô de até 10.000 Pa com bateria de 5200 mAh e foco em limpeza automatizada, com recursos que variam por kit/região.",
+    "chamada": "Robô de até 10.000 Pa com bateria de 5200 mAh e foco em limpeza automatizada, com recursos que variam por kit/região.",
+    "chips": [
+      "💨 10.000 Pa",
+      "🔋 5200 mAh",
+      "🧹 Mop",
+      "✨ Anti-enrosco"
+    ],
+    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
+    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
+    "pontos": [
+      "Robô de até 10.000 Pa com bateria de 5200 mAh e foco em limpeza automatizada, com recursos que variam por kit/região.",
+      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
+    ],
+    "especificacoes": {
+      "Sucção": "até 10.000 Pa",
+      "Bateria": "5200 mAh",
+      "Mop": "Sim",
+      "Anti-enrosco": "Sim",
+      "Base": "Confirmar kit/região"
+    },
+    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
+    "fonteTecnica": "https://www.mi.com/global/product/xiaomi-robot-vacuum-h40/",
+    "fonteNome": "Xiaomi",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "robot",
+    "ecosistemas": [
+      "Alexa",
+      "Google Assistente"
+    ],
+    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
+    "hub": "Não",
+    "ambiente": "Pisos internos",
+    "imagemFallback": "assets/house-robot.svg",
+    "imagemTipo": "oficial",
+    "imagemFonte": "https://www.mi.com/global/product/xiaomi-robot-vacuum-h40/",
+    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
+  },
+  {
+    "id": "xiaomi-robot-vacuum-s20-plus",
+    "nome": "Xiaomi Robot Vacuum S20+",
+    "marca": "Xiaomi",
+    "categoria": "Robô aspirador",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Intermediário",
+    "imagem": "assets/produtos/xiaomi-robot-vacuum-s20-plus.webp",
+    "imagemAlt": "Imagem oficial de Xiaomi Robot Vacuum S20+",
+    "linkAfiliado": "https://meli.la/19i5yDW",
+    "loja": "Mercado Livre",
+    "resumo": "Robô Xiaomi com mapeamento, aspiração e mop, posicionado entre modelos básicos e sistemas com bases avançadas.",
+    "chamada": "Robô Xiaomi com mapeamento, aspiração e mop, posicionado entre modelos básicos e sistemas com bases avançadas.",
+    "chips": [
+      "🧭 Mapeamento",
+      "🧹 Mop",
+      "📱 Xiaomi Home",
+      "🏠 Intermediário"
+    ],
+    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
+    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
+    "pontos": [
+      "Robô Xiaomi com mapeamento, aspiração e mop, posicionado entre modelos básicos e sistemas com bases avançadas.",
+      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
+    ],
+    "especificacoes": {
+      "Navegação": "Mapeamento inteligente",
+      "Mop": "Sim",
+      "App": "Xiaomi Home",
+      "Base": "Carregamento",
+      "Sucção": "Confirmar variante"
+    },
+    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
+    "fonteTecnica": "https://www.mi.com/global/product-list/vacuum-cleaner/robot-vacuum/",
+    "fonteNome": "Xiaomi",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "robot",
+    "ecosistemas": [
+      "Alexa",
+      "Google Assistente"
+    ],
+    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
+    "hub": "Não",
+    "ambiente": "Pisos internos",
+    "imagemFallback": "assets/house-robot.svg",
+    "imagemTipo": "oficial",
+    "imagemFonte": "https://www.mi.com/global/product-list/vacuum-cleaner/robot-vacuum/",
+    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
+  },
+  {
+    "id": "samsung-powerbot-e-vr5000",
+    "nome": "Samsung POWERbot‑E VR5000",
+    "marca": "Samsung",
+    "categoria": "Robô aspirador",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "SmartThings",
+    "imagem": "assets/house-robot.svg",
+    "imagemAlt": "Ilustração de Samsung POWERbot‑E VR5000; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1vJK8HU",
+    "loja": "Mercado Livre",
+    "resumo": "Robô 2 em 1 que aspira e passa pano, com Wi‑Fi/SmartThings e sistema de sensores.",
+    "chamada": "Robô 2 em 1 que aspira e passa pano, com Wi‑Fi/SmartThings e sistema de sensores.",
+    "chips": [
+      "🧹 2 em 1",
+      "📱 SmartThings",
+      "📶 Wi‑Fi",
+      "⚡ 55 W"
+    ],
+    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
+    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
+    "pontos": [
+      "Robô 2 em 1 que aspira e passa pano, com Wi‑Fi/SmartThings e sistema de sensores.",
+      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
+    ],
+    "especificacoes": {
+      "Limpeza": "Aspira + passa pano",
+      "Conectividade": "Wi‑Fi / SmartThings",
+      "Potência": "55 W",
+      "Navegação": "Smart Sensing",
+      "Base": "Carregamento"
+    },
+    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
+    "fonteTecnica": "https://www.samsung.com/br/vacuum-cleaners/robot/robot-vr05r5050wk/",
+    "fonteNome": "Samsung",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "robot",
+    "ofertas": [
+      {
+        "nome": "VR5000 — oferta 1",
+        "link": "https://meli.la/1vJK8HU"
+      },
+      {
+        "nome": "VR5000RM — oferta 2",
+        "link": "https://meli.la/1PsiZDe"
+      }
+    ],
+    "ecosistemas": [
+      "SmartThings"
+    ],
+    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
+    "hub": "Não",
+    "ambiente": "Pisos internos"
+  },
+  {
+    "id": "samsung-jet-bot-ai",
+    "nome": "Samsung Jet Bot AI",
+    "marca": "Samsung",
+    "categoria": "Robô aspirador",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Premium",
+    "imagem": "assets/house-robot.svg",
+    "imagemAlt": "Ilustração de Samsung Jet Bot AI; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1kFJPkv",
+    "loja": "Mercado Livre",
+    "resumo": "Robô premium da família Jet Bot com sensores avançados, mapeamento e recursos de IA dependendo da versão.",
+    "chamada": "Robô premium da família Jet Bot com sensores avançados, mapeamento e recursos de IA dependendo da versão.",
+    "chips": [
+      "🤖 IA",
+      "🧭 Mapeamento",
+      "📱 SmartThings",
+      "👁️ Sensores"
+    ],
+    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
+    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
+    "pontos": [
+      "Robô premium da família Jet Bot com sensores avançados, mapeamento e recursos de IA dependendo da versão.",
+      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
+    ],
+    "especificacoes": {
+      "Navegação": "LiDAR / sensores avançados conforme versão",
+      "App": "SmartThings",
+      "IA": "Reconhecimento/evitação em versões AI",
+      "Base": "Confirmar versão do anúncio",
+      "Filtro": "HEPA/multicamadas conforme versão"
+    },
+    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
+    "fonteTecnica": "https://www.samsung.com/br/home-appliances/faq-robot-vacuum-cleaner/",
+    "fonteNome": "Samsung",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "robot",
+    "ecosistemas": [
+      "SmartThings"
+    ],
+    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
+    "hub": "Não",
+    "ambiente": "Pisos internos"
+  },
+  {
+    "id": "amazon-echo-pop",
+    "nome": "Amazon Echo Pop",
+    "marca": "Amazon",
+    "categoria": "Assistente inteligente",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Compacto",
+    "imagem": "assets/produtos/amazon-echo-pop.webp",
+    "imagemAlt": "Imagem oficial de Amazon Echo Pop",
+    "linkAfiliado": "https://meli.la/33NtYBJ",
+    "loja": "Mercado Livre",
+    "resumo": "Smart speaker compacto com Alexa, Wi‑Fi e Bluetooth para comandos de voz e automações.",
+    "chamada": "Smart speaker compacto com Alexa, Wi‑Fi e Bluetooth para comandos de voz e automações.",
+    "chips": [
+      "🗣️ Alexa",
+      "📶 Wi‑Fi",
+      "🔵 Bluetooth",
+      "🪶 Compacto"
+    ],
+    "paraQuem": "Quem quer usar a Alexa como ponto de controle por voz para dispositivos compatíveis da casa.",
+    "atencao": "A compatibilidade depende do dispositivo que será controlado e de eventuais skills, contas, hubs ou serviços. Verifique o selo “Works with Alexa” quando possível.",
+    "pontos": [
+      "Smart speaker compacto com Alexa, Wi‑Fi e Bluetooth para comandos de voz e automações.",
+      "Pode participar de rotinas com outros dispositivos compatíveis com Alexa."
+    ],
+    "especificacoes": {
+      "Tipo": "Smart speaker",
+      "Assistente": "Alexa",
+      "Conexões": "Wi‑Fi + Bluetooth",
+      "Tela": "Não"
+    },
+    "veredito": "A escolha entre Pop, Dot e Show deve considerar principalmente áudio e necessidade de tela; todos servem como porta de entrada para rotinas Alexa.",
+    "fonteTecnica": "https://www.amazon.com.br/Echo-Pop-Cor-Preta/dp/B09WXVH7WK",
+    "fonteNome": "Amazon",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "assistente",
+    "ecosistemas": [
+      "Alexa"
+    ],
+    "wifi": "Wi‑Fi",
+    "hub": "Alguns dispositivos podem exigir hub próprio",
+    "ambiente": "Interno",
+    "imagemFallback": "assets/house-echo.svg",
+    "imagemTipo": "oficial",
+    "imagemFonte": "https://www.amazon.com.br/Echo-Pop-Cor-Preta/dp/B09WXVH7WK",
+    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
+  },
+  {
+    "id": "amazon-echo-dot-5",
+    "nome": "Amazon Echo Dot 5ª Geração",
+    "marca": "Amazon",
+    "categoria": "Assistente inteligente",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Equilíbrio",
+    "imagem": "assets/produtos/amazon-echo-dot-5.webp",
+    "imagemAlt": "Imagem oficial de Amazon Echo Dot 5ª Geração",
+    "linkAfiliado": "https://meli.la/1fUL5Un",
+    "loja": "Mercado Livre",
+    "resumo": "Smart speaker esférico com Alexa, som mais encorpado que o Pop e recursos de automação por voz.",
+    "chamada": "Smart speaker esférico com Alexa, som mais encorpado que o Pop e recursos de automação por voz.",
+    "chips": [
+      "🗣️ Alexa",
+      "🔊 Som maior",
+      "📶 Wi‑Fi",
+      "🔵 Bluetooth"
+    ],
+    "paraQuem": "Quem quer usar a Alexa como ponto de controle por voz para dispositivos compatíveis da casa.",
+    "atencao": "A compatibilidade depende do dispositivo que será controlado e de eventuais skills, contas, hubs ou serviços. Verifique o selo “Works with Alexa” quando possível.",
+    "pontos": [
+      "Smart speaker esférico com Alexa, som mais encorpado que o Pop e recursos de automação por voz.",
+      "Pode participar de rotinas com outros dispositivos compatíveis com Alexa."
+    ],
+    "especificacoes": {
+      "Tipo": "Smart speaker",
+      "Assistente": "Alexa",
+      "Geração": "5ª",
+      "Conexões": "Wi‑Fi + Bluetooth",
+      "Tela": "Não"
+    },
+    "veredito": "A escolha entre Pop, Dot e Show deve considerar principalmente áudio e necessidade de tela; todos servem como porta de entrada para rotinas Alexa.",
+    "fonteTecnica": "https://www.amazon.com.br/Echo-Dot-5%C2%AA-gera%C3%A7%C3%A3o-Cor-Preta/dp/B09B8VGCR8",
+    "fonteNome": "Amazon",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "assistente",
+    "ecosistemas": [
+      "Alexa"
+    ],
+    "wifi": "Wi‑Fi",
+    "hub": "Alguns dispositivos podem exigir hub próprio",
+    "ambiente": "Interno",
+    "imagemFallback": "assets/house-echo.svg",
+    "imagemTipo": "oficial",
+    "imagemFonte": "https://www.amazon.com.br/Echo-Dot-5%C2%AA-gera%C3%A7%C3%A3o-Cor-Preta/dp/B09B8VGCR8",
+    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
+  },
+  {
+    "id": "amazon-echo-show-8",
+    "nome": "Amazon Echo Show 8",
+    "marca": "Amazon",
+    "categoria": "Assistente inteligente",
+    "categoriaId": "casa",
+    "destaque": false,
+    "selo": "Com tela",
+    "imagem": "assets/house-echo.svg",
+    "imagemAlt": "Ilustração de Amazon Echo Show 8; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2XnR4jN",
+    "loja": "Mercado Livre",
+    "resumo": "Smart display com Alexa para voz, vídeo, visualização de câmeras compatíveis e controle de casa inteligente.",
+    "chamada": "Smart display com Alexa para voz, vídeo, visualização de câmeras compatíveis e controle de casa inteligente.",
+    "chips": [
+      "🖥️ Tela",
+      "🗣️ Alexa",
+      "📷 Casa inteligente",
+      "📶 Wi‑Fi"
+    ],
+    "paraQuem": "Quem quer usar a Alexa como ponto de controle por voz para dispositivos compatíveis da casa.",
+    "atencao": "A compatibilidade depende do dispositivo que será controlado e de eventuais skills, contas, hubs ou serviços. Verifique o selo “Works with Alexa” quando possível.",
+    "pontos": [
+      "Smart display com Alexa para voz, vídeo, visualização de câmeras compatíveis e controle de casa inteligente.",
+      "Pode participar de rotinas com outros dispositivos compatíveis com Alexa."
+    ],
+    "especificacoes": {
+      "Tipo": "Smart display",
+      "Assistente": "Alexa",
+      "Tela": "Sim",
+      "Conexão": "Wi‑Fi + Bluetooth",
+      "Uso": "Rotinas, mídia e visualização de dispositivos"
+    },
+    "veredito": "A escolha entre Pop, Dot e Show deve considerar principalmente áudio e necessidade de tela; todos servem como porta de entrada para rotinas Alexa.",
+    "fonteTecnica": "https://www.amazon.com.br/gp/help/customer/display.html?nodeId=TNXH2S950y7FAsCCJe",
+    "fonteNome": "Amazon",
+    "tipoProduto": "casa",
+    "comparador": "casa",
+    "subtipoCasa": "assistente",
+    "ecosistemas": [
+      "Alexa"
+    ],
+    "wifi": "Wi‑Fi",
+    "hub": "Alguns dispositivos podem exigir hub próprio",
+    "ambiente": "Interno"
+  },
+  {
+    "id": "epson-ef30",
+    "nome": "Epson Smart EF‑30",
+    "marca": "Epson",
+    "categoria": "Projetor",
+    "categoriaId": "entretenimento",
+    "destaque": false,
+    "selo": "Portátil",
+    "imagem": "assets/produtos/epson-ef30.webp",
+    "imagemAlt": "Imagem oficial de Epson Smart EF‑30",
+    "linkAfiliado": "https://meli.la/1dLi1YV",
+    "loja": "Mercado Livre",
+    "resumo": "Projetor smart portátil Full HD com Google TV, tecnologia 3LCD e 350 lúmens ISO de brilho branco.",
+    "chamada": "Projetor smart portátil Full HD com Google TV, tecnologia 3LCD e 350 lúmens ISO de brilho branco.",
+    "chips": [
+      "📽️ Full HD",
+      "✨ 350 lm",
+      "📺 Google TV",
+      "🔊 Dolby Audio"
+    ],
+    "paraQuem": "Quem quer uma tela grande para filmes, séries, esportes ou games e aceita controlar a luz do ambiente de acordo com o brilho do projetor.",
+    "atencao": "Brilho em ANSI/ISO lumens não deve ser confundido com “lumens LED” de anúncios genéricos. Confirme resolução nativa, distância de projeção, foco/keystone e garantia.",
+    "pontos": [
+      "Projetor smart portátil Full HD com Google TV, tecnologia 3LCD e 350 lúmens ISO de brilho branco.",
+      "Compare resolução nativa, brilho padronizado, sistema integrado, ajuste de imagem e proposta de uso."
+    ],
+    "especificacoes": {
+      "Resolução nativa": "Full HD 1080p",
+      "Brilho": "350 lm branco / 350 lm cor (Epson)",
+      "Sistema": "Google TV",
+      "Tecnologia": "3LCD",
+      "Áudio": "Dolby Audio estéreo"
+    },
+    "veredito": "Projetor deve ser escolhido pelo ambiente: portátil e smart para praticidade; maior brilho para salas claras; home theater para qualidade de imagem.",
+    "fonteTecnica": "https://epson.com.br/projetores-lifestudio",
+    "fonteNome": "Epson",
+    "tipoProduto": "projetor",
+    "comparador": "projetores",
+    "subtipoCasa": "projetor",
+    "imagemFallback": "assets/projector.svg",
+    "imagemTipo": "oficial",
+    "imagemFonte": "https://epson.com.br/projetores-lifestudio",
+    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
+  },
+  {
+    "id": "epson-ef21",
+    "nome": "Epson EpiqVision EF21",
+    "marca": "Epson",
+    "categoria": "Projetor",
+    "categoriaId": "entretenimento",
+    "destaque": false,
+    "selo": "Smart laser",
+    "imagem": "assets/produtos/epson-ef21.webp",
+    "imagemAlt": "Imagem oficial de Epson EpiqVision EF21",
+    "linkAfiliado": "https://meli.la/1gBFmGa",
+    "loja": "Mercado Livre",
+    "resumo": "Projetor smart laser Full HD de até 150\", Google TV e 1.000 lúmens de brilho branco e em cores.",
+    "chamada": "Projetor smart laser Full HD de até 150\", Google TV e 1.000 lúmens de brilho branco e em cores.",
+    "chips": [
+      "📽️ Full HD",
+      "✨ 1000 lm",
+      "🔦 Laser",
+      "📺 Google TV"
+    ],
+    "paraQuem": "Quem quer uma tela grande para filmes, séries, esportes ou games e aceita controlar a luz do ambiente de acordo

@@ -7,7 +7,9 @@
 !data/
 data/*
 !data/produtos.js
+!data/experiencias.js
 !data/importacao-v13_5-*.json
+!data/importacao-v13_6-*.json
 !assets/
 assets/*
 !assets/produtos/

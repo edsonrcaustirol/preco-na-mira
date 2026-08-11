@@ -1,676 +1,4 @@
-    "paraQuem": "Quem quer atualizar o roteador principal para Wi‑Fi 6 dentro do ecossistema Intelbras.",
-    "atencao": "Cobertura depende do ambiente. Para casas grandes, compare roteador único com soluções Mesh e extensores.",
-    "pontos": [
-      "Wi‑Fi 6.",
-      "Classe de velocidade AX3000.",
-      "Uso residencial."
-    ],
-    "especificacoes": {
-      "Tipo": "Roteador",
-      "Padrão": "Wi‑Fi 6",
-      "Classe": "AX3000",
-      "Mesh": "Confirmar recursos/compatibilidade"
-    },
-    "veredito": "Bom ponto de partida para uma casa conectada; o comparador ajuda a decidir entre um roteador forte e uma rede Mesh distribuída.",
-    "fonteTecnica": "https://www.intelbras.com.br/",
-    "fonteNome": "Intelbras",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "rede",
-    "ecosistemas": [],
-    "wifi": "Wi‑Fi 6",
-    "hub": "É infraestrutura de rede",
-    "ambiente": "Interno"
-  },
-  {
-    "id": "intelbras-ex1500",
-    "nome": "Intelbras EX 1500 Extensor Mesh Wi‑Fi 6",
-    "marca": "Intelbras",
-    "categoria": "Rede doméstica",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Complemento",
-    "imagem": "assets/house-router.svg",
-    "imagemAlt": "Ilustração de Intelbras EX 1500 Extensor Mesh Wi‑Fi 6; imagem ilustrativa",
-    "linkAfiliado": "https://meli.la/1bF29BY",
-    "loja": "Mercado Livre",
-    "resumo": "Extensor Wi‑Fi 6 com suporte Mesh para ampliar cobertura em conjunto com rede compatível.",
-    "chamada": "Extensor Wi‑Fi 6 com suporte Mesh para ampliar cobertura em conjunto com rede compatível.",
-    "chips": [
-      "📶 Extensor",
-      "🕸️ Mesh",
-      "📡 Wi‑Fi 6",
-      "🏠 Cobertura"
-    ],
-    "paraQuem": "Quem já tem roteador compatível e precisa eliminar pontos de sombra sem trocar toda a rede.",
-    "atencao": "Extensor não é equivalente a roteador principal. Confirme compatibilidade Mesh com o equipamento que você já possui.",
-    "pontos": [
-      "Função de extensor.",
-      "Wi‑Fi 6.",
-      "Suporte Mesh conforme ecossistema compatível."
-    ],
-    "especificacoes": {
-      "Tipo": "Extensor de sinal",
-      "Padrão": "Wi‑Fi 6",
-      "Mesh": "Sim, com equipamentos compatíveis",
-      "Papel": "Expansão de cobertura"
-    },
-    "veredito": "Vale mais como complemento de uma rede existente do que como solução isolada.",
-    "fonteTecnica": "https://www.intelbras.com.br/",
-    "fonteNome": "Intelbras",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "rede",
-    "ecosistemas": [],
-    "wifi": "Wi‑Fi 6",
-    "hub": "Depende da rede principal",
-    "ambiente": "Interno"
-  },
-  {
-    "id": "wap-robot-w90",
-    "nome": "WAP Robot W90",
-    "marca": "WAP",
-    "categoria": "Robô aspirador",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Entrada",
-    "imagem": "assets/house-robot.svg",
-    "imagemAlt": "Ilustração de WAP Robot W90; imagem ilustrativa",
-    "linkAfiliado": "https://meli.la/17ViJJd",
-    "loja": "Mercado Livre",
-    "resumo": "Varre, aspira e passa pano; corpo baixo e sensores básicos.",
-    "chamada": "Varre, aspira e passa pano; corpo baixo e sensores básicos.",
-    "chips": [
-      "🧹 3 em 1",
-      "🪶 8 cm",
-      "🔋 até ~2 h",
-      "💰 Entrada"
-    ],
-    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
-    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
-    "pontos": [
-      "Varre, aspira e passa pano; corpo baixo e sensores básicos.",
-      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
-    ],
-    "especificacoes": {
-      "Navegação": "Sensores / aleatória",
-      "Mop": "Sim",
-      "Base automática": "Não",
-      "App": "Não informado",
-      "Autonomia": "Até ~2 h (fabricante/blog)"
-    },
-    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
-    "fonteTecnica": "https://loja.wap.ind.br/robo-aspirador-de-po-wap-robot-w90/p",
-    "fonteNome": "WAP",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "robot",
-    "ecosistemas": [],
-    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
-    "hub": "Não",
-    "ambiente": "Pisos internos"
-  },
-  {
-    "id": "wap-robot-w310",
-    "nome": "WAP Robot W310",
-    "marca": "WAP",
-    "categoria": "Robô aspirador",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Intermediário",
-    "imagem": "assets/produtos/wap-robot-w310.webp",
-    "imagemAlt": "Imagem oficial de WAP Robot W310",
-    "linkAfiliado": "https://meli.la/2P1AcKm",
-    "loja": "Mercado Livre",
-    "resumo": "Robô 3 em 1 com base carregadora e controle remoto.",
-    "chamada": "Robô 3 em 1 com base carregadora e controle remoto.",
-    "chips": [
-      "🧹 3 em 1",
-      "🔌 Base",
-      "🎛️ Controle",
-      "🏠 Rotina"
-    ],
-    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
-    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
-    "pontos": [
-      "Robô 3 em 1 com base carregadora e controle remoto.",
-      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
-    ],
-    "especificacoes": {
-      "Navegação": "Sensores",
-      "Mop": "Sim",
-      "Base automática": "Carregamento",
-      "Controle": "Remoto",
-      "App": "Confirmar"
-    },
-    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
-    "fonteTecnica": "https://loja.wap.ind.br/aspirador-de-po/robo-aspirador-de-po",
-    "fonteNome": "WAP",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "robot",
-    "ecosistemas": [],
-    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
-    "hub": "Não",
-    "ambiente": "Pisos internos",
-    "imagemFallback": "assets/house-robot.svg",
-    "imagemTipo": "oficial",
-    "imagemFonte": "https://loja.wap.ind.br/aspirador-de-po/robo-aspirador-de-po",
-    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
-  },
-  {
-    "id": "wap-robot-w1000",
-    "nome": "WAP Robot W1000",
-    "marca": "WAP",
-    "categoria": "Robô aspirador",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Mais completo",
-    "imagem": "assets/produtos/wap-robot-w1000.webp",
-    "imagemAlt": "Imagem oficial de WAP Robot W1000",
-    "linkAfiliado": "https://meli.la/1hVKmPS",
-    "loja": "Mercado Livre",
-    "resumo": "Modelo WAP mais avançado da leva, com programação e base de carregamento.",
-    "chamada": "Modelo WAP mais avançado da leva, com programação e base de carregamento.",
-    "chips": [
-      "🧹 Robô",
-      "⏱️ Programação",
-      "🔌 Base",
-      "🏠 Automação"
-    ],
-    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
-    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
-    "pontos": [
-      "Modelo WAP mais avançado da leva, com programação e base de carregamento.",
-      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
-    ],
-    "especificacoes": {
-      "Navegação": "Confirmar no fabricante",
-      "Mop": "Confirmar",
-      "Programação": "Sim",
-      "Base": "Carregamento",
-      "App": "Confirmar"
-    },
-    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
-    "fonteTecnica": "https://loja.wap.ind.br/aspirador-de-po/robo-aspirador-de-po",
-    "fonteNome": "WAP",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "robot",
-    "ecosistemas": [],
-    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
-    "hub": "Não",
-    "ambiente": "Pisos internos",
-    "imagemFallback": "assets/house-robot.svg",
-    "imagemTipo": "oficial",
-    "imagemFonte": "https://loja.wap.ind.br/aspirador-de-po/robo-aspirador-de-po",
-    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
-  },
-  {
-    "id": "xiaomi-robot-vacuum-s40",
-    "nome": "Xiaomi Robot Vacuum S40",
-    "marca": "Xiaomi",
-    "categoria": "Robô aspirador",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Na mira",
-    "imagem": "assets/produtos/xiaomi-robot-vacuum-s40.webp",
-    "imagemAlt": "Imagem oficial de Xiaomi Robot Vacuum S40",
-    "linkAfiliado": "https://meli.la/2RWGWEh",
-    "loja": "Mercado Livre",
-    "resumo": "Robô com sucção de até 10.000 Pa, navegação LDS, bateria de 5200 mAh e função aspirar + passar pano.",
-    "chamada": "Robô com sucção de até 10.000 Pa, navegação LDS, bateria de 5200 mAh e função aspirar + passar pano.",
-    "chips": [
-      "💨 10.000 Pa",
-      "🧭 LDS",
-      "🔋 5200 mAh",
-      "🧹 Mop"
-    ],
-    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
-    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
-    "pontos": [
-      "Robô com sucção de até 10.000 Pa, navegação LDS, bateria de 5200 mAh e função aspirar + passar pano.",
-      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
-    ],
-    "especificacoes": {
-      "Sucção": "até 10.000 Pa",
-      "Navegação": "LDS laser",
-      "Bateria": "5200 mAh",
-      "Mop": "Sim",
-      "App": "Xiaomi Home"
-    },
-    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
-    "fonteTecnica": "https://www.mi.com/global/product/xiaomi-robot-vacuum-s40/",
-    "fonteNome": "Xiaomi",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "robot",
-    "ecosistemas": [
-      "Alexa",
-      "Google Assistente"
-    ],
-    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
-    "hub": "Não",
-    "ambiente": "Pisos internos",
-    "imagemFallback": "assets/house-robot.svg",
-    "imagemTipo": "oficial",
-    "imagemFonte": "https://www.mi.com/global/product/xiaomi-robot-vacuum-s40/",
-    "imagemNota": "Imagem de referência obtida em fonte oficial do fabricante. Cor, acabamento e configuração do anúncio podem variar."
-  },
-  {
-    "id": "xiaomi-robot-vacuum-h40",
-    "nome": "Xiaomi Robot Vacuum H40",
-    "marca": "Xiaomi",
-    "categoria": "Robô aspirador",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Autoesvaziamento",
-    "imagem": "assets/produtos/xiaomi-robot-vacuum-h40.webp",
-    "imagemAlt": "Imagem oficial de Xiaomi Robot Vacuum H40",
-    "linkAfiliado": "https://meli.la/1KBV5G7",
-    "loja": "Mercado Livre",
-    "resumo": "Robô de até 10.000 Pa com bateria de 5200 mAh e foco em limpeza automatizada, com recursos que variam por kit/região.",
-    "chamada": "Robô de até 10.000 Pa com bateria de 5200 mAh e foco em limpeza automatizada, com recursos que variam por kit/região.",
-    "chips": [
-      "💨 10.000 Pa",
-      "🔋 5200 mAh",
-      "🧹 Mop",
-      "✨ Anti-enrosco"
-    ],
-    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
-    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
-    "pontos": [
-      "Robô de até 10.000 Pa com bateria de 5200 mAh e foco em limpeza automatizada, com recursos que variam por kit/região.",
-      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
-    ],
-    "especificacoes": {
-      "Sucção": "até 10.000 Pa",
-      "Bateria": "5200 mAh",
-      "Mop": "Sim",
-      "Anti-enrosco": "Sim",
-      "Base": "Confirmar kit/região"
-    },
-    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
-    "fonteTecnica": "https://www.mi.com/global/product/xiaomi-robot-vacuum-h40/",
-    "fonteNome": "Xiaomi",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "robot",
-    "ecosistemas": [
-      "Alexa",
-      "Google Assistente"
-    ],
-    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
-    "hub": "Não",
-    "ambiente": "Pisos internos",
-    "imagemFallback": "assets/house-robot.svg",
-    "imagemTipo": "oficial",
-    "imagemFonte": "https://www.mi.com/global/product/xiaomi-robot-vacuum-h40/",
-    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
-  },
-  {
-    "id": "xiaomi-robot-vacuum-s20-plus",
-    "nome": "Xiaomi Robot Vacuum S20+",
-    "marca": "Xiaomi",
-    "categoria": "Robô aspirador",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Intermediário",
-    "imagem": "assets/produtos/xiaomi-robot-vacuum-s20-plus.webp",
-    "imagemAlt": "Imagem oficial de Xiaomi Robot Vacuum S20+",
-    "linkAfiliado": "https://meli.la/19i5yDW",
-    "loja": "Mercado Livre",
-    "resumo": "Robô Xiaomi com mapeamento, aspiração e mop, posicionado entre modelos básicos e sistemas com bases avançadas.",
-    "chamada": "Robô Xiaomi com mapeamento, aspiração e mop, posicionado entre modelos básicos e sistemas com bases avançadas.",
-    "chips": [
-      "🧭 Mapeamento",
-      "🧹 Mop",
-      "📱 Xiaomi Home",
-      "🏠 Intermediário"
-    ],
-    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
-    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
-    "pontos": [
-      "Robô Xiaomi com mapeamento, aspiração e mop, posicionado entre modelos básicos e sistemas com bases avançadas.",
-      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
-    ],
-    "especificacoes": {
-      "Navegação": "Mapeamento inteligente",
-      "Mop": "Sim",
-      "App": "Xiaomi Home",
-      "Base": "Carregamento",
-      "Sucção": "Confirmar variante"
-    },
-    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
-    "fonteTecnica": "https://www.mi.com/global/product-list/vacuum-cleaner/robot-vacuum/",
-    "fonteNome": "Xiaomi",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "robot",
-    "ecosistemas": [
-      "Alexa",
-      "Google Assistente"
-    ],
-    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
-    "hub": "Não",
-    "ambiente": "Pisos internos",
-    "imagemFallback": "assets/house-robot.svg",
-    "imagemTipo": "oficial",
-    "imagemFonte": "https://www.mi.com/global/product-list/vacuum-cleaner/robot-vacuum/",
-    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
-  },
-  {
-    "id": "samsung-powerbot-e-vr5000",
-    "nome": "Samsung POWERbot‑E VR5000",
-    "marca": "Samsung",
-    "categoria": "Robô aspirador",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "SmartThings",
-    "imagem": "assets/house-robot.svg",
-    "imagemAlt": "Ilustração de Samsung POWERbot‑E VR5000; imagem ilustrativa",
-    "linkAfiliado": "https://meli.la/1vJK8HU",
-    "loja": "Mercado Livre",
-    "resumo": "Robô 2 em 1 que aspira e passa pano, com Wi‑Fi/SmartThings e sistema de sensores.",
-    "chamada": "Robô 2 em 1 que aspira e passa pano, com Wi‑Fi/SmartThings e sistema de sensores.",
-    "chips": [
-      "🧹 2 em 1",
-      "📱 SmartThings",
-      "📶 Wi‑Fi",
-      "⚡ 55 W"
-    ],
-    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
-    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
-    "pontos": [
-      "Robô 2 em 1 que aspira e passa pano, com Wi‑Fi/SmartThings e sistema de sensores.",
-      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
-    ],
-    "especificacoes": {
-      "Limpeza": "Aspira + passa pano",
-      "Conectividade": "Wi‑Fi / SmartThings",
-      "Potência": "55 W",
-      "Navegação": "Smart Sensing",
-      "Base": "Carregamento"
-    },
-    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
-    "fonteTecnica": "https://www.samsung.com/br/vacuum-cleaners/robot/robot-vr05r5050wk/",
-    "fonteNome": "Samsung",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "robot",
-    "ofertas": [
-      {
-        "nome": "VR5000 — oferta 1",
-        "link": "https://meli.la/1vJK8HU"
-      },
-      {
-        "nome": "VR5000RM — oferta 2",
-        "link": "https://meli.la/1PsiZDe"
-      }
-    ],
-    "ecosistemas": [
-      "SmartThings"
-    ],
-    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
-    "hub": "Não",
-    "ambiente": "Pisos internos"
-  },
-  {
-    "id": "samsung-jet-bot-ai",
-    "nome": "Samsung Jet Bot AI",
-    "marca": "Samsung",
-    "categoria": "Robô aspirador",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Premium",
-    "imagem": "assets/house-robot.svg",
-    "imagemAlt": "Ilustração de Samsung Jet Bot AI; imagem ilustrativa",
-    "linkAfiliado": "https://meli.la/1kFJPkv",
-    "loja": "Mercado Livre",
-    "resumo": "Robô premium da família Jet Bot com sensores avançados, mapeamento e recursos de IA dependendo da versão.",
-    "chamada": "Robô premium da família Jet Bot com sensores avançados, mapeamento e recursos de IA dependendo da versão.",
-    "chips": [
-      "🤖 IA",
-      "🧭 Mapeamento",
-      "📱 SmartThings",
-      "👁️ Sensores"
-    ],
-    "paraQuem": "Quem quer automatizar parte da limpeza diária e reduzir a necessidade de aspirar manualmente todos os dias.",
-    "atencao": "Robô aspirador não substitui toda limpeza manual. Tapetes, degraus, fios, objetos pequenos e tipos de piso mudam muito o resultado; confira o modelo exato e acessórios inclusos.",
-    "pontos": [
-      "Robô premium da família Jet Bot com sensores avançados, mapeamento e recursos de IA dependendo da versão.",
-      "Compare principalmente navegação, sucção, mop, base, app e autonomia."
-    ],
-    "especificacoes": {
-      "Navegação": "LiDAR / sensores avançados conforme versão",
-      "App": "SmartThings",
-      "IA": "Reconhecimento/evitação em versões AI",
-      "Base": "Confirmar versão do anúncio",
-      "Filtro": "HEPA/multicamadas conforme versão"
-    },
-    "veredito": "Escolha pelo nível de automação e navegação, não apenas pelo número de Pa. Base, mapeamento e manutenção podem mudar mais a experiência no dia a dia.",
-    "fonteTecnica": "https://www.samsung.com/br/home-appliances/faq-robot-vacuum-cleaner/",
-    "fonteNome": "Samsung",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "robot",
-    "ecosistemas": [
-      "SmartThings"
-    ],
-    "wifi": "Wi‑Fi nos modelos conectados; confirmar",
-    "hub": "Não",
-    "ambiente": "Pisos internos"
-  },
-  {
-    "id": "amazon-echo-pop",
-    "nome": "Amazon Echo Pop",
-    "marca": "Amazon",
-    "categoria": "Assistente inteligente",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Compacto",
-    "imagem": "assets/produtos/amazon-echo-pop.webp",
-    "imagemAlt": "Imagem oficial de Amazon Echo Pop",
-    "linkAfiliado": "https://meli.la/33NtYBJ",
-    "loja": "Mercado Livre",
-    "resumo": "Smart speaker compacto com Alexa, Wi‑Fi e Bluetooth para comandos de voz e automações.",
-    "chamada": "Smart speaker compacto com Alexa, Wi‑Fi e Bluetooth para comandos de voz e automações.",
-    "chips": [
-      "🗣️ Alexa",
-      "📶 Wi‑Fi",
-      "🔵 Bluetooth",
-      "🪶 Compacto"
-    ],
-    "paraQuem": "Quem quer usar a Alexa como ponto de controle por voz para dispositivos compatíveis da casa.",
-    "atencao": "A compatibilidade depende do dispositivo que será controlado e de eventuais skills, contas, hubs ou serviços. Verifique o selo “Works with Alexa” quando possível.",
-    "pontos": [
-      "Smart speaker compacto com Alexa, Wi‑Fi e Bluetooth para comandos de voz e automações.",
-      "Pode participar de rotinas com outros dispositivos compatíveis com Alexa."
-    ],
-    "especificacoes": {
-      "Tipo": "Smart speaker",
-      "Assistente": "Alexa",
-      "Conexões": "Wi‑Fi + Bluetooth",
-      "Tela": "Não"
-    },
-    "veredito": "A escolha entre Pop, Dot e Show deve considerar principalmente áudio e necessidade de tela; todos servem como porta de entrada para rotinas Alexa.",
-    "fonteTecnica": "https://www.amazon.com.br/Echo-Pop-Cor-Preta/dp/B09WXVH7WK",
-    "fonteNome": "Amazon",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "assistente",
-    "ecosistemas": [
-      "Alexa"
-    ],
-    "wifi": "Wi‑Fi",
-    "hub": "Alguns dispositivos podem exigir hub próprio",
-    "ambiente": "Interno",
-    "imagemFallback": "assets/house-echo.svg",
-    "imagemTipo": "oficial",
-    "imagemFonte": "https://www.amazon.com.br/Echo-Pop-Cor-Preta/dp/B09WXVH7WK",
-    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
-  },
-  {
-    "id": "amazon-echo-dot-5",
-    "nome": "Amazon Echo Dot 5ª Geração",
-    "marca": "Amazon",
-    "categoria": "Assistente inteligente",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Equilíbrio",
-    "imagem": "assets/produtos/amazon-echo-dot-5.webp",
-    "imagemAlt": "Imagem oficial de Amazon Echo Dot 5ª Geração",
-    "linkAfiliado": "https://meli.la/1fUL5Un",
-    "loja": "Mercado Livre",
-    "resumo": "Smart speaker esférico com Alexa, som mais encorpado que o Pop e recursos de automação por voz.",
-    "chamada": "Smart speaker esférico com Alexa, som mais encorpado que o Pop e recursos de automação por voz.",
-    "chips": [
-      "🗣️ Alexa",
-      "🔊 Som maior",
-      "📶 Wi‑Fi",
-      "🔵 Bluetooth"
-    ],
-    "paraQuem": "Quem quer usar a Alexa como ponto de controle por voz para dispositivos compatíveis da casa.",
-    "atencao": "A compatibilidade depende do dispositivo que será controlado e de eventuais skills, contas, hubs ou serviços. Verifique o selo “Works with Alexa” quando possível.",
-    "pontos": [
-      "Smart speaker esférico com Alexa, som mais encorpado que o Pop e recursos de automação por voz.",
-      "Pode participar de rotinas com outros dispositivos compatíveis com Alexa."
-    ],
-    "especificacoes": {
-      "Tipo": "Smart speaker",
-      "Assistente": "Alexa",
-      "Geração": "5ª",
-      "Conexões": "Wi‑Fi + Bluetooth",
-      "Tela": "Não"
-    },
-    "veredito": "A escolha entre Pop, Dot e Show deve considerar principalmente áudio e necessidade de tela; todos servem como porta de entrada para rotinas Alexa.",
-    "fonteTecnica": "https://www.amazon.com.br/Echo-Dot-5%C2%AA-gera%C3%A7%C3%A3o-Cor-Preta/dp/B09B8VGCR8",
-    "fonteNome": "Amazon",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "assistente",
-    "ecosistemas": [
-      "Alexa"
-    ],
-    "wifi": "Wi‑Fi",
-    "hub": "Alguns dispositivos podem exigir hub próprio",
-    "ambiente": "Interno",
-    "imagemFallback": "assets/house-echo.svg",
-    "imagemTipo": "oficial",
-    "imagemFonte": "https://www.amazon.com.br/Echo-Dot-5%C2%AA-gera%C3%A7%C3%A3o-Cor-Preta/dp/B09B8VGCR8",
-    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
-  },
-  {
-    "id": "amazon-echo-show-8",
-    "nome": "Amazon Echo Show 8",
-    "marca": "Amazon",
-    "categoria": "Assistente inteligente",
-    "categoriaId": "casa",
-    "destaque": false,
-    "selo": "Com tela",
-    "imagem": "assets/house-echo.svg",
-    "imagemAlt": "Ilustração de Amazon Echo Show 8; imagem ilustrativa",
-    "linkAfiliado": "https://meli.la/2XnR4jN",
-    "loja": "Mercado Livre",
-    "resumo": "Smart display com Alexa para voz, vídeo, visualização de câmeras compatíveis e controle de casa inteligente.",
-    "chamada": "Smart display com Alexa para voz, vídeo, visualização de câmeras compatíveis e controle de casa inteligente.",
-    "chips": [
-      "🖥️ Tela",
-      "🗣️ Alexa",
-      "📷 Casa inteligente",
-      "📶 Wi‑Fi"
-    ],
-    "paraQuem": "Quem quer usar a Alexa como ponto de controle por voz para dispositivos compatíveis da casa.",
-    "atencao": "A compatibilidade depende do dispositivo que será controlado e de eventuais skills, contas, hubs ou serviços. Verifique o selo “Works with Alexa” quando possível.",
-    "pontos": [
-      "Smart display com Alexa para voz, vídeo, visualização de câmeras compatíveis e controle de casa inteligente.",
-      "Pode participar de rotinas com outros dispositivos compatíveis com Alexa."
-    ],
-    "especificacoes": {
-      "Tipo": "Smart display",
-      "Assistente": "Alexa",
-      "Tela": "Sim",
-      "Conexão": "Wi‑Fi + Bluetooth",
-      "Uso": "Rotinas, mídia e visualização de dispositivos"
-    },
-    "veredito": "A escolha entre Pop, Dot e Show deve considerar principalmente áudio e necessidade de tela; todos servem como porta de entrada para rotinas Alexa.",
-    "fonteTecnica": "https://www.amazon.com.br/gp/help/customer/display.html?nodeId=TNXH2S950y7FAsCCJe",
-    "fonteNome": "Amazon",
-    "tipoProduto": "casa",
-    "comparador": "casa",
-    "subtipoCasa": "assistente",
-    "ecosistemas": [
-      "Alexa"
-    ],
-    "wifi": "Wi‑Fi",
-    "hub": "Alguns dispositivos podem exigir hub próprio",
-    "ambiente": "Interno"
-  },
-  {
-    "id": "epson-ef30",
-    "nome": "Epson Smart EF‑30",
-    "marca": "Epson",
-    "categoria": "Projetor",
-    "categoriaId": "entretenimento",
-    "destaque": false,
-    "selo": "Portátil",
-    "imagem": "assets/produtos/epson-ef30.webp",
-    "imagemAlt": "Imagem oficial de Epson Smart EF‑30",
-    "linkAfiliado": "https://meli.la/1dLi1YV",
-    "loja": "Mercado Livre",
-    "resumo": "Projetor smart portátil Full HD com Google TV, tecnologia 3LCD e 350 lúmens ISO de brilho branco.",
-    "chamada": "Projetor smart portátil Full HD com Google TV, tecnologia 3LCD e 350 lúmens ISO de brilho branco.",
-    "chips": [
-      "📽️ Full HD",
-      "✨ 350 lm",
-      "📺 Google TV",
-      "🔊 Dolby Audio"
-    ],
-    "paraQuem": "Quem quer uma tela grande para filmes, séries, esportes ou games e aceita controlar a luz do ambiente de acordo com o brilho do projetor.",
-    "atencao": "Brilho em ANSI/ISO lumens não deve ser confundido com “lumens LED” de anúncios genéricos. Confirme resolução nativa, distância de projeção, foco/keystone e garantia.",
-    "pontos": [
-      "Projetor smart portátil Full HD com Google TV, tecnologia 3LCD e 350 lúmens ISO de brilho branco.",
-      "Compare resolução nativa, brilho padronizado, sistema integrado, ajuste de imagem e proposta de uso."
-    ],
-    "especificacoes": {
-      "Resolução nativa": "Full HD 1080p",
-      "Brilho": "350 lm branco / 350 lm cor (Epson)",
-      "Sistema": "Google TV",
-      "Tecnologia": "3LCD",
-      "Áudio": "Dolby Audio estéreo"
-    },
-    "veredito": "Projetor deve ser escolhido pelo ambiente: portátil e smart para praticidade; maior brilho para salas claras; home theater para qualidade de imagem.",
-    "fonteTecnica": "https://epson.com.br/projetores-lifestudio",
-    "fonteNome": "Epson",
-    "tipoProduto": "projetor",
-    "comparador": "projetores",
-    "subtipoCasa": "projetor",
-    "imagemFallback": "assets/projector.svg",
-    "imagemTipo": "oficial",
-    "imagemFonte": "https://epson.com.br/projetores-lifestudio",
-    "imagemNota": "Imagem obtida na página oficial do fabricante. Confirme cor, acabamento, acessórios e configuração na oferta."
-  },
-  {
-    "id": "epson-ef21",
-    "nome": "Epson EpiqVision EF21",
-    "marca": "Epson",
-    "categoria": "Projetor",
-    "categoriaId": "entretenimento",
-    "destaque": false,
-    "selo": "Smart laser",
-    "imagem": "assets/produtos/epson-ef21.webp",
-    "imagemAlt": "Imagem oficial de Epson EpiqVision EF21",
-    "linkAfiliado": "https://meli.la/1gBFmGa",
-    "loja": "Mercado Livre",
-    "resumo": "Projetor smart laser Full HD de até 150\", Google TV e 1.000 lúmens de brilho branco e em cores.",
-    "chamada": "Projetor smart laser Full HD de até 150\", Google TV e 1.000 lúmens de brilho branco e em cores.",
-    "chips": [
-      "📽️ Full HD",
-      "✨ 1000 lm",
-      "🔦 Laser",
-      "📺 Google TV"
-    ],
-    "paraQuem": "Quem quer uma tela grande para filmes, séries, esportes ou games e aceita controlar a luz do ambiente de acordo com o brilho do projetor.",
+ com o brilho do projetor.",
     "atencao": "Brilho em ANSI/ISO lumens não deve ser confundido com “lumens LED” de anúncios genéricos. Confirme resolução nativa, distância de projeção, foco/keystone e garantia.",
     "pontos": [
       "Projetor smart laser Full HD de até 150\", Google TV e 1.000 lúmens de brilho branco e em cores.",
@@ -8125,3 +7453,925 @@
       "🧱 Telhas e coberturas"
     ],
     "paraQuem": "Quem está estruturando a cobertura ou a proteção da obra e quer comparar alternativas de forma organizada.",
+    "atencao": "Confira sistema de cobertura, inclinação, fixação, área necessária, compatibilidade dos componentes e orientações do fabricante/projeto.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de telhas e coberturas.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Telhas e coberturas",
+      "Referência do anúncio": "Prego para Telha Shingle Anelado Galvanizado 35x25MM"
+    },
+    "veredito": "Use este item para organizar a decisão de telhas e coberturas dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/prego-para-telha-shingle-anelado-galvanizado--35x25mm/up/MLBU3377386102?utm_source=chatgpt.com",
+    "subtipoObra": "cobertura"
+  },
+  {
+    "id": "martelete-perfurador-romp-800w-4j-sds-vonder-mpv840-cor-amarelopreto-frequencia-60-hz",
+    "nome": "Martelete Perfurador Romp 800W 4J SDS Vonder MPV840 Cor Amarelopreto Frequencia 60 Hz",
+    "marca": "Vonder",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/22rvUcu",
+    "loja": "Mercado Livre",
+    "resumo": "Martelete Perfurador Romp 800W 4J SDS Vonder MPV840 Cor Amarelopreto Frequencia 60 Hz integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Vonder",
+      "🧱 Ferramentas de obra",
+      "📐 800w",
+      "📐 4j"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Martelete Perfurador Romp 800W 4J SDS Vonder MPV840 Cor Amarelopreto Frequencia 60 Hz"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/martelete-perfurador-romp-800w-4j-sds-vonder-mpv840-cor-amarelopreto-frequencia-60-hz/p/MLB11300120?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "martelo-demolidor-rompedor-martelete-pesado-hanabi-45j",
+    "nome": "Martelo Demolidor Rompedor Martelete Pesado Hanabi 45J",
+    "marca": "Hanabi",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2QBX8Su",
+    "loja": "Mercado Livre",
+    "resumo": "Martelo Demolidor Rompedor Martelete Pesado Hanabi 45J integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Hanabi",
+      "🧱 Ferramentas de obra",
+      "📐 45j"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Martelo Demolidor Rompedor Martelete Pesado Hanabi 45J"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://produto.mercadolivre.com.br/MLB-6106530036-martelo-demolidor-rompedor-martelete-pesado-hanabi-45j-_JM?searchVariation=194875310109#polycard_client=search_best-seller-categories&tracking_id=8ae0f260-1221-45d0-a088-46d0a5a895f6&sid=search",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "misturador-de-argamassa-e-tinta-1200w-mel1200-menegotti",
+    "nome": "Misturador de Argamassa e Tinta 1200W MEL1200 Menegotti",
+    "marca": "Menegotti",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1J15vQG",
+    "loja": "Mercado Livre",
+    "resumo": "Misturador de Argamassa e Tinta 1200W MEL1200 Menegotti integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Menegotti",
+      "🧱 Ferramentas de obra",
+      "📐 1200w"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Misturador de Argamassa e Tinta 1200W MEL1200 Menegotti"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/misturador-de-argamassa-e-tinta-1200w-mel1200-menegotti/p/MLB24006591?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "misturador-eletrico-argamassa-1600w-hm140-cortag",
+    "nome": "Misturador Eletrico Argamassa 1600W HM140 Cortag",
+    "marca": "Cortag",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1d1g3C8",
+    "loja": "Mercado Livre",
+    "resumo": "Misturador Eletrico Argamassa 1600W HM140 Cortag integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Cortag",
+      "🧱 Ferramentas de obra",
+      "📐 1600w"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Misturador Eletrico Argamassa 1600W HM140 Cortag"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/misturador-eletrico-argamassa-1600w-hm140-cortag/p/MLB24089936?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "furadeira-parafusadeira-bosch-gsr-120li-12v-2-baterias-68",
+    "nome": "Furadeira Parafusadeira Bosch Gsr 120LI 12V 2 Baterias 68",
+    "marca": "Bosch",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1wBiJ9t",
+    "loja": "Mercado Livre",
+    "resumo": "Furadeira Parafusadeira Bosch Gsr 120LI 12V 2 Baterias 68 integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Bosch",
+      "🧱 Ferramentas de obra",
+      "📐 12v"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Furadeira Parafusadeira Bosch Gsr 120LI 12V 2 Baterias 68"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/furadeira-parafusadeira-bosch-gsr-120li-12v-2-baterias-68/up/MLBU4231007324?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "furadeira-parafusadeira-de-impacto-2-baterias-21v-46-pecas",
+    "nome": "Furadeira Parafusadeira de Impacto 2 Baterias 21V 46 Pecas",
+    "marca": "Outras marcas",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1pGEC8d",
+    "loja": "Mercado Livre",
+    "resumo": "Furadeira Parafusadeira de Impacto 2 Baterias 21V 46 Pecas integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Outras marcas",
+      "🧱 Ferramentas de obra",
+      "📐 21v",
+      "📐 46 pecas"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Furadeira Parafusadeira de Impacto 2 Baterias 21V 46 Pecas"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/furadeira-parafusadeira-de-impacto-2-baterias-21v--46-pecas/up/MLBU3472399363?pdp_filters=item_id:MLB5775901318#polycard_client=recommendations_vip-pads-up&wid=MLB5775901318&sid=recos&reco_backend=recomm_platform_base_pads_rfa_MERGE_marketplace&reco_model=recos_backend_only&reco_client=vip-pads-up&reco_item_pos=0&reco_backend_type=low_level&reco_id=4a976b84-bdde-403d-a124-cee1f20e8228&is_advertising=true&ad_domain=VIPDESKTOP_UP&ad_position=1&ad_click_id=ZmMyOWJiYTctMzU4OC00MWQ5LWI3YTUtY2JlYzY4NTExNmVj",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "parafusadeira-furadeira-de-impacto-dewalt-dcd7781d2-20v-brushless-mandril-13mm-torque-65nm",
+    "nome": "Parafusadeira Furadeira de Impacto DeWalt DCD7781D2 20V Brushless Mandril 13MM Torque 65NM com 2 Baterias Carregador Bivolt e Maleta",
+    "marca": "DeWalt",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2kZeHfz",
+    "loja": "Mercado Livre",
+    "resumo": "Parafusadeira Furadeira de Impacto DeWalt DCD7781D2 20V Brushless Mandril 13MM Torque 65NM com 2 Baterias Carregador Bivolt e Maleta integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ DeWalt",
+      "🧱 Ferramentas de obra",
+      "📐 20v",
+      "📐 13mm"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Parafusadeira Furadeira de Impacto DeWalt DCD7781D2 20V Brushless Mandril 13MM Torque 65NM com 2 Baterias Carregador Bivolt e Maleta"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/parafusadeira-furadeira-de-impacto-dewalt-dcd7781d2-20v-brushless-mandril-13mm-torque-65nm-com-2-baterias-carregador-bivolt-e-maleta/p/MLB18357322?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "nivel-a-laser-verde-12m-bosch-gll-2-12g",
+    "nome": "Nivel a Laser Verde 12M Bosch GLL 2 12G",
+    "marca": "Bosch",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2mRf7ak",
+    "loja": "Mercado Livre",
+    "resumo": "Nivel a Laser Verde 12M Bosch GLL 2 12G integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Bosch",
+      "🧱 Ferramentas de obra",
+      "📐 12m"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Nivel a Laser Verde 12M Bosch GLL 2 12G"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/nivel-a-laser-verde-12m-bosch-gll-2-12g/p/MLB24512796?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "bosch-glm-40-trena-laser",
+    "nome": "Bosch GLM 40 — Trena laser",
+    "marca": "Bosch",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/produtos/bosch-glm-40.webp",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2ipn4WH",
+    "loja": "Mercado Livre",
+    "resumo": "Bosch GLM 40 — Trena laser integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Bosch",
+      "🧱 Ferramentas de obra",
+      "✓ 0,15–40 m",
+      "✓ ± 1,5 mm",
+      "✓ IP54"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Bosch GLM 40 — Trena laser",
+      "Faixa de medição": "0,15–40 m",
+      "Precisão típica": "± 1,5 mm",
+      "Proteção": "IP54",
+      "Memória": "10 medições"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/trena-medidora-laser-de-distancia-bosch-glm-40-com-bolsa-protetora-0601072900/p/MLB9603881?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta",
+    "fonteTecnica": "https://www.bosch-professional.com/br/pt/products/glm-40-0601072900",
+    "fonteNome": "Bosch Professional",
+    "imagemFallback": "assets/construction-tool.svg",
+    "imagemTipo": "oficial",
+    "imagemFonte": "https://www.bosch-professional.com/br/pt/products/glm-40-0601072900",
+    "imagemNota": "Imagem de referência de fonte oficial; confirme a embalagem/variante da oferta."
+  },
+  {
+    "id": "trena-a-laser-50mt-com-bluetooth-glm-0601072u00-000-verde",
+    "nome": "Trena a Laser 50MT com Bluetooth Glm 0601072U00 000 Verde",
+    "marca": "Outras marcas",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2YT26jy",
+    "loja": "Mercado Livre",
+    "resumo": "Trena a Laser 50MT com Bluetooth Glm 0601072U00 000 Verde integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Outras marcas",
+      "🧱 Ferramentas de obra"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Trena a Laser 50MT com Bluetooth Glm 0601072U00 000 Verde"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/trena-a-laser-50mt-cbluetooth-glm-0601072u00-000-verde/p/MLB37780121?pdp_filters=seller_id%3A1127786122#polycard_client=recommendations_pdp-seller_items-above&reco_backend=ranker-retsys-same-seller&reco_model=fallback_same-seller&reco_client=pdp-seller_items-above&reco_item_pos=0&reco_backend_type=low_level&reco_id=6d70f8ca-94b7-4475-83b9-d17c7d2de620&wid=MLB3818453777&sid=recos",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "betoneira-400l-2hp-monof-e-kit-segur-prime-menegotti",
+    "nome": "Betoneira 400L 2HP Monof e Kit Segur Prime Menegotti",
+    "marca": "Menegotti",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2vcnehU",
+    "loja": "Mercado Livre",
+    "resumo": "Betoneira 400L 2HP Monof e Kit Segur Prime Menegotti integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Menegotti",
+      "🧱 Ferramentas de obra",
+      "📐 400l",
+      "📐 2hp"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Betoneira 400L 2HP Monof e Kit Segur Prime Menegotti"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/betoneira-400l-2hp-monof-e-kit-segur-prime-menegotti/p/MLB38486850?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "betoneira-130-litros-compacta-csm-motor-12-cv-monofasica",
+    "nome": "Betoneira 130 Litros Compacta CSM Motor 12 Cv Monofasica",
+    "marca": "CSM",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1Z4h9JZ",
+    "loja": "Mercado Livre",
+    "resumo": "Betoneira 130 Litros Compacta CSM Motor 12 Cv Monofasica integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ CSM",
+      "🧱 Ferramentas de obra"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Betoneira 130 Litros Compacta CSM Motor 12 Cv Monofasica"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/betoneira-130-litros-compacta-csm-motor-12-cv-monofasica/up/MLBU4010084453?pdp_filters=item_id:MLB4716247087#polycard_client=recommendations_pdp-pads-right&wid=MLB4716247087&sid=recos&reco_backend=pdp_pads_right_rars_v2_with_default&reco_model=fallback_productos-promocionados&reco_client=pdp-pads-right&reco_item_pos=0&reco_backend_type=low_level&reco_id=0faf1d5b-d5b5-4aa0-9bef-248c0e71fe01&is_advertising=true&ad_domain=PDPDESKTOP_RIGHT&ad_position=1&ad_click_id=NDc5NWVhNjEtYTU5YS00MmIwLTkwOTYtMTllYmI0MDU3ZDkx",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "compactador-placa-vibratoria-toyama-tpc60w-65-hp-105-kn",
+    "nome": "Compactador Placa Vibratoria Toyama TPC60W 65 Hp 105 Kn",
+    "marca": "Toyama",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2q3cvax",
+    "loja": "Mercado Livre",
+    "resumo": "Compactador Placa Vibratoria Toyama TPC60W 65 Hp 105 Kn integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Toyama",
+      "🧱 Ferramentas de obra",
+      "📐 65 hp",
+      "📐 105 kn"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Compactador Placa Vibratoria Toyama TPC60W 65 Hp 105 Kn"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/compactador-placa-vibratoria-toyama-tpc60w-65-hp-105-kn/p/MLB12644040?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "placa-vibratoria-kawashima-pc900-13kn-7hp-compactadora-de-solo",
+    "nome": "Placa Vibratoria Kawashima PC900 13KN 7HP Compactadora de Solo",
+    "marca": "Kawashima",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "Ferramentas de obra",
+    "imagem": "assets/construction-tool.svg",
+    "imagemAlt": "Ilustração de referência para ferramentas de obra; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1riyqEe",
+    "loja": "Mercado Livre",
+    "resumo": "Placa Vibratoria Kawashima PC900 13KN 7HP Compactadora de Solo integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de ferramentas de obra para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Kawashima",
+      "🧱 Ferramentas de obra",
+      "📐 13kn",
+      "📐 7hp"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de ferramentas de obra.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "Ferramentas de obra",
+      "Referência do anúncio": "Placa Vibratoria Kawashima PC900 13KN 7HP Compactadora de Solo"
+    },
+    "veredito": "Use este item para organizar a decisão de ferramentas de obra dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/placa-vibratoria-kawashima-pc900-13kn-7hp-compactadora-de-solo/p/MLB12644035?utm_source=chatgpt.com",
+    "subtipoObra": "ferramenta"
+  },
+  {
+    "id": "kit-obra-capacete-luva-protetor-mascara-2-oculos-epi",
+    "nome": "Kit Obra Capacete Luva Protetor Mascara 2 Oculos EPI",
+    "marca": "Outras marcas",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "EPIs e proteção",
+    "imagem": "assets/construction-safety.svg",
+    "imagemAlt": "Ilustração de referência para epis e proteção; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1VqQK3Z",
+    "loja": "Mercado Livre",
+    "resumo": "Kit Obra Capacete Luva Protetor Mascara 2 Oculos EPI integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de epis e proteção para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Outras marcas",
+      "🧱 EPIs e proteção"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de epis e proteção.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "EPIs e proteção",
+      "Referência do anúncio": "Kit Obra Capacete Luva Protetor Mascara 2 Oculos EPI"
+    },
+    "veredito": "Use este item para organizar a decisão de epis e proteção dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/kit-obra-capacete--luva--protetor--mascara--2-oculos-epi/up/MLBU3834041985#polycard_client=recommendations_vpp-pdp-v2p-pom&reco_backend=ranker_retrieval_system_vpp_v2p&reco_model=fallback_organicos_deduplication&reco_client=vpp-pdp-v2p-pom&reco_item_pos=2&reco_backend_type=low_level&reco_id=4048743a-6799-42d9-b1da-aba9ab3c9b6c&wid=MLB6443492928&sid=recos",
+    "subtipoObra": "epi"
+  },
+  {
+    "id": "kit-obra-botina-capacete-luva-raspa-plug-oculos",
+    "nome": "Kit Obra Botina Capacete Luva Raspa Plug Oculos",
+    "marca": "Outras marcas",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "EPIs e proteção",
+    "imagem": "assets/construction-safety.svg",
+    "imagemAlt": "Ilustração de referência para epis e proteção; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1eLDbXC",
+    "loja": "Mercado Livre",
+    "resumo": "Kit Obra Botina Capacete Luva Raspa Plug Oculos integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de epis e proteção para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Outras marcas",
+      "🧱 EPIs e proteção"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de epis e proteção.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "EPIs e proteção",
+      "Referência do anúncio": "Kit Obra Botina Capacete Luva Raspa Plug Oculos"
+    },
+    "veredito": "Use este item para organizar a decisão de epis e proteção dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://produto.mercadolivre.com.br/MLB-1966639119-kit-obra-botina-capacete-luva-raspa-plug-oculos-_JM?searchVariation=92811654707#polycard_client=recommendations_vpp-pdp-v2p-pom&reco_backend=ranker_retrieval_system_vpp_v2p&reco_model=fallback_organicos_deduplication&reco_client=vpp-pdp-v2p-pom&reco_item_pos=0&reco_backend_type=low_level&reco_id=4048743a-6799-42d9-b1da-aba9ab3c9b6c&sid=recos",
+    "subtipoObra": "epi"
+  },
+  {
+    "id": "kit-respirador-6200-pservicos-gerais-hb004526339-3m",
+    "nome": "Kit Respirador 6200 Pservicos Gerais HB004526339 3M",
+    "marca": "3M",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "EPIs e proteção",
+    "imagem": "assets/construction-safety.svg",
+    "imagemAlt": "Ilustração de referência para epis e proteção; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2KWwMsW",
+    "loja": "Mercado Livre",
+    "resumo": "Kit Respirador 6200 Pservicos Gerais HB004526339 3M integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de epis e proteção para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ 3M",
+      "🧱 EPIs e proteção",
+      "📐 3m"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de epis e proteção.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "EPIs e proteção",
+      "Referência do anúncio": "Kit Respirador 6200 Pservicos Gerais HB004526339 3M"
+    },
+    "veredito": "Use este item para organizar a decisão de epis e proteção dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/kit-respirador-6200-pservicos-gerais-hb004526339-3m/p/MLB36471437?utm_source=chatgpt.com",
+    "subtipoObra": "epi"
+  },
+  {
+    "id": "respirador-3m-mascaras-de-gas-viseira-capacete",
+    "nome": "Respirador 3M Mascaras de Gas Viseira Capacete",
+    "marca": "3M",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "EPIs e proteção",
+    "imagem": "assets/construction-safety.svg",
+    "imagemAlt": "Ilustração de referência para epis e proteção; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/23PQa64",
+    "loja": "Mercado Livre",
+    "resumo": "Respirador 3M Mascaras de Gas Viseira Capacete integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de epis e proteção para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ 3M",
+      "🧱 EPIs e proteção",
+      "📐 3m"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de epis e proteção.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "EPIs e proteção",
+      "Referência do anúncio": "Respirador 3M Mascaras de Gas Viseira Capacete"
+    },
+    "veredito": "Use este item para organizar a decisão de epis e proteção dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/respirador-3m-mascaras-de-gas-viseira-capacete/up/MLBU4248512391#polycard_client=recommendations_vpp-pdp-v2p-pom&reco_backend=ranker_retrieval_system_vpp_v2p&reco_model=coldstart_low_exposition&reco_client=vpp-pdp-v2p-pom&reco_item_pos=1&reco_backend_type=low_level&reco_id=81f96335-3c81-4115-95ef-5b817892822a&wid=MLB4867142951&sid=recos",
+    "subtipoObra": "epi"
+  },
+  {
+    "id": "mascara-de-protecao-3m-6200-com-cartuchos-e-filtros-6003-para-vapores-e-gases",
+    "nome": "Mascara de Protecao 3M 6200 com Cartuchos e Filtros 6003 para Vapores e Gases",
+    "marca": "3M",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "EPIs e proteção",
+    "imagem": "assets/construction-safety.svg",
+    "imagemAlt": "Ilustração de referência para epis e proteção; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2s6cc2j",
+    "loja": "Mercado Livre",
+    "resumo": "Mascara de Protecao 3M 6200 com Cartuchos e Filtros 6003 para Vapores e Gases integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de epis e proteção para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ 3M",
+      "🧱 EPIs e proteção",
+      "📐 3m"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de epis e proteção.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "EPIs e proteção",
+      "Referência do anúncio": "Mascara de Protecao 3M 6200 com Cartuchos e Filtros 6003 para Vapores e Gases"
+    },
+    "veredito": "Use este item para organizar a decisão de epis e proteção dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/mascara-de-protecao-3m-6200-com-cartuchos-e-filtros-6003-para-vapores-e-gases/p/MLB37157235#polycard_client=recommendations_vpp-pdp-v2p-pom&reco_backend=ranker_retrieval_system_vpp_v2p&reco_model=coldstart_low_exposition&reco_client=vpp-pdp-v2p-pom&reco_item_pos=0&reco_backend_type=low_level&reco_id=81f96335-3c81-4115-95ef-5b817892822a&wid=MLB3858470523&sid=recos",
+    "subtipoObra": "epi"
+  },
+  {
+    "id": "4-filtro-refil-alltec-cmc1-voga-para-respirador",
+    "nome": "4 Filtro Refil Alltec CMC1 Voga para Respirador",
+    "marca": "Alltec",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "EPIs e proteção",
+    "imagem": "assets/construction-safety.svg",
+    "imagemAlt": "Ilustração de referência para epis e proteção; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/2pvbxJ8",
+    "loja": "Mercado Livre",
+    "resumo": "4 Filtro Refil Alltec CMC1 Voga para Respirador integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de epis e proteção para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Alltec",
+      "🧱 EPIs e proteção"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de epis e proteção.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "EPIs e proteção",
+      "Referência do anúncio": "4 Filtro Refil Alltec CMC1 Voga para Respirador"
+    },
+    "veredito": "Use este item para organizar a decisão de epis e proteção dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/4-filtro-refil-alltec-cmc1-voga-para-respirador/up/MLBU4478228657#polycard_client=recommendations_pdp-v2p&reco_backend=ranker_retrieval_online_vpp_v2p&reco_model=coldstart_low_exposition&reco_client=pdp-v2p&reco_item_pos=4&reco_backend_type=low_level&reco_id=313fcc47-b459-4880-a345-e743e1dcd26c&wid=MLB4964955061&sid=recos",
+    "subtipoObra": "epi"
+  },
+  {
+    "id": "kit-50-pre-filtro-5n11-para-mascara-6200-6800-branco-particulas-para-respirador-mascara-se",
+    "nome": "Kit 50 Pre Filtro 5N11 para Mascara 6200 6800 Branco Particulas para Respirador Mascara Semi Facial Particulados Protecao Automotiva Poeira Gases P2 com Carvao Ativo 25 Pares de Filtros",
+    "marca": "Outras marcas",
+    "categoria": "Obra Base",
+    "categoriaId": "obra-base",
+    "destaque": false,
+    "selo": "EPIs e proteção",
+    "imagem": "assets/construction-safety.svg",
+    "imagemAlt": "Ilustração de referência para epis e proteção; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/142dco5",
+    "loja": "Mercado Livre",
+    "resumo": "Kit 50 Pre Filtro 5N11 para Mascara 6200 6800 Branco Particulas para Respirador Mascara Semi Facial Particulados Protecao Automotiva Poeira Gases P2 com Carvao Ativo 25 Pares de Filtros integrado à etapa 01 • Obra Base da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de epis e proteção para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Outras marcas",
+      "🧱 EPIs e proteção"
+    ],
+    "paraQuem": "Obra, reforma e manutenção em que ferramenta, medição ou proteção adequada faz diferença na execução.",
+    "atencao": "Confirme capacidade, alimentação, acessórios, aplicação prevista e requisitos de segurança. EPIs e ferramentas precisam ser adequados ao risco e ao serviço; o catálogo não substitui orientação técnica ou normas de segurança.",
+    "pontos": [
+      "Entra na camada 01 • Obra Base do Universo Casa.",
+      "Pode ser comparado com outros itens de epis e proteção.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "01 • Obra Base",
+      "Grupo": "EPIs e proteção",
+      "Referência do anúncio": "Kit 50 Pre Filtro 5N11 para Mascara 6200 6800 Branco Particulas para Respirador Mascara Semi Facial Particulados Protecao Automotiva Poeira Gases P2 com Carvao Ativo 25 Pares de Filtros"
+    },
+    "veredito": "Use este item para organizar a decisão de epis e proteção dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "obra",
+    "comparador": "obra",
+    "linkOriginal": "https://www.mercadolivre.com.br/kit-50-pre-filtro-5n11-para-mascara-6200-6800-branco-particulas-para-respirador-mascara-semi-facial-particulados-protecao-automotiva-poeira-gases-p2-com-carvao-ativo-25-pares-de-filtros/p/MLB59191784?pdp_filters=item_id:MLB5778752952#polycard_client=recommendations_pdp-pads-reviews&wid=MLB5778752952&sid=recos&reco_backend=recos-pads-retrieval-4stars&reco_model=fallback_promocionados-4stars&reco_client=pdp-pads-reviews&reco_item_pos=2&reco_backend_type=low_level&reco_id=3263e2ef-2a1c-48f3-b39d-54cadacc5b39&is_advertising=true&ad_domain=PDPDESKTOP_RECOMMENDED&ad_position=3&ad_click_id=OTA0OTFlZWMtNmNlZC00NmFjLTg0NGItN2Q0MWU1MmNlMGE3",
+    "subtipoObra": "epi"
+  },
+  {
+    "id": "cabo-fio-eletrico-flexivel-25mm-100m-corfio-cor-da-cobertura-preto",
+    "nome": "Cabo Fio Eletrico Flexivel 25MM 100M Corfio Cor da Cobertura Preto",
+    "marca": "Corfio",
+    "categoria": "Instalações",
+    "categoriaId": "instalacoes",
+    "destaque": false,
+    "selo": "Fios e cabos",
+    "imagem": "assets/construction-cable.svg",
+    "imagemAlt": "Ilustração de referência para fios e cabos; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/31K5Wvb",
+    "loja": "Mercado Livre",
+    "resumo": "Cabo Fio Eletrico Flexivel 25MM 100M Corfio Cor da Cobertura Preto integrado à etapa 02 • Instalações da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de fios e cabos para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Corfio",
+      "⚡ Fios e cabos",
+      "📐 25mm",
+      "📐 100m"
+    ],
+    "paraQuem": "Quem está planejando a infraestrutura elétrica e quer organizar opções por função antes de comprar.",
+    "atencao": "Instalações elétricas envolvem risco de choque, incêndio e incompatibilidade. Corrente, tensão, curva, número de polos, seção de condutor, DR/DPS e quadro devem ser dimensionados conforme o projeto, a instalação real e as normas aplicáveis por profissional qualificado.",
+    "pontos": [
+      "Entra na camada 02 • Instalações do Universo Casa.",
+      "Pode ser comparado com outros itens de fios e cabos.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "02 • Instalações",
+      "Grupo": "Fios e cabos",
+      "Referência do anúncio": "Cabo Fio Eletrico Flexivel 25MM 100M Corfio Cor da Cobertura Preto"
+    },
+    "veredito": "Use este item para organizar a decisão de fios e cabos dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "instalacao",
+    "comparador": "instalacao",
+    "linkOriginal": "https://www.mercadolivre.com.br/cabo-fio-eletrico-flexivel-25mm-100m-corfio-cor-da-cobertura-preto/p/MLB29245267?product_trigger_id=MLB26688152&picker=true&utm_source=chatgpt.com&quantity=1",
+    "subtipoInstalacao": "fio-cabo"
+  },
+  {
+    "id": "cabo-flex-fio-cobre-6mm-preto-750v-rolo-100m-cobrecom",
+    "nome": "Cabo Flex Fio Cobre 6MM Preto 750V Rolo 100M Cobrecom",
+    "marca": "Cobrecom",
+    "categoria": "Instalações",
+    "categoriaId": "instalacoes",
+    "destaque": false,
+    "selo": "Fios e cabos",
+    "imagem": "assets/construction-cable.svg",
+    "imagemAlt": "Ilustração de referência para fios e cabos; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1j5LPQb",
+    "loja": "Mercado Livre",
+    "resumo": "Cabo Flex Fio Cobre 6MM Preto 750V Rolo 100M Cobrecom integrado à etapa 02 • Instalações da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de fios e cabos para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Cobrecom",
+      "⚡ Fios e cabos",
+      "📐 750v",
+      "📐 6mm",
+      "📐 100m"
+    ],
+    "paraQuem": "Quem está planejando a infraestrutura elétrica e quer organizar opções por função antes de comprar.",
+    "atencao": "Instalações elétricas envolvem risco de choque, incêndio e incompatibilidade. Corrente, tensão, curva, número de polos, seção de condutor, DR/DPS e quadro devem ser dimensionados conforme o projeto, a instalação real e as normas aplicáveis por profissional qualificado.",
+    "pontos": [
+      "Entra na camada 02 • Instalações do Universo Casa.",
+      "Pode ser comparado com outros itens de fios e cabos.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "02 • Instalações",
+      "Grupo": "Fios e cabos",
+      "Referência do anúncio": "Cabo Flex Fio Cobre 6MM Preto 750V Rolo 100M Cobrecom"
+    },
+    "veredito": "Use este item para organizar a decisão de fios e cabos dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "instalacao",
+    "comparador": "instalacao",
+    "linkOriginal": "https://www.mercadolivre.com.br/cabo-flex-fio-cobre-6mm-preto-750v-rolo-100m-cobrecom/up/MLBU3766128096#polycard_client=recommendations_pdp-v2p&reco_backend=ranker_retrieval_online_vpp_v2p&reco_model=organicos_deduplication&reco_client=pdp-v2p&reco_item_pos=1&reco_backend_type=low_level&reco_id=82c62b63-b4ad-400c-bfdb-9e4cb6907746&wid=MLB4449915115&sid=recos",
+    "subtipoInstalacao": "fio-cabo"
+  },
+  {
+    "id": "disjuntor-bipolar-steck-serie-6ka-curva-c-63a-sdzd62c63",
+    "nome": "Disjuntor Bipolar Steck Serie 6KA Curva C 63A SDZD62C63",
+    "marca": "Steck",
+    "categoria": "Instalações",
+    "categoriaId": "instalacoes",
+    "destaque": false,
+    "selo": "Disjuntores",
+    "imagem": "assets/construction-breaker.svg",
+    "imagemAlt": "Ilustração de referência para disjuntores; imagem ilustrativa",
+    "linkAfiliado": "https://meli.la/1bCMWGd",
+    "loja": "Mercado Livre",
+    "resumo": "Disjuntor Bipolar Steck Serie 6KA Curva C 63A SDZD62C63 integrado à etapa 02 • Instalações da Minha Casa. Compare produtos do mesmo grupo e confirme aplicação, dimensionamento e variante antes da compra.",
+    "chamada": "Uma opção de disjuntores para colocar a decisão da obra no mesmo projeto da casa.",
+    "chips": [
+      "🏷️ Steck",
+      "⚡ Disjuntores",
+      "📐 63a"
+    ],
+    "paraQuem": "Quem está planejando a infraestrutura elétrica e quer organizar opções por função antes de comprar.",
+    "atencao": "Instalações elétricas envolvem risco de choque, incêndio e incompatibilidade. Corrente, tensão, curva, número de polos, seção de condutor, DR/DPS e quadro devem ser dimensionados conforme o projeto, a instalação real e as normas aplicáveis por profissional qualificado.",
+    "pontos": [
+      "Entra na camada 02 • Instalações do Universo Casa.",
+      "Pode ser comparado com outros itens de disjuntores.",
+      "O anúncio do Mercado Livre continua sendo a referência para preço, disponibilidade e variante atual."
+    ],
+    "especificacoes": {
+      "Etapa do projeto": "02 • Instalações",
+      "Grupo": "Disjuntores",
+      "Referência do anúncio": "Disjuntor Bipolar Steck Serie 6KA Curva C 63A SDZD62C63"
+    },
+    "veredito": "Use este item para organizar a decisão de disjuntores dentro do projeto. O Preço na Mira ajuda a comparar contexto e alternativas; a especificação final deve respeitar a aplicação real.",
+    "tipoProduto": "instalacao",
+    "comparador": "instalacao",
+    "linkOriginal": "https://www.mercadolivre.com.br/disjuntor-bipolar-steck-serie-6ka-curva-c-63a-sdzd62c63/p/MLB24737380#polycard_client=recommendations_pdp-v2p&reco_backend=ranker_retrieval_online_vpp_v2p&reco_model=organicos_deduplication&reco_client=pdp-v2p&reco_item_pos=0&reco_backend_type=low_level&reco_id=84c7c70e-1437-4475-ae83-50d07a050e35&wid=MLB3978655411&sid=recos",
+    "subtipoInstalacao": "disjuntor"
+  },
+  {
+    "id": "dis

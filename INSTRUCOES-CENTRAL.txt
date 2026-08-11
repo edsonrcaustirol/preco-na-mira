@@ -1,0 +1,62 @@
+PREÇO NA MIRA V13.6 — CENTRAL LOCAL + SITE ONLINE
+
+COMO ABRIR NO WINDOWS
+1. Extraia todo o ZIP para uma pasta.
+2. Dê dois cliques em ABRIR-CENTRAL.bat.
+3. A Central abrirá automaticamente no navegador.
+4. Mantenha a janela preta aberta enquanto estiver trabalhando.
+
+PRIMEIRO USO
+A ferramenta precisa do Node.js 20.11 ou superior. Ele é gratuito.
+Se o arquivo .bat avisar que o Node.js não está instalado, baixe a versão LTS em:
+https://nodejs.org/pt
+
+ATIVAR O SITE ONLINE — UMA VEZ
+1. Dê dois cliques em CONFIGURAR-GITHUB.bat.
+2. O Windows instalará Git/GitHub CLI se estiverem ausentes.
+3. Autorize a conta edsonrcaustirol na página oficial aberta pelo GitHub.
+4. Ao aparecer GITHUB CONFIGURADO COM SUCESSO, feche a janela.
+5. Abra normalmente pelo ABRIR-CENTRAL.bat.
+
+FLUXO MAIS RÁPIDO
+1. Cole links normais e links meli.la, mesmo que o texto esteja bagunçado.
+2. Clique em ANALISAR E PREENCHER.
+3. Corrija apenas os cartões amarelos.
+4. Duplicatas ficam vermelhas e desmarcadas.
+5. Clique em PUBLICAR PRODUTOS PRONTOS.
+6. A Central valida e tenta enviar ao GitHub automaticamente.
+7. Se aparecer ENVIO PENDENTE, clique em SINCRONIZAR SITE ONLINE quando a conexão voltar.
+8. GERAR ZIP ATUALIZADO continua disponível apenas como cópia de segurança.
+
+LINK AFILIADO SOZINHO — V13.6
+- A central segue o meli.la e procura o código MLB mesmo quando o destino é uma página /social/.
+- Depois consulta o cadastro público para preencher link normal, título, marca, modelo, categoria e imagem.
+- Se a consulta pública estiver temporariamente indisponível, a central ainda tenta reconstruir o anúncio pelo MLB.
+- Se o Mercado Livre abrir a verificação de conta, a central extrai o anúncio escondido no parâmetro go= e tenta completar título, marca e categoria pelo endereço.
+- O link afiliado precisa estar completo, com o código depois de https://meli.la/.
+- Para testar novamente um cartão antigo, limpe a fila e analise o link outra vez nesta versão.
+
+PORTA JÁ EM USO
+- Se outra Central ainda estiver usando a porta 4314, a V13.6 tenta automaticamente 4315, 4316 e as portas seguintes.
+- O navegador abre no endereço correto; não é mais necessário encerrar a versão antiga apenas para iniciar a nova.
+
+IMAGENS
+- A central tenta encontrar e baixar a imagem exibida no anúncio.
+- Essa imagem fica marcada como “imagem de anúncio”, não como fonte oficial.
+- Uma imagem só recebe o selo de fonte oficial após conferência no fabricante.
+- Se o download falhar, o produto entra com um fallback e fica na fila de imagens pendentes.
+- Para produtos que já estão no site, use BUSCAR IMAGENS DE 6 PRODUTOS ANTIGOS.
+- Revise as fotografias encontradas e publique o lote. Os dados originais do produto são preservados.
+- Clique novamente para consultar o próximo grupo de pendências.
+
+SEGURANÇA
+- Um backup é criado antes de cada lote.
+- Se a validação falhar, o catálogo anterior é restaurado automaticamente.
+- Links repetidos por afiliado, anúncio ou código MLB são bloqueados.
+- Endereços locais ou privados são bloqueados no buscador de imagens/metadados.
+- Redirecionamentos também são revalidados antes de qualquer download.
+- O GitHub recebe somente o catálogo, manifestos e imagens gerados pela Central.
+- Credenciais, .git, backups, temporários e ZIPs ficam fora dos pacotes e envios.
+
+MODO ORGANIZADOR
+Se gerenciador.html for aberto sem o arquivo .bat, ainda é possível analisar, revisar e exportar um lote JSON. A publicação direta, o backup e o ZIP ficam desativados.

@@ -35,6 +35,10 @@ jobs:
             mkdir -p _site/data
             node -e 'const fs=require("node:fs");const parts=fs.readdirSync("data").filter((name)=>name.startsWith("produtos.part-")).sort();fs.writeFileSync("_site/data/produtos.js",Buffer.concat(parts.map((name)=>fs.readFileSync(`data/${name}`))))'
           fi
+          if [ -f data/experiencias.js ]; then
+            mkdir -p _site/data
+            cp data/experiencias.js _site/data/experiencias.js
+          fi
           if [ -d assets ]; then
             mkdir -p _site/assets
             rsync -a assets/ _site/assets/

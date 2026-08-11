@@ -2,7 +2,7 @@
 
 Catálogo comparativo brasileiro com curadoria de produtos e links do Mercado Livre.
 
-O site público é implantado automaticamente pelo GitHub Pages. O arquivo `site-base.zip` contém a base estática validada; `data/produtos.js` e novas imagens em `assets/produtos/` são sobrepostos durante cada atualização da Central de Catálogo V13.5.
+O site público é implantado automaticamente pelo GitHub Pages. O arquivo `site-base.zip` contém a base estática validada; catálogo, experiências e imagens locais são sobrepostos durante cada atualização. A V13.6 ativa a Lavanderia e renova visualmente os ambientes Gamer e Casa.
 
 - Site: https://edsonrcaustirol.github.io/preco-na-mira/
 - Administração: executada somente no computador local por `ABRIR-CENTRAL.bat`.
