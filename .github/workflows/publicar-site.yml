@@ -33,11 +33,7 @@ jobs:
             cp data/produtos.js _site/data/produtos.js
           elif compgen -G "data/produtos.part-*" > /dev/null; then
             mkdir -p _site/data
-            node <<'NODE'
-            const fs = require('node:fs');
-            const parts = fs.readdirSync('data').filter((name) => name.startsWith('produtos.part-')).sort();
-            fs.writeFileSync('_site/data/produtos.js', parts.map((name) => fs.readFileSync(`data/${name}`)).reduce((all, part) => Buffer.concat([all, part]), Buffer.alloc(0)));
-            NODE
+            node -e 'const fs=require("node:fs");const parts=fs.readdirSync("data").filter((name)=>name.startsWith("produtos.part-")).sort();fs.writeFileSync("_site/data/produtos.js",Buffer.concat(parts.map((name)=>fs.readFileSync(`data/${name}`))))'
           fi
           if [ -d assets ]; then
             mkdir -p _site/assets
