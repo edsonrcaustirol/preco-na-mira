@@ -1,0 +1,51 @@
+name: Publicar Preço na Mira
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o catálogo
+        uses: actions/checkout@v5
+
+      - name: Preparar arquivos públicos
+        run: |
+          mkdir -p _site
+          unzip -q site-base.zip -d _site
+          if [ -f data/produtos.js ]; then
+            mkdir -p _site/data
+            cp data/produtos.js _site/data/produtos.js
+          fi
+          if [ -d assets/produtos ]; then
+            mkdir -p _site/assets/produtos
+            rsync -a assets/produtos/ _site/assets/produtos/
+          fi
+          touch _site/.nojekyll
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Montar pacote do site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Publicar site
+        id: deployment
+        uses: actions/deploy-pages@v4
