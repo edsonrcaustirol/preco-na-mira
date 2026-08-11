@@ -1,0 +1,6 @@
+backups/
+.tmp-*/
+*.zip
+*.tmp
+.pnm-github.json
+node_modules/
