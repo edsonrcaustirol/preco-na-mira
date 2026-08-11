@@ -38,6 +38,62 @@ jobs:
           fi
           touch _site/.nojekyll
 
+      - name: Preparar Google e outros buscadores
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const base = 'https://edsonrcaustirol.github.io/preco-na-mira/';
+          const privatePages = new Set(['busca.html', 'favoritos.html', 'minha-lista.html']);
+
+          for (const page of ['gerenciador.html', 'importador.html']) {
+            fs.rmSync(`_site/${page}`, { force: true });
+          }
+
+          const htmlPages = fs.readdirSync('_site').filter((name) => name.endsWith('.html'));
+          const publicPages = htmlPages.filter((name) => !privatePages.has(name));
+
+          for (const page of publicPages) {
+            const path = `_site/${page}`;
+            let html = fs.readFileSync(path, 'utf8');
+            if (/<meta\s+name=["']robots["']/i.test(html)) {
+              html = html.replace(
+                /<meta\s+name=["']robots["']\s+content=["'][^"']*["']\s*\/?\s*>/i,
+                '<meta name="robots" content="index,follow">'
+              );
+            } else {
+              html = html.replace(/<\/head>/i, '<meta name="robots" content="index,follow"></head>');
+            }
+            fs.writeFileSync(path, html);
+          }
+
+          fs.writeFileSync('_site/robots.txt', [
+            'User-agent: *',
+            'Allow: /',
+            'Disallow: /preco-na-mira/gerenciador.html',
+            'Disallow: /preco-na-mira/importador.html',
+            'Disallow: /preco-na-mira/busca.html',
+            'Disallow: /preco-na-mira/favoritos.html',
+            'Disallow: /preco-na-mira/minha-lista.html',
+            `Sitemap: ${base}sitemap.xml`,
+            ''
+          ].join('\n'));
+
+          const products = fs.readFileSync('_site/data/produtos.js', 'utf8');
+          const ids = [...products.matchAll(/\n\s+"id":\s+"([^"]+)"/g)].map((match) => match[1]);
+          const urls = [
+            ...publicPages.map((page) => page === 'index.html' ? base : `${base}${page}`),
+            ...ids.map((id) => `${base}produto.html?id=${encodeURIComponent(id)}`)
+          ];
+          const sitemap = [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+            ...urls.map((url) => `  <url><loc>${url.replace(/&/g, '&amp;')}</loc></url>`),
+            '</urlset>',
+            ''
+          ].join('\n');
+          fs.writeFileSync('_site/sitemap.xml', sitemap);
+          NODE
+
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
 
