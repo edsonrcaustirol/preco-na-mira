@@ -1,0 +1,190 @@
+/* V13.7 — opções maiores + preview de produto no hover */
+
+/* O montador passa a tratar cada opção como um card de produto, não como uma miniatura. */
+.builder-options{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  margin-top:16px;
+}
+.builder-options button{
+  position:relative;
+  min-height:142px;
+  grid-template-columns:112px minmax(0,1fr);
+  gap:14px;
+  padding:14px;
+  border-radius:18px;
+  overflow:visible;
+  background:#fff;
+  box-shadow:0 8px 24px rgba(45,68,60,.05);
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease;
+}
+.builder-options button:hover{
+  transform:translateY(-3px);
+  border-color:#8fb3a5;
+  box-shadow:0 18px 40px rgba(45,68,60,.14);
+  z-index:20;
+}
+.builder-options button.active{
+  background:#eef5f0;
+  border-color:#5f8d7d;
+  box-shadow:0 0 0 2px rgba(73,115,100,.12),0 14px 32px rgba(45,68,60,.10);
+}
+.builder-options>button>img{
+  width:112px;
+  height:112px;
+  object-fit:contain;
+  padding:8px;
+  background:#fbfaf7;
+  border:1px solid #ece5dc;
+  border-radius:14px;
+}
+.builder-options>button>span{
+  min-width:0;
+}
+.builder-options>button>span>b{
+  display:block;
+  font-size:13px;
+  line-height:1.28;
+  color:#263a33;
+  margin-bottom:7px;
+}
+.builder-options>button>span>small{
+  display:block;
+  font-size:9px;
+  line-height:1.45;
+  color:#7d756e;
+}
+.builder-option-hint{
+  display:inline-flex;
+  margin-top:10px;
+  padding:6px 8px;
+  border-radius:999px;
+  background:#f3eee7;
+  color:#7f654f;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.35px;
+}
+.builder-options button.active .builder-option-hint{
+  background:#dcebe4;
+  color:#326a57;
+}
+
+/* Preview flutuante no desktop. */
+.builder-hover-preview{
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 12px);
+  width:min(360px,82vw);
+  display:grid;
+  grid-template-columns:128px minmax(0,1fr);
+  gap:14px;
+  align-items:center;
+  padding:14px;
+  background:rgba(255,255,255,.98);
+  border:1px solid #ded6cb;
+  border-radius:20px;
+  box-shadow:0 24px 65px rgba(30,43,38,.22);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translate(-50%,10px) scale(.96);
+  transform-origin:center bottom;
+  transition:opacity .16s ease,transform .16s ease,visibility .16s ease;
+  z-index:80;
+  text-align:left;
+}
+.builder-hover-preview:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-7px;
+  width:14px;
+  height:14px;
+  background:#fff;
+  border-right:1px solid #ded6cb;
+  border-bottom:1px solid #ded6cb;
+  transform:translateX(-50%) rotate(45deg);
+}
+.builder-options button:hover .builder-hover-preview,
+.builder-options button:focus-visible .builder-hover-preview{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0) scale(1);
+}
+.builder-hover-preview .preview-media{
+  width:128px;
+  height:128px;
+  display:grid;
+  place-items:center;
+  background:#f8f5ef;
+  border-radius:15px;
+  overflow:hidden;
+}
+.builder-hover-preview .preview-media img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:9px;
+}
+.builder-hover-preview .preview-copy small{
+  display:block;
+  color:#9a7256;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.55px;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.builder-hover-preview .preview-copy strong{
+  display:block;
+  font-size:14px;
+  line-height:1.22;
+  color:#23372f;
+  margin-bottom:7px;
+}
+.builder-hover-preview .preview-copy p{
+  margin:0 0 9px;
+  color:#716b64;
+  font-size:9px;
+  line-height:1.5;
+}
+.builder-hover-preview .preview-copy em{
+  display:inline-flex;
+  font-style:normal;
+  color:#356b59;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.35px;
+}
+
+/* Dá um pouco mais de presença também aos cards do catálogo. */
+.kitchen-product-media{height:240px}
+.kitchen-product-copy{padding:20px}
+.kitchen-product-copy>small{font-size:9px}
+.kitchen-product-copy h3{font-size:18px}
+.kitchen-product-copy p{font-size:11px;min-height:50px}
+.finish-tags span{font-size:8px;padding:6px 8px}
+
+@media(max-width:1100px){
+  .builder-options{grid-template-columns:1fr}
+}
+
+@media(max-width:850px){
+  .builder-options button{grid-template-columns:96px minmax(0,1fr);min-height:124px}
+  .builder-options>button>img{width:96px;height:96px}
+}
+
+@media(max-width:620px){
+  .builder-options{gap:10px}
+  .builder-options button{grid-template-columns:86px minmax(0,1fr);min-height:112px;padding:11px;gap:11px}
+  .builder-options>button>img{width:86px;height:86px}
+  .builder-options>button>span>b{font-size:12px}
+  .builder-options>button>span>small{font-size:9px}
+  .builder-hover-preview{display:none}
+  .kitchen-product-media{height:215px}
+}
+
+@media(hover:none){
+  .builder-hover-preview{display:none}
+}
