@@ -19,7 +19,7 @@ echo Cole os links de afiliado e use IMPORTAR + PUBLICAR AUTOMATICAMENTE.
 echo Mantenha esta janela aberta durante o uso.
 echo.
 
-start "" cmd /c "timeout /t 2 /nobreak >nul & start "" "http://127.0.0.1:4314/automacao.html""
+start "" cmd /c "timeout /t 2 /nobreak ^>nul ^& start http://127.0.0.1:4314/automacao.html"
 node tools\catalog-server.mjs
 
 if errorlevel 1 (
