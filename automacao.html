@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Automação de Catálogo — Preço na Mira</title>
+  <meta name="description" content="Modo automático para importar links de afiliado, detectar duplicados e publicar produtos seguros no Preço na Mira.">
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/site.css">
+  <style>
+    :root{--auto-bg:#07101f;--auto-panel:#0c172a;--auto-line:rgba(255,255,255,.1);--auto-text:#eef4ff;--auto-muted:#94a3b8;--auto-accent:#ffd84d;--auto-good:#42d392;--auto-warn:#ffb84d;--auto-bad:#ff6b6b}
+    body.auto-page{background:radial-gradient(circle at 15% 0%,rgba(53,109,255,.18),transparent 32rem),linear-gradient(180deg,#07101f 0%,#0a1220 100%);color:var(--auto-text);min-height:100vh}
+    .auto-topbar{padding:9px 16px;text-align:center;font-size:12px;letter-spacing:.08em;text-transform:uppercase;background:#020817;color:#9fb1c7;border-bottom:1px solid rgba(255,255,255,.06)}
+    .auto-wrap{width:min(1180px,calc(100% - 32px));margin:0 auto}
+    .auto-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0}
+    .auto-nav a{color:#dce7f7;text-decoration:none}.auto-nav-links{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}.auto-nav-links a:hover{color:#fff}
+    .auto-hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:28px;padding:42px 0 28px;align-items:stretch}
+    .auto-kicker{display:inline-flex;gap:8px;align-items:center;font-size:12px;letter-spacing:.12em;font-weight:800;color:var(--auto-accent)}
+    .auto-hero h1{font-size:clamp(38px,6vw,72px);line-height:.96;margin:14px 0 18px;letter-spacing:-.045em}.auto-hero h1 em{font-style:normal;color:var(--auto-accent)}
+    .auto-hero p{font-size:18px;line-height:1.65;color:#b8c5d6;max-width:760px}
+    .auto-status{border:1px solid var(--auto-line);background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border-radius:22px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 22px 80px rgba(0,0,0,.25)}
+    .auto-status strong{font-size:17px}.auto-status p{font-size:14px;margin:8px 0 0}.auto-status-dot{width:10px;height:10px;border-radius:50%;background:#64748b;display:inline-block;margin-right:8px;box-shadow:0 0 0 5px rgba(100,116,139,.12)}
+    .auto-status.ready .auto-status-dot{background:var(--auto-good);box-shadow:0 0 0 5px rgba(66,211,146,.12)}
+    .auto-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:20px}.auto-stat{padding:16px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06)}.auto-stat b{display:block;font-size:28px}.auto-stat span{font-size:12px;color:var(--auto-muted)}
+    .auto-panel{margin:18px 0 28px;background:rgba(9,19,34,.88);border:1px solid var(--auto-line);border-radius:24px;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.24)}
+    .auto-panel-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;padding:24px 24px 18px;border-bottom:1px solid var(--auto-line)}.auto-panel-head h2{margin:3px 0 6px;font-size:26px}.auto-panel-head p{margin:0;color:var(--auto-muted);line-height:1.5}.auto-step{font-size:11px;letter-spacing:.12em;color:var(--auto-accent);font-weight:900}
+    .auto-input-grid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;padding:22px}
+    .auto-textarea{width:100%;min-height:290px;resize:vertical;border:1px solid rgba(255,255,255,.12);background:#07101d;color:#edf5ff;border-radius:18px;padding:18px;font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;outline:none}.auto-textarea:focus{border-color:rgba(255,216,77,.55);box-shadow:0 0 0 4px rgba(255,216,77,.07)}
+    .auto-side{display:flex;flex-direction:column;gap:14px}.auto-side label{font-size:12px;color:#b9c6d8;font-weight:700}.auto-side select{width:100%;margin-top:7px;background:#07101d;color:#edf5ff;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px}
+    .auto-tip{padding:15px;border:1px dashed rgba(255,216,77,.3);border-radius:16px;color:#c7d3e3;font-size:13px;line-height:1.55;background:rgba(255,216,77,.035)}
+    .auto-actions{display:flex;gap:12px;flex-wrap:wrap;padding:0 22px 22px}.auto-btn{appearance:none;border:0;border-radius:14px;padding:14px 18px;font-weight:900;letter-spacing:.02em;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}.auto-btn:disabled{opacity:.5;cursor:not-allowed}.auto-btn.primary{background:var(--auto-accent);color:#10131a}.auto-btn.secondary{background:#15243a;color:#ecf3ff;border:1px solid rgba(255,255,255,.09)}.auto-btn.ghost{background:transparent;color:#c6d1df;border:1px solid rgba(255,255,255,.12)}
+    .auto-progress{display:none;margin:0 22px 22px;padding:14px 16px;border-radius:14px;background:rgba(53,109,255,.09);border:1px solid rgba(90,137,255,.25);color:#c9d8ff}.auto-progress.show{display:block}
+    .auto-results{padding:22px}.auto-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.auto-summary-card{border-radius:16px;padding:16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07)}.auto-summary-card b{font-size:28px;display:block}.auto-summary-card span{font-size:12px;color:var(--auto-muted)}
+    .auto-list{display:grid;gap:10px}.auto-row{display:grid;grid-template-columns:1.25fr .7fr .8fr 1fr;gap:12px;align-items:center;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025)}.auto-row b{font-size:14px}.auto-row span,.auto-row small{color:var(--auto-muted);font-size:12px}.auto-pill{display:inline-flex;width:max-content;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:900}.auto-pill.ready{background:rgba(66,211,146,.12);color:#82efba}.auto-pill.duplicate{background:rgba(255,184,77,.12);color:#ffd08a}.auto-pill.review{background:rgba(255,107,107,.12);color:#ff9e9e}
+    .auto-log{white-space:pre-wrap;margin:0;padding:18px 22px 24px;color:#c7d3e3;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;border-top:1px solid var(--auto-line);background:#050c17}
+    .auto-empty{text-align:center;padding:36px;color:var(--auto-muted)}
+    .auto-note{padding:0 0 46px;color:#7f91a8;font-size:13px;line-height:1.65}
+    @media(max-width:860px){.auto-hero,.auto-input-grid{grid-template-columns:1fr}.auto-summary{grid-template-columns:repeat(2,1fr)}.auto-row{grid-template-columns:1fr 1fr}.auto-nav{align-items:flex-start;flex-direction:column}}
+    @media(max-width:520px){.auto-wrap{width:min(100% - 20px,1180px)}.auto-hero{padding-top:26px}.auto-summary{grid-template-columns:1fr 1fr}.auto-row{grid-template-columns:1fr}.auto-actions{flex-direction:column}.auto-btn{width:100%}}
+  </style>
+</head>
+<body class="auto-page">
+  <div class="auto-topbar">Ferramenta privada de alimentação • use pelo servidor local da Central</div>
+  <div class="auto-wrap">
+    <nav class="auto-nav">
+      <a class="brand" href="index.html" aria-label="Preço na Mira — página inicial"><span class="pnm-brand-mark" aria-hidden="true"></span><span class="pnm-brand-name"><b>PREÇO</b><i>NA MIRA</i></span></a>
+      <div class="auto-nav-links"><a href="gerenciador.html">Gerenciador completo</a><a href="index.html">Ver site</a></div>
+    </nav>
+
+    <section class="auto-hero">
+      <div>
+        <span class="auto-kicker">⚡ MODO AUTOMÁTICO</span>
+        <h1>Cole os links.<br><em>O resto é com a Central.</em></h1>
+        <p>O modo automático resolve links do Mercado Livre, tenta identificar o anúncio, classifica o produto, detecta duplicados e publica somente os itens seguros. As exceções ficam separadas para revisão.</p>
+      </div>
+      <aside class="auto-status" id="statusBox">
+        <div><strong><span class="auto-status-dot"></span><span id="statusTitle">Verificando a Central...</span></strong><p id="statusText">Conectando ao servidor local.</p></div>
+        <div class="auto-stats"><div class="auto-stat"><b id="statProducts">—</b><span>produtos atuais</span></div><div class="auto-stat"><b id="statPending">—</b><span>imagens pendentes</span></div></div>
+      </aside>
+    </section>
+
+    <section class="auto-panel">
+      <div class="auto-panel-head"><div><span class="auto-step">ETAPA ÚNICA</span><h2>Importação em massa</h2><p>Cole 1, 10, 50 ou mais links. Cabeçalhos de texto ajudam a Central a entender categoria e faixa.</p></div><strong id="linkCount">0 links</strong></div>
+      <div class="auto-input-grid">
+        <div><textarea class="auto-textarea" id="raw" placeholder="Caixas de som — premium&#10;https://meli.la/xxxx&#10;https://meli.la/yyyy&#10;&#10;Processadores — custo-benefício&#10;https://meli.la/zzzz"></textarea></div>
+        <aside class="auto-side">
+          <label>Categoria do lote<select id="type"><option value="">Detectar automaticamente</option></select></label>
+          <label>Subcategoria<select id="subtype"><option value="">Detectar automaticamente</option></select></label>
+          <label>Faixa<select id="tier"><option value="">Detectar automaticamente</option><option>Custo-benefício</option><option>Intermediário</option><option>Topo de linha</option></select></label>
+          <div class="auto-tip"><b>Modo seguro:</b> duplicados e produtos com informação incerta nunca são publicados automaticamente. Só entram os cadastros que passarem sem pendências.</div>
+          <label class="auto-btn secondary" for="fileInput">📄 ABRIR TXT / CSV / JSON</label><input id="fileInput" type="file" accept=".txt,.csv,.json,text/plain,text/csv,application/json" hidden>
+        </aside>
+      </div>
+      <div class="auto-progress" id="progress">Processando o lote...</div>
+      <div class="auto-actions">
+        <button class="auto-btn primary" id="autoPublish">⚡ IMPORTAR + PUBLICAR AUTOMATICAMENTE</button>
+        <button class="auto-btn secondary" id="analyzeOnly">🔎 ANALISAR SEM PUBLICAR</button>
+        <button class="auto-btn ghost" id="copyPending" disabled>📋 COPIAR PENDÊNCIAS</button>
+        <a class="auto-btn ghost" href="gerenciador.html">🧰 ABRIR GERENCIADOR COMPLETO</a>
+      </div>
+    </section>
+
+    <section class="auto-panel">
+      <div class="auto-panel-head"><div><span class="auto-step">RESULTADO</span><h2>Triagem automática</h2><p>Produtos prontos, duplicados e itens que exigem revisão aparecem separados.</p></div></div>
+      <div class="auto-results" id="results"><div class="auto-empty">Nenhum lote processado ainda.</div></div>
+      <pre class="auto-log" id="log">Aguardando links.</pre>
+    </section>
+
+    <p class="auto-note">O link de afiliado é preservado como destino de compra. A Central usa o endereço resolvido apenas para identificar o anúncio e enriquecer o cadastro. Preço, estoque, frete, vendedor e variante continuam sujeitos ao anúncio do Mercado Livre.</p>
+  </div>
+
+  <script type="module">
+    import {TYPE_OPTIONS,subtypeOptions} from './assets/catalog-core.mjs';
+    const $=id=>document.getElementById(id);
+    let token='',direct=false,busy=false,last={ready:[],duplicate:[],review:[],drafts:[]};
+    const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    function fillTypes(){ $('type').innerHTML='<option value="">Detectar automaticamente</option>'+TYPE_OPTIONS.map(x=>`<option value="${esc(x.id)}">${esc(x.label)}</option>`).join(''); fillSubtypes(); }
+    function fillSubtypes(){const list=subtypeOptions($('type').value);$('subtype').innerHTML='<option value="">Detectar automaticamente</option>'+list.map(x=>`<option value="${esc(x.id)}">${esc(x.label)}</option>`).join('');}
+    function defaults(){return{tipoProduto:$('type').value,subtipo:$('subtype').value,faixa:$('tier').value}}
+    function countLinks(){const n=($('raw').value.match(/https?:\/\//gi)||[]).length;$('linkCount').textContent=`${n} ${n===1?'link':'links'}`}
+    function setBusy(value,text='Processando o lote...'){busy=value;$('autoPublish').disabled=value||!direct;$('analyzeOnly').disabled=value||!direct;$('progress').classList.toggle('show',value);$('progress').textContent=text}
+    function log(text){$('log').textContent=text}
+    async function api(path,payload){const r=await fetch(path,{method:'POST',headers:{'content-type':'application/json','x-pnm-token':token},body:JSON.stringify(payload)}),data=await r.json().catch(()=>({error:`HTTP ${r.status}`}));if(!r.ok)throw new Error(data.error||data.output||`HTTP ${r.status}`);return data}
+    async function status(){try{const r=await fetch('/api/status',{cache:'no-store'});if(!r.ok)throw new Error('Servidor local indisponível');const s=await r.json();token=s.sessionToken||'';direct=s.mode==='direct'&&Boolean(token);$('statusBox').classList.toggle('ready',direct);$('statusTitle').textContent=direct?(s.github?.configured?'Central pronta + GitHub conectado':'Central pronta em modo local'):'Modo automático indisponível';$('statusText').textContent=direct?(s.github?.configured?'Produtos seguros podem ser publicados e enviados ao site online em uma única ação.':'A publicação local funciona; configure o GitHub para sincronizar o site online.'):'Abra esta página através de ABRIR-CENTRAL.bat.';$('statProducts').textContent=s.products??'—';$('statPending').textContent=s.pending??'—';}catch(e){direct=false;token='';$('statusBox').classList.remove('ready');$('statusTitle').textContent='Abra pela Central local';$('statusText').textContent='Esta automação não publica quando aberta diretamente pelo GitHub Pages ou por arquivo local.';$('statProducts').textContent='—';$('statPending').textContent='—';log('Modo automático bloqueado. Execute ABRIR-CENTRAL.bat e abra Automação no menu da Central.')}finally{setBusy(false)}}
+    function splitDrafts(drafts=[]){const ready=[],duplicate=[],review=[];for(const d of drafts){if(d.duplicate){duplicate.push(d);continue}if(d.selected!==false&&!d.errors?.length){ready.push(d);continue}review.push(d)}last={ready,duplicate,review,drafts};$('copyPending').disabled=!(duplicate.length||review.length);render();return last}
+    function reason(d){if(d.duplicate)return d.duplicate.reason+(d.duplicate.nome?` — ${d.duplicate.nome}`:'');if(d.errors?.length)return d.errors.join(', ');return d.metadataError||'Revisão manual necessária'}
+    function render(){const {ready,duplicate,review,drafts}=last;if(!drafts.length){$('results').innerHTML='<div class="auto-empty">Nenhum produto detectado.</div>';return}const rows=[...ready.map(d=>[d,'ready','✓ PRONTO']),...duplicate.map(d=>[d,'duplicate','♻ DUPLICADO']),...review.map(d=>[d,'review','⚠ REVISAR'])].map(([d,kind,label])=>`<div class="auto-row"><div><b>${esc(d.nome||'Produto sem nome')}</b><br><small>${esc(d.marca||'Marca a confirmar')}</small></div><span>${esc(d.selo||d.categoria||'Categoria em revisão')}</span><span>${esc(d.mercadoItemId||'ID não identificado')}</span><div><span class="auto-pill ${kind}">${label}</span><br><small>${esc(kind==='ready'?(d.faixa||'Pronto para publicar'):reason(d))}</small></div></div>`).join('');$('results').innerHTML=`<div class="auto-summary"><div class="auto-summary-card"><b>${drafts.length}</b><span>detectados</span></div><div class="auto-summary-card"><b>${ready.length}</b><span>prontos</span></div><div class="auto-summary-card"><b>${duplicate.length}</b><span>duplicados</span></div><div class="auto-summary-card"><b>${review.length}</b><span>revisão</span></div></div><div class="auto-list">${rows}</div>`}
+    async function analyze(){const raw=$('raw').value.trim();if(!raw)throw new Error('Cole pelo menos um link antes de começar.');const out=await api('/api/analyze',{raw,defaults:defaults()});splitDrafts(out.drafts||[]);return last}
+    async function analyzeOnly(){if(busy||!direct)return;setBusy(true,'Identificando anúncios, classificando produtos e procurando duplicados...');log('Analisando lote...');try{const r=await analyze();log(`${r.drafts.length} detectados\n${r.ready.length} prontos para publicação\n${r.duplicate.length} duplicados bloqueados\n${r.review.length} precisam de revisão\n\nNada foi publicado.`)}catch(e){log(`ERRO\n${e.message}`)}finally{setBusy(false)}}
+    async function autoPublish(){if(busy||!direct)return;setBusy(true,'Analisando e preparando publicação automática...');log('1/2 — Analisando lote...');try{const r=await analyze();if(!r.ready.length){log(`Nenhum produto foi publicado.\n${r.duplicate.length} duplicados bloqueados.\n${r.review.length} itens exigem revisão.`);return}log(`2/2 — ${r.ready.length} produtos seguros encontrados. Publicando e sincronizando...`);const out=await api('/api/publish',{products:r.ready});const online=out.online?.ok?(out.online.pushed?'GitHub atualizado e implantação iniciada.':'GitHub já estava atualizado.'):out.online?.configured?`Publicação local concluída; sincronização pendente: ${out.online.message}`:'Publicação local concluída; GitHub ainda não configurado.';log(`${out.added} produtos publicados automaticamente.\n${r.duplicate.length} duplicados ignorados.\n${r.review.length} itens ficaram para revisão.\nCatálogo atual: ${out.total} produtos.\n${online}\nBackup: ${out.backup}\nManifesto: ${out.manifest}${out.warnings?.length?`\n\nAvisos:\n- ${out.warnings.join('\n- ')}`:''}`);last.ready=[];render();await status()}catch(e){log(`PUBLICAÇÃO CANCELADA\n${e.message}\n\nNenhum lote parcialmente inválido deve ser aceito pela Central.`)}finally{setBusy(false)}}
+    async function copyPending(){const items=[...last.duplicate,...last.review],text=items.map(d=>`${d.heading&&d.heading!=='Sem categoria'?d.heading+'\n':''}${d.linkAfiliado||d.linkOriginal||''}`).filter(Boolean).join('\n\n');if(!text)return;try{await navigator.clipboard.writeText(text);log($('log').textContent+'\n\nPendências copiadas. Cole no Gerenciador completo para revisar.')}catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}}
+    $('type').addEventListener('change',fillSubtypes);$('raw').addEventListener('input',countLinks);$('analyzeOnly').addEventListener('click',analyzeOnly);$('autoPublish').addEventListener('click',autoPublish);$('copyPending').addEventListener('click',copyPending);$('fileInput').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;$('raw').value=await f.text();countLinks();e.target.value=''});
+    fillTypes();countLinks();status();
+  </script>
+</body>
+</html>
