@@ -47,6 +47,34 @@ jobs:
             [ -f "$arquivo" ] || continue
             cp "$arquivo" _site/"$(basename "$arquivo")"
           done
+
+          # V14.0: aplica a nova camada visual depois do CSS histórico do site.
+          # Isso mantém compatibilidade com as páginas que ainda vivem dentro de site-base.zip.
+          if [ -f _site/assets/site.css ]; then
+            if [ -f _site/assets/kitchen-product-preview.css ]; then
+              printf '\n/* Kitchen product preview — promoted to global layer */\n' >> _site/assets/site.css
+              cat _site/assets/kitchen-product-preview.css >> _site/assets/site.css
+            fi
+            if [ -f _site/assets/v14-refinement.css ]; then
+              printf '\n/* Preço na Mira V14.0 — refinement layer */\n' >> _site/assets/site.css
+              cat _site/assets/v14-refinement.css >> _site/assets/site.css
+            fi
+          fi
+
+          # Injeta a camada de interação V14 em todas as páginas públicas extraídas/atualizadas.
+          node <<'NODE'
+          const fs = require('node:fs');
+          const dir = '_site';
+          for (const name of fs.readdirSync(dir).filter((x) => x.endsWith('.html'))) {
+            const path = `${dir}/${name}`;
+            let html = fs.readFileSync(path, 'utf8');
+            if (!html.includes('assets/v14-refinement.js')) {
+              html = html.replace(/<\/body>/i, '<script src="assets/v14-refinement.js"></script></body>');
+              fs.writeFileSync(path, html);
+            }
+          }
+          NODE
+
           touch _site/.nojekyll
 
       - name: Preparar Google e outros buscadores
