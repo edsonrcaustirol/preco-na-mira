@@ -84,7 +84,7 @@ jobs:
           const base = 'https://edsonrcaustirol.github.io/preco-na-mira/';
           const privatePages = new Set(['busca.html', 'favoritos.html', 'minha-lista.html']);
 
-          for (const page of ['gerenciador.html', 'importador.html']) {
+          for (const page of ['gerenciador.html', 'importador.html', 'automacao.html']) {
             fs.rmSync(`_site/${page}`, { force: true });
           }
 
@@ -110,6 +110,7 @@ jobs:
             'Allow: /',
             'Disallow: /preco-na-mira/gerenciador.html',
             'Disallow: /preco-na-mira/importador.html',
+            'Disallow: /preco-na-mira/automacao.html',
             'Disallow: /preco-na-mira/busca.html',
             'Disallow: /preco-na-mira/favoritos.html',
             'Disallow: /preco-na-mira/minha-lista.html',
