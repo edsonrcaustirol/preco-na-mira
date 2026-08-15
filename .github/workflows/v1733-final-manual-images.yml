@@ -1,0 +1,74 @@
+name: V17.3.3 Final Manual Images
+
+on:
+  push:
+    branches:
+      - agent/v17-3-3-image-resolver-run
+    paths:
+      - .github/workflows/v1733-final-manual-images.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  download-final-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check requests pillow
+      - name: Download and validate exact product images
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from io import BytesIO
+          import json, requests
+          from PIL import Image
+
+          rows = [
+            {
+              'id':'4-filtro-refil-alltec-cmc1-voga-para-respirador',
+              'url':'https://http2.mlstatic.com/D_Q_NP_2X_852903-MLA100068600995_122025-AB.webp',
+              'source':'https://www.mercadolivre.com.br/4-filtro-refil-alltec-cmc1-voga-para-respirador/up/MLBU4478228657'
+            },
+            {
+              'id':'manta-asfaltica-aluminio-poliester-4mm-1m-x-10m-tipo2-dryko',
+              'url':'https://dryko.com.br/wp-content/uploads/2025/09/MANTA-PA-PADRAO-site-600x600px-1-1.png',
+              'source':'https://dryko.com.br/en/produtos/drykomanta-polialum-tipo-ii/'
+            },
+            {
+              'id':'manta-asfaltica-preta-poliester-4mm-1m-x-10m-tipo2-dryko-tp2',
+              'url':'https://dryko.com.br/wp-content/uploads/2025/09/Superflex_web.png',
+              'source':'https://dryko.com.br/produtos/drykomanta-flex/'
+            },
+            {
+              'id':'tramontina-paris-chumbo-7p',
+              'url':'https://assets.tramontina.com.br/upload/tramon/imagens/CUT/28599617PDM001G.jpg',
+              'source':'https://www.tramontina.com.br/jogo-de-panelas-tramontina-paris-em-aluminio-com-revestimento-interno-e-externo-em-antiaderente-starflon-max-chumbo-07-pecas/28599617.html'
+            }
+          ]
+          out=Path('v1733-final-images'); out.mkdir(exist_ok=True)
+          session=requests.Session(); session.headers.update({'User-Agent':'Mozilla/5.0'})
+          manifest=[]
+          for row in rows:
+            r=session.get(row['url'],timeout=30); r.raise_for_status()
+            im=Image.open(BytesIO(r.content)); im.load()
+            w,h=im.size
+            if w < 300 or h < 300: raise RuntimeError(f"imagem pequena {row['id']} {w}x{h}")
+            ext={'JPEG':'jpg','PNG':'png','WEBP':'webp','AVIF':'avif'}.get(im.format, im.format.lower())
+            path=out/f"{row['id']}.{ext}"
+            path.write_bytes(r.content)
+            manifest.append({**row,'file':path.name,'width':w,'height':h,'format':im.format,'bytes':len(r.content)})
+            print(row['id'], w, h, im.format, len(r.content), flush=True)
+          (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v1733-final-manual-images
+          path: v1733-final-images/
+          if-no-files-found: error
+          retention-days: 7
