@@ -48,7 +48,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add resolved-images-v1733.json resolved-images-v1733.csv
+          git add -f resolved-images-v1733.json resolved-images-v1733.csv
           git diff --cached --quiet && exit 0
           git commit -m "Resolve fotos reais da V17.3.3"
           git push
