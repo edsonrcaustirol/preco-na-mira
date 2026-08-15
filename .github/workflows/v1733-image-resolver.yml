@@ -28,6 +28,19 @@ jobs:
       - name: Install dependency
         run: python -m pip install --disable-pip-version-check requests
 
+      - name: Fix runner copy and validate syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tools/resolve_v1733_images.py')
+          lines=p.read_text(encoding='utf-8').splitlines()
+          for i,line in enumerate(lines):
+              if "if n%20==0 or x['status']=='failed':print(" in line:
+                  lines[i]="            if n%20==0 or x['status']=='failed': print('[%d/%d] %s #%d %s' % (n,len(TARGETS),x['status'],x['index'],x['method']),flush=True)"
+          p.write_text('\n'.join(lines)+'\n',encoding='utf-8')
+          PY
+          python -m py_compile tools/resolve_v1733_images.py
+
       - name: Resolve real product images
         run: python tools/resolve_v1733_images.py
 
