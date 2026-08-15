@@ -52,12 +52,13 @@ jobs:
       - name: Build compact transfer map
         run: |
           python - <<'PY'
-          import base64,gzip,json
+          import base64,gzip,json,textwrap
           src=json.load(open('resolved-images-v1733.json',encoding='utf-8'))
           rows=[[x['index'],x.get('image',''),x.get('method',''),x.get('source','')] for x in src['results']]
           raw=json.dumps(rows,separators=(',',':'),ensure_ascii=False).encode()
-          open('resolved-images-v1733.min.b64','w').write(base64.b64encode(gzip.compress(raw,9)).decode())
-          print('compact bytes',len(open('resolved-images-v1733.min.b64').read()),'resolved',src['resolved'],'failed',src['failed'])
+          b64=base64.b64encode(gzip.compress(raw,9)).decode()
+          open('resolved-images-v1733.min.b64','w').write('\n'.join(textwrap.wrap(b64,4000))+'\n')
+          print('compact bytes',len(b64),'lines',len(textwrap.wrap(b64,4000)),'resolved',src['resolved'],'failed',src['failed'])
           PY
 
       - name: Commit resolution map
@@ -66,5 +67,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f resolved-images-v1733.json resolved-images-v1733.csv resolved-images-v1733.min.b64
           git diff --cached --quiet && exit 0
-          git commit -m "Compacta mapa de fotos reais da V17.3.3"
+          git commit -m "Fragmenta mapa compacto de fotos V17.3.3"
           git push
