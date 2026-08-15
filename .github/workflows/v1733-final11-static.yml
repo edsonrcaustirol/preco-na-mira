@@ -1,0 +1,36 @@
+name: V17.3.3 Final 11 Static Photos
+
+on:
+  push:
+    branches:
+      - agent/v17-3-3-image-resolver-run
+    paths:
+      - tools/download_v1733_final11.py
+      - .github/workflows/v1733-final11-static.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-final11:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check requests pillow
+      - name: Validate script
+        run: python -m py_compile tools/download_v1733_final11.py
+      - name: Download exact static photos
+        run: python tools/download_v1733_final11.py
+      - name: Upload final 11 photos
+        uses: actions/upload-artifact@v4
+        with:
+          name: v1733-final11-static
+          path: v1733-final11/
+          if-no-files-found: error
+          retention-days: 7
