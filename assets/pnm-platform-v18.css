@@ -71,7 +71,7 @@ body {
 
 /* As camadas V17 usam :not() em cadeia com !important. Esta regra deliberadamente
    mais específica mantém o fundo oficial da plataforma sem depender da página. */
-html[data-pnm-version][data-pnm-area] body:not(.catalog-admin):not(.pnm-admin) {
+html[data-pnm-version][data-pnm-area] body:not(#pnm-v18-disabled):not(.catalog-admin):not(.pnm-admin) {
   background:
     radial-gradient(circle at 8% 2%, rgba(var(--pnm-v18-sector-rgb), .12), transparent 25rem),
     radial-gradient(circle at 92% 14%, rgba(64, 142, 255, .09), transparent 28rem),
