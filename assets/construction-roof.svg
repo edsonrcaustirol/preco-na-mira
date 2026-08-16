@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520">
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#f4eee5"/><stop offset="1" stop-color="#e8f0eb"/></linearGradient></defs>
+<rect width="800" height="520" rx="42" fill="url(#g)"/>
+<circle cx="630" cy="105" r="115" fill="#31584b" opacity=".12"/>
+<circle cx="685" cy="155" r="70" fill="#7c4fd1" opacity=".10"/>
+<rect x="72" y="78" width="130" height="130" rx="34" fill="#31584b"/>
+<text x="137" y="162" text-anchor="middle" font-size="68" font-family="Arial" fill="white">⌂</text>
+<text x="72" y="292" font-family="Arial" font-size="42" font-weight="700" fill="#22322d">COBERTURA</text>
+<text x="72" y="342" font-family="Arial" font-size="24" fill="#6d756f">Proteção superior</text>
+<path d="M72 390 H720" stroke="#31584b" stroke-opacity=".18" stroke-width="3"/>
+<text x="72" y="443" font-family="Arial" font-size="19" fill="#7f817e">Preço na Mira • imagem ilustrativa</text>
+</svg>

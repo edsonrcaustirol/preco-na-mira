@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>🎬 Cinema em Casa — Preço na Mira</title>
+  <meta name="robots" content="index,follow,max-image-preview:large"/>
+  <meta name="description" content="Monte o seu cinema já vendo TV, projetor e soundbar em cena. Compare imagem, áudio e encaixe do conjunto antes da compra."/>
+  <link rel="icon" type="image/png" href="assets/favicon-pnm.png"/>
+  <link rel="stylesheet" href="assets/pnm-core.css"/>
+  <link rel="stylesheet" href="assets/pnm-layer-standard.css"/>
+  <link rel="stylesheet" href="assets/pnm-layer-immersive-builders.css"/>
+  <link rel="canonical" href="https://preco-na-mira.preco-na-mira.workers.dev/cinema-em-casa.html"/>
+  <meta name="theme-color" content="#070914"/>
+  <meta property="og:site_name" content="Preço na Mira"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="🎬 Cinema em Casa — Preço na Mira"/>
+  <meta property="og:description" content="Monte o seu cinema já vendo TV, projetor e soundbar em cena. Compare imagem, áudio e encaixe do conjunto antes da compra."/>
+  <meta property="og:url" content="https://preco-na-mira.preco-na-mira.workers.dev/cinema-em-casa.html"/>
+  <meta property="og:image" content="https://preco-na-mira.preco-na-mira.workers.dev/assets/logo-pnm-2026.png"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="🎬 Cinema em Casa — Preço na Mira"/>
+  <meta name="twitter:description" content="Monte o seu cinema já vendo TV, projetor e soundbar em cena. Compare imagem, áudio e encaixe do conjunto antes da compra."/>
+  <meta name="twitter:image" content="https://preco-na-mira.preco-na-mira.workers.dev/assets/logo-pnm-2026.png"/>
+</head>
+<body>
+  <div class="topbar">Conteúdo independente • Alguns links podem gerar comissão de afiliado, sem custo extra para você.</div>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html"><img src="assets/logo-pnm-header.png" alt="Preço na Mira" width="256" height="256" loading="eager" decoding="async"/></a>
+      <nav class="nav-links" id="nav">
+        <a href="universos.html">Universos</a>
+        <a href="ofertas.html">Ofertas</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="montar.html">Projetos</a>
+        <a href="minha-lista.html">Salvos</a>
+        <a class="pnm-cart-nav" href="carrinho.html">Carrinho <span class="pnm-cart-count" aria-label="Itens no carrinho">0</span></a>
+      </nav>
+      <button class="menu-btn" id="menu" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-panel hero-panel--immersive projector-card-accent">
+          <div class="hero-panel-copy">
+            <span class="kicker">🎬 CINEMA EM CASA</span>
+            <h1>Escolha vendo.<br/><em>O conjunto precisa seduzir no olho e funcionar no uso.</em></h1>
+            <p>Agora o montador mostra os produtos em cena enquanto você decide. Compare TV ou projetor, encaixe o áudio e monte um cinema com mais desejo, mais contexto e menos compra no escuro.</p>
+            <button class="pnm-share-btn" id="shareBuild">🔗 COMPARTILHAR SETUP</button>
+            <div class="immersive-hero-rail" id="cinemaHeroStats">
+              <div><strong>Imagem + áudio</strong><span>o montador destaca o par principal em tempo real</span></div>
+              <div><strong>Leitura rápida</strong><span>compatibilidade, perfil de uso e pontos de atenção</span></div>
+              <div><strong>Compra com desejo</strong><span>produto visível antes de abrir a análise ou a oferta</span></div>
+            </div>
+          </div>
+          <div class="hero-panel-visual" aria-hidden="true">
+            <div class="visual-core" id="cinemaHeroVisual">
+              <div class="visual-ring"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="immersive-builder">
+          <div class="immersive-main">
+            <div class="immersive-card">
+              <div class="immersive-eyebrow">PASSO A PASSO</div>
+              <h2>Monte o ambiente já vendo o conjunto tomar forma.</h2>
+              <p>Primeiro defina a base da imagem. Depois escolha a soundbar. O palco ao lado atualiza na hora e mostra o perfil da combinação.</p>
+              <div class="setup-grid" style="margin-top:18px">
+                <article class="content-card">
+                  <div class="immersive-card">
+                    <div class="immersive-picker">
+                      <label>
+                        <small>Tipo de imagem</small>
+                        <select id="displayType" aria-label="Tipo de imagem">
+                          <option value="tv">📺 TV</option>
+                          <option value="projetor">📽️ Projetor</option>
+                        </select>
+                      </label>
+                      <label>
+                        <small>Produto principal</small>
+                        <select id="display" aria-label="Display"></select>
+                      </label>
+                    </div>
+                  </div>
+                </article>
+                <article class="content-card">
+                  <div class="immersive-card">
+                    <div class="immersive-picker">
+                      <label>
+                        <small>Áudio</small>
+                        <select id="sound" aria-label="Sound"></select>
+                      </label>
+                      <div class="immersive-inline-note" id="cinemaNote"><strong>Selecione os produtos</strong> para ver o comportamento da combinação.</div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="immersive-selected-grid" id="cinemaSelectionGrid">
+                <div id="displayCard"></div>
+                <div id="soundCard"></div>
+              </div>
+
+              <div class="immersive-tip-grid">
+                <article>
+                  <h3>Se a escolha for TV</h3>
+                  <p>Pense em tamanho, brilho do ambiente e principalmente HDMI ARC/eARC para simplificar a ligação com a soundbar.</p>
+                </article>
+                <article>
+                  <h3>Se a escolha for projetor</h3>
+                  <p>Distância, luminosidade do cômodo e posição do áudio pesam mais. Nem sempre o melhor projetor é o mais forte no papel.</p>
+                </article>
+                <article>
+                  <h3>Na soundbar</h3>
+                  <p>Olhe mais do que potência. Canais, subwoofer, formatos como Atmos e tipo de conexão mudam muito a experiência.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <aside class="immersive-side">
+            <div class="immersive-stage">
+              <div class="immersive-stage-head">
+                <div>
+                  <span>VISUAL AO VIVO</span>
+                  <strong>Seu cinema em cena</strong>
+                </div>
+              </div>
+              <p class="immersive-stage-sub">O objetivo aqui é fazer você sentir o conjunto antes de comprar: menos lista seca, mais contexto visual e prático.</p>
+              <div class="immersive-stage-visual cinema" id="cinemaVisual"></div>
+              <div class="immersive-stage-summary" id="cinemaSummary"></div>
+              <div class="immersive-checklist" id="cinemaChecklist"></div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="immersive-guide">
+          <h3>Como usar melhor este montador</h3>
+          <p>Escolha sem pressa. Primeiro compare a experiência que você quer criar, depois veja a análise individual. Quando fizer sentido, avance para a oferta.</p>
+          <ul>
+            <li>Use o botão <strong>Analisar</strong> para ver contexto, veredito e cuidados daquele produto.</li>
+            <li>Use <strong>Ver oferta</strong> quando o produto já fizer sentido para o ambiente que você está montando.</li>
+            <li>Compartilhe o setup para revisar depois ou mandar para outra pessoa opinar.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <img src="assets/logo-pnm-footer.webp" alt="Preço na Mira" width="360" height="360" loading="lazy" decoding="async"/>
+      </div>
+      <div>
+        <strong>Transparência</strong>
+        <p>Confirme conexões, formatos de áudio, espaço para subwoofer e condições reais da sala antes da compra.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="data/produtos-cinema.js"></script>
+  <script src="data/experiencias.js"></script>
+  <script src="assets/core.js"></script>
+  <script src="assets/pages/cinema-em-casa-1.js"></script>
+  <script src="assets/pnm-runtime.js"></script>
+  <script src="assets/pnm-foundation-runtime.js"></script>
+  <script src="assets/pnm-accessibility.js"></script>
+  <script src="assets/pnm-projects.js"></script>
+  <script src="assets/pnm-project-entry.js"></script>
+<script src="assets/pnm-real-product-images.js"></script></body>
+</html>

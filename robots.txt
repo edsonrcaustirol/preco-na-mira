@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /busca.html
+Disallow: /favoritos.html
+Disallow: /minha-lista.html
+Disallow: /produto.html
+Sitemap: https://preco-na-mira.preco-na-mira.workers.dev/sitemap.xml
