@@ -1,1 +1,1 @@
-location.replace('montar.html'+location.search+location.hash);
+location.replace('montar'+location.search+location.hash);

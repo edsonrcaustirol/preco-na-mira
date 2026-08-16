@@ -37,8 +37,8 @@
   const list=PNMCompactBest(all,12);
   $('catalogTitle').textContent=copy[1];
   $('catalogCount').textContent=all.length+' '+PNMPlural(all.length,'produto conectado','produtos conectados')+(all.length>list.length?' • exibindo 12':'');
-  $('compareLink').href='comparativo-compactos.html?tipo='+(compareByIntent[intent]||'cozinha-airfryer');
-  $('products').innerHTML=list.map(p=>`<article class="compact-product-card"><div class="compact-product-media">${p.imagemTipo==='oficial'?'<span class="official-image-badge">✓ FONTE OFICIAL</span>':''}<img src="${esc(p.imagem)}" loading="lazy" decoding="async" data-fallback-src="${esc(p.imagemFallback||p.imagem)}" alt="${esc(p.imagemAlt||p.nome)}"></div><div class="compact-product-copy"><small>${esc(p.marca)} • ${esc(p.categoria)}</small><h3>${esc(p.nome)}</h3><p>${esc(p.resumo)}</p><div class="compact-tags">${PNMCompactTags(p).map(x=>`<span>${esc(x)}</span>`).join('')}</div><div class="actions"><a class="btn btn-dark" href="produto-${encodeURIComponent(p.id)}.html">ANALISAR →</a><a class="btn btn-outline offer" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer">OFERTA ↗</a></div></div></article>`).join('');
+  $('compareLink').href='comparativo-compactos?tipo='+(compareByIntent[intent]||'cozinha-airfryer');
+  $('products').innerHTML=list.map(p=>`<article class="compact-product-card"><div class="compact-product-media">${p.imagemTipo==='oficial'?'<span class="official-image-badge">✓ FONTE OFICIAL</span>':''}<img src="${esc(p.imagem)}" loading="lazy" decoding="async" data-fallback-src="${esc(p.imagemFallback||p.imagem)}" alt="${esc(p.imagemAlt||p.nome)}"></div><div class="compact-product-copy"><small>${esc(p.marca)} • ${esc(p.categoria)}</small><h3>${esc(p.nome)}</h3><p>${esc(p.resumo)}</p><div class="compact-tags">${PNMCompactTags(p).map(x=>`<span>${esc(x)}</span>`).join('')}</div><div class="actions"><a class="btn btn-dark" href="produto-${encodeURIComponent(p.id)}">ANALISAR →</a><a class="btn btn-outline offer" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer">OFERTA ↗</a></div></div></article>`).join('');
   $('empty').style.display=list.length?'none':'block';
   setTimeout(()=>window.PNMEnsureAffiliateLinks?.(),0);
  }
@@ -51,12 +51,12 @@
   $('summaryAlert').innerHTML=l&&w?'<b>Base registrada</b><p>O Projeto receberá comprimento e largura. Ainda confirme folgas, abertura, acesso e medidas do produto antes da compra.</p>':'<b>Antes de comprar</b><p>Registre comprimento e largura para o Projeto tratar encaixe como restrição real.</p>';
  }
  function createProject(){
-  if(!window.PNMProjects){location.href='montar.html?novo=compacto';return}
+  if(!window.PNMProjects){location.href='montar?novo=compacto';return}
   const l=$('spaceLength').value.trim(),w=$('spaceWidth').value.trim(),h=$('spaceHeight').value.trim();
   const reqKey=requirementByIntent[intent],base=PNMProjects.definitions.compacto?.requirements||[];
   const requirements=Object.fromEntries(base.map(([k])=>[k,k===reqKey?'need':'unknown']));
   const p=PNMProjects.create('compacto',{name:`${labelProfile().replace('APÊ','Apê').replace('STUDIO','Studio').replace('KITNET','Kitnet').replace('HOME OFFICE','Home office').replace('COZINHA','Cozinha').replace('LAVANDERIA','Lavanderia').replace('BANHEIRO','Banheiro').replace('QUARTO','Quarto')} compacto`,dimensions:{length:l,width:w,height:h},requirements});
-  location.href=`projeto.html?projeto=${encodeURIComponent(p.id)}&aba=planning`;
+  location.href=`projeto?projeto=${encodeURIComponent(p.id)}&aba=planning`;
  }
  ['spaceLength','spaceWidth','spaceHeight'].forEach(id=>$(id).addEventListener('input',syncSummary));
  $('search').addEventListener('input',e=>{query=e.target.value.trim().toLowerCase();renderProducts()});

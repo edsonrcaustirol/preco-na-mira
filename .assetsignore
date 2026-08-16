@@ -1,15 +1,29 @@
-.git/
-.github/
-node_modules/
+/.git
+/.git/**
+/.github
+/.github/**
+/node_modules
+/node_modules/**
+/.audit
+/.audit/**
+/.wrangler
+/.wrangler/**
 
 # Configuracao e automacao
-.assetsignore
-.gitignore
-package.json
-package-lock.json
-wrangler.jsonc
-scripts/
-tools/
+/.gitignore
+/package.json
+/package-lock.json
+/wrangler.jsonc
+/scripts
+/scripts/**
+/tools
+/tools/**
+
+# Fontes e fragmentos mantidos no Git, mas nao servidos em producao
+/assets/logo-full.png
+/assets/logo-header.png
+/assets/logo-pnm-2026.png
+/data/produtos.part-*
 
 # Arquivos de trabalho, auditoria e distribuicao
 *.bat
@@ -23,6 +37,6 @@ README.txt
 INSTRUCOES-*.txt
 
 # Central privada de alimentacao do catalogo
-gerenciador.html
-importador.html
-automacao.html
+/gerenciador.html
+/importador.html
+/automacao.html

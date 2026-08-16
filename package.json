@@ -1,10 +1,16 @@
 {
   "name": "preco-na-mira",
-  "version": "17.3.4",
+  "version": "18.0.0",
   "private": true,
   "scripts": {
+    "prepare:platform": "node scripts/preparar-plataforma.mjs",
+    "sync:compatibility": "node scripts/sincronizar-compatibilidade.mjs",
+    "audit": "node scripts/auditar-site.mjs",
+    "audit:strict": "node scripts/auditar-site.mjs --strict",
+    "preview": "node scripts/preview.mjs",
     "deploy": "wrangler deploy",
-    "deploy:preview": "wrangler versions upload"
+    "deploy:preview": "wrangler versions upload",
+    "check": "npm run audit:strict && wrangler deploy --dry-run"
   },
   "devDependencies": {
     "wrangler": "4.123.0"

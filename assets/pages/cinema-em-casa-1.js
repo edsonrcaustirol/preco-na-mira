@@ -27,8 +27,8 @@ function fill(){
 }
 function badgeText(p){return esc(p.selo||p.categoria||p.marca)}
 function actionButtons(p){
-  const analyze=`<a class="btn btn-dark" href="produto-${encodeURIComponent(p.id)}.html">ANALISAR</a>`;
-  const offer=p.linkAfiliado?`<a class="btn btn-outline" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored noopener">VER OFERTA</a>`:`<a class="btn btn-outline" href="produto-${encodeURIComponent(p.id)}.html">VER DETALHES</a>`;
+  const analyze=`<a class="btn btn-dark" href="produto-${encodeURIComponent(p.id)}">ANALISAR</a>`;
+  const offer=p.linkAfiliado?`<a class="btn btn-outline" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored noopener">VER OFERTA</a>`:`<a class="btn btn-outline" href="produto-${encodeURIComponent(p.id)}">VER DETALHES</a>`;
   return `<div class="builder-actions">${analyze}${offer}</div>`;
 }
 function metaRow(p){

@@ -8,10 +8,10 @@
   const byKind={
     real:summary.real,
     ai:summary.ai,
-    pending:summary.pending
+    pending:PRODUTOS.filter(p=>/^https?:\/\//i.test(String(p.imagem||'')))
   };
   const stats=document.getElementById('coverageStats');
-  stats.innerHTML=`<article class="pnm-stat"><b>${summary.products}</b><span>Produtos no catálogo</span></article><article class="pnm-stat"><b>${summary.real.length}</b><span>Com foto real</span></article><article class="pnm-stat"><b>${summary.ai.length}</b><span>Imagens feitas por IA</span></article><article class="pnm-stat"><b>${summary.pending.length}</b><span>Busca automática de foto real</span></article>`;
+  stats.innerHTML=`<article class="pnm-stat"><b>${summary.products}</b><span>Produtos no catálogo</span></article><article class="pnm-stat"><b>${summary.localPhoto}</b><span>Imagens hospedadas localmente</span></article><article class="pnm-stat"><b>${summary.remoteVerified}</b><span>Dependências externas de imagem</span></article><article class="pnm-stat"><b>${summary.ai.length}</b><span>Imagens feitas por IA</span></article>`;
 
   const typeSel=document.getElementById('coverageType');
   const brandSel=document.getElementById('coverageBrand');
@@ -34,7 +34,7 @@
       if(state.status==='verified' && !info.real)return false;
     }
     if(group==='ai')return info.kind==='ai';
-    if(group==='pending')return ['pending','missing'].includes(info.kind);
+    if(group==='pending')return /^https?:\/\//i.test(String(p.imagem||''));
     if(group==='real')return info.real;
     return true;
   }
@@ -43,7 +43,7 @@
     const info=infoFor(p);
     const img=esc(p.imagem||p.imagemFallback||'assets/product-placeholder.svg');
     const fb=esc(p.imagemFallback||'assets/product-placeholder.svg');
-    return `<article class="pnm-coverage-row"><img src="${img}" data-fallback-src="${fb}" data-placeholder-src="assets/product-placeholder.svg" alt="${esc(p.imagemAlt||p.nome)}"><div><h3>${esc(p.nome)}</h3><p>${esc(p.marca||'Marca não informada')} • ${esc(niceType(p))}</p><p>ID: ${esc(p.id)}</p></div><div class="pnm-coverage-meta"><span class="pnm-coverage-badge ${esc(info.className)}">${esc(info.label)}</span><span>${esc(info.meta)}</span></div><div class="pnm-coverage-meta"><span>${esc(p.fonteNome||p.marca||'—')}</span><span>${p.imagemFonte?`<a href="${esc(p.imagemFonte)}" target="_blank" rel="noopener noreferrer nofollow">Fonte da imagem ↗</a>`:'Sem fonte externa cadastrada'}</span></div><div class="pnm-coverage-actions-col"><a href="produto-${encodeURIComponent(p.id)}.html">Analisar</a>${p.linkAfiliado?`<a href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer">Oferta ↗</a>`:''}</div></article>`;
+    return `<article class="pnm-coverage-row"><img src="${img}" data-fallback-src="${fb}" data-placeholder-src="assets/product-placeholder.svg" alt="${esc(p.imagemAlt||p.nome)}"><div><h3>${esc(p.nome)}</h3><p>${esc(p.marca||'Marca não informada')} • ${esc(niceType(p))}</p><p>ID: ${esc(p.id)}</p></div><div class="pnm-coverage-meta"><span class="pnm-coverage-badge ${esc(info.className)}">${esc(info.label)}</span><span>${esc(info.meta)}</span></div><div class="pnm-coverage-meta"><span>${esc(p.fonteNome||p.marca||'—')}</span><span>${p.imagemFonte?`<a href="${esc(p.imagemFonte)}" target="_blank" rel="noopener noreferrer nofollow">Fonte da imagem ↗</a>`:'Sem fonte externa cadastrada'}</span></div><div class="pnm-coverage-actions-col"><a href="produto-${encodeURIComponent(p.id)}">Analisar</a>${p.linkAfiliado?`<a href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer">Oferta ↗</a>`:''}</div></article>`;
   }
 
   function renderSection(id,items,empty){
@@ -57,7 +57,7 @@
 
   function render(){
     renderSection('ai-review',byKind.ai,'Nenhum produto com imagem gerada por IA no momento. Quando isso acontecer, ele aparece aqui automaticamente para revisão manual.');
-    renderSection('manual-review',byKind.pending,'Nenhum produto aguardando resolução automática nesta filtragem.');
+    renderSection('manual-review',byKind.pending,'Nenhuma dependência externa de imagem nesta filtragem.');
     renderSection('verified-review',byKind.real,'Nenhum produto com foto real nesta filtragem.');
   }
 

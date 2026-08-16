@@ -4,14 +4,14 @@
   const d=document, root=d.documentElement;
   root.classList.add('pnm-premium');
   const prefersReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const basename=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+  const basename=(location.pathname.split('/').pop()||'/').toLowerCase();
   d.querySelectorAll('.home-brand-line,.gamer-signal,.house-overline,.kicker,.gamer-overline').forEach(el=>{
     el.childNodes.forEach(n=>{
       if(n.nodeType===Node.TEXT_NODE)n.textContent=n.textContent.replace(/\s*[•\-]?\s*(?:EXPERIÊNCIA\s+|CATÁLOGO\s+)?V(?:14\.\d+|13\.\d+|12\.\d+)/ig,'').replace(/\s{2,}/g,' ');
     });
   });
   d.querySelectorAll('.nav-links a').forEach(a=>{
-    try{const page=(new URL(a.href,location.href).pathname.split('/').pop()||'index.html').toLowerCase();if(page===basename)a.setAttribute('aria-current','page')}catch(_){}
+    try{const page=(new URL(a.href,location.href).pathname.split('/').pop()||'/').toLowerCase();if(page===basename)a.setAttribute('aria-current','page')}catch(_){}
   });
   const progress=d.createElement('div');progress.className='pnm-scroll-progress';progress.innerHTML='<i></i>';d.body.appendChild(progress);const progressBar=progress.firstElementChild;
   const updateProgress=()=>{const max=Math.max(1,d.documentElement.scrollHeight-innerHeight),pct=Math.min(100,Math.max(0,(scrollY/max)*100));progressBar.style.width=pct+'%'};addEventListener('scroll',updateProgress,{passive:true});updateProgress();
@@ -124,7 +124,7 @@
     const image=p.imagem||p.imagemFallback||'assets/product-placeholder.svg';
     const fallback=p.imagemFallback||'assets/product-placeholder.svg';
     return `<div class="smart-ad-inner ${compact?'is-compact':''}">
-      <a class="smart-ad-media" href="produto-${encodeURIComponent(p.id)}.html" aria-label="Analisar ${esc(p.nome)}">
+      <a class="smart-ad-media" href="produto-${encodeURIComponent(p.id)}" aria-label="Analisar ${esc(p.nome)}">
         <span class="smart-ad-kicker">${esc(reason)}</span>${hasRealPhoto(p)?`<span class="smart-photo-badge">FOTO</span>`:""}
         <img src="${esc(image)}" data-fallback-src="${esc(fallback)}" alt="${esc(p.imagemAlt||p.nome)}">
       </a>
@@ -133,7 +133,7 @@
         <h3>${esc(p.nome)}</h3>
         <p>${esc(p.chamada||p.resumo||'Veja os detalhes e compare antes de escolher.')}</p>
         <div class="smart-ad-actions">
-          <a href="produto-${encodeURIComponent(p.id)}.html">ANALISAR →</a>
+          <a href="produto-${encodeURIComponent(p.id)}">ANALISAR →</a>
           ${p.linkAfiliado?`<a class="offer" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer">VER OFERTA ↗</a>`:''}
         </div>
       </div>
