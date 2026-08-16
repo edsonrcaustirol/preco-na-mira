@@ -1,0 +1,28 @@
+.git/
+.github/
+node_modules/
+
+# Configuracao e automacao
+.assetsignore
+.gitignore
+package.json
+package-lock.json
+wrangler.jsonc
+scripts/
+tools/
+
+# Arquivos de trabalho, auditoria e distribuicao
+*.bat
+*.md
+*.csv
+*.zip
+AUDITORIA-*.json
+COBERTURA-*.json
+FOTOS-*.json
+README.txt
+INSTRUCOES-*.txt
+
+# Central privada de alimentacao do catalogo
+gerenciador.html
+importador.html
+automacao.html
