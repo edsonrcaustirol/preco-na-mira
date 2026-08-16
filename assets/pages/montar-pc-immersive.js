@@ -63,7 +63,7 @@
 
   function featureMarkup(product,selected,stageLabel){
     if(!product)return '<div class="pc-stage-feature"><div class="pc-feature-copy"><h4>Nenhum produto disponível nesta etapa.</h4></div></div>';
-    return `<div class="pc-stage-feature ${selected?'selected':''}"><div class="pc-feature-state"><span>${selected?'PEÇA INSTALADA':'PRÉVIA DA ETAPA'}</span><i></i></div><div class="pc-feature-image">${safeImageMarkup(product)}</div><div class="pc-feature-copy"><small>${esc(product.marca||stageLabel)} • ${esc(product.selo||'CATÁLOGO')}</small><h4>${esc(product.nome)}</h4><div class="pc-feature-chips">${chips(product,3)}</div><div class="pc-feature-actions"><button type="button" data-pc-feature-select="${esc(product.id)}" ${selected?'disabled':''}>${selected?'✓ INSTALADA':'ADICIONAR AO SETUP'}</button><a href="produto.html?id=${encodeURIComponent(product.id)}">VER FICHA →</a></div></div></div>`;
+    return `<div class="pc-stage-feature ${selected?'selected':''}"><div class="pc-feature-state"><span>${selected?'PEÇA INSTALADA':'PRÉVIA DA ETAPA'}</span><i></i></div><div class="pc-feature-image">${safeImageMarkup(product)}</div><div class="pc-feature-copy"><small>${esc(product.marca||stageLabel)} • ${esc(product.selo||'CATÁLOGO')}</small><h4>${esc(product.nome)}</h4><div class="pc-feature-chips">${chips(product,3)}</div><div class="pc-feature-actions"><button type="button" data-pc-feature-select="${esc(product.id)}" ${selected?'disabled':''}>${selected?'✓ INSTALADA':'ADICIONAR AO SETUP'}</button><a href="produto?id=${encodeURIComponent(product.id)}">VER FICHA →</a></div></div></div>`;
   }
 
   function decorateStep(article,index){

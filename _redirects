@@ -1,1 +1,4 @@
-/jornadas.html /montar.html 301
+/jornadas /montar 301
+/jornadas.html /montar 301
+/favoritos /minha-lista?aba=favoritos 301
+/favoritos.html /minha-lista?aba=favoritos 301

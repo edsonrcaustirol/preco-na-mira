@@ -1,12 +1,24 @@
 # Preço na Mira
 
-Catálogo comparativo brasileiro com curadoria de produtos e links do Mercado Livre.
+Plataforma brasileira de curadoria, comparação e planejamento de compras para Casa, Gamer e Tecnologia.
 
-O site público é implantado automaticamente pelo GitHub Pages. O arquivo `site-base.zip` contém a base estática validada; catálogo, experiências e imagens locais são sobrepostos durante cada atualização. A V13.6 ativa a Lavanderia e renova visualmente os ambientes Gamer e Casa.
+## Fonte oficial e publicação
 
-- Site: https://edsonrcaustirol.github.io/preco-na-mira/
-- Administração completa: executada somente no computador local por `ABRIR-CENTRAL.bat`.
-- Alimentação automática: use `ABRIR-AUTOMACAO.bat` para colar lotes de links; itens seguros são publicados automaticamente, duplicados são bloqueados e exceções ficam para revisão.
-- Atualizações: cada lote validado cria um commit e inicia uma nova implantação.
+- Produção: https://preconamira.com.br/
+- Repositório oficial: `edsonrcaustirol/preco-na-mira`
+- Ramo de produção: `main`
+- Hospedagem: Cloudflare Workers com ativos estáticos
+- Implantação: automática após atualização validada do `main`
 
-As páginas de administração e automação não entram no GitHub Pages. Arquivos internos, credenciais, backups e rascunhos não são publicados no site.
+O repositório é a fonte oficial. Pacotes ZIP são apenas artefatos de entrega e não devem ser usados como uma segunda fonte do site.
+
+## Validação
+
+```bash
+npm ci
+npm run check
+```
+
+O comando executa a auditoria estática rigorosa e o empacotamento de teste do Cloudflare. O relatório detalhado é gerado em `.audit/site-audit.json`.
+
+As páginas de administração e automação local não entram na implantação pública. A central de catálogo da geração V13 permanece somente como ferramenta legada e precisa ser modernizada antes de voltar a publicar produtos diretamente.

@@ -26,8 +26,8 @@ fill(sels.power,groups.power,true);
 fill(sels.hub,groups.hub,true);
 Object.keys(sels).forEach(k=>{if(state[k]) sels[k].value=state[k]});
 function actionButtons(p){
-  const analyze=`<a class="btn btn-dark" href="produto-${encodeURIComponent(p.id)}.html">ANALISAR</a>`;
-  const offer=p.linkAfiliado?`<a class="btn btn-outline" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored noopener">VER OFERTA</a>`:`<a class="btn btn-outline" href="produto-${encodeURIComponent(p.id)}.html">VER DETALHES</a>`;
+  const analyze=`<a class="btn btn-dark" href="produto-${encodeURIComponent(p.id)}">ANALISAR</a>`;
+  const offer=p.linkAfiliado?`<a class="btn btn-outline" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored noopener">VER OFERTA</a>`:`<a class="btn btn-outline" href="produto-${encodeURIComponent(p.id)}">VER DETALHES</a>`;
   return `<div class="builder-actions">${analyze}${offer}</div>`;
 }
 function pills(p){const arr=(p.chips||[]).slice(0,4);return arr.length?`<div class="builder-pills">${arr.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}
