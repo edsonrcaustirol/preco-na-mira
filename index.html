@@ -1,265 +1,218 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="index,follow">
-  <title>Preço na Mira — Compare, monte e escolha melhor</title>
-  <meta name="description" content="Busque produtos, compare alternativas e monte projetos completos — da tecnologia à casa inteira.">
-  <link rel="icon" href="assets/favicon.svg">
-  <link rel="stylesheet" href="assets/site.css">
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="index,follow,max-image-preview:large" name="robots"/>
+<title>Preço na Mira — Compare, monte e escolha melhor</title>
+<meta content="Busque produtos, compare alternativas e monte projetos completos — da tecnologia à casa inteira." name="description"/>
+<link href="assets/favicon-pnm.png" rel="icon" type="image/png"/>
+<link href="assets/pnm-core.css" rel="stylesheet"/><link href="assets/pnm-layer-home.css" rel="stylesheet"/>
+<link href="https://preco-na-mira.preco-na-mira.workers.dev/" rel="canonical"/><meta content="#070914" name="theme-color"/><meta content="Preço na Mira" property="og:site_name"/><meta content="website" property="og:type"/><meta content="Preço na Mira — Compare, monte e escolha melhor" property="og:title"/><meta content="Busque produtos, compare alternativas e monte projetos completos — da tecnologia à casa inteira." property="og:description"/><meta content="https://preco-na-mira.preco-na-mira.workers.dev/" property="og:url"/><meta content="https://preco-na-mira.preco-na-mira.workers.dev/assets/logo-pnm-2026.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Preço na Mira — Compare, monte e escolha melhor" name="twitter:title"/><meta content="Busque produtos, compare alternativas e monte projetos completos — da tecnologia à casa inteira." name="twitter:description"/><meta content="https://preco-na-mira.preco-na-mira.workers.dev/assets/logo-pnm-2026.png" name="twitter:image"/></head>
 <body class="home-v121">
-  <div class="topbar home-topbar">
-    <div class="container home-topbar-inner">
-      <span>Conteúdo independente • Alguns links podem gerar comissão de afiliado, sem custo extra para você.</span>
-      <span class="home-topbar-trust">🎯 Comparar • 🧩 Combinar • ✅ Decidir</span>
-    </div>
-  </div>
-
-  <header class="site-header home-header">
-    <div class="container nav">
-      <a class="brand home-brand" href="index.html" aria-label="Preço na Mira — página inicial">
-        <img src="assets/logo-header.png" alt="Preço na Mira">
-      </a>
-      <nav class="nav-links" id="nav">
-        <a href="universos.html">Universos</a>
-        <a href="minha-casa.html">Minha Casa</a>
-        <a href="jornadas.html">Montar</a>
-        <a href="busca.html">Buscar</a>
-      </nav>
-      <a class="nav-primary" href="jornadas.html">COMEÇAR UM PROJETO →</a>
-      <button class="menu-btn" id="menu" aria-label="Abrir menu">☰</button>
-    </div>
-  </header>
-
-  <main>
-    <section class="home-hero-v121">
-      <div class="container home-hero-grid">
-        <div class="home-hero-main">
-          <div class="home-brand-line"><span class="home-target-dot">◎</span> PREÇO NA MIRA <b>• V13.6</b></div>
-          <h1>Encontre com clareza.<br><em>Monte do seu jeito.</em></h1>
-          <p class="home-hero-lede">Um lugar para buscar produtos, comparar diferenças e transformar ideias em conjuntos e projetos completos — do PC à casa inteira.</p>
-
-          <form class="home-search-v121" action="busca.html" id="homeSearchForm" autocomplete="off">
-            <div class="home-search-field">
-              <span>⌕</span>
-              <input id="homeSearchInput" name="q" type="search" placeholder="Busque produto, marca ou ideia: iPhone, robô aspirador, air fryer..." aria-label="Buscar no Preço na Mira">
-              <button>PROCURAR →</button>
-              <div class="home-search-suggestions" id="homeSearchSuggestions" hidden></div>
-            </div>
-            <div class="home-quick-searches" aria-label="Buscas rápidas">
-              <small>ATALHOS:</small>
-              <button type="button" data-q="RTX 5070">RTX 5070</button>
-              <button type="button" data-q="robô aspirador">Robô aspirador</button>
-              <button type="button" data-q="air fryer">Air fryer</button>
-              <button type="button" data-q="soundbar">Soundbar</button>
-              <a href="casa-studio.html">✏️ Casa Studio</a>
-            </div>
-          </form>
-
-          <div class="home-hero-actions">
-            <a class="home-btn-primary" href="universos.html">🌐 EXPLORAR UNIVERSOS</a>
-            <a class="home-btn-ghost" href="jornadas.html">🎯 O QUE QUERO MONTAR?</a>
-          </div>
-
-          <div class="home-stat-row">
-            <div><strong id="heroProductCount">—</strong><span>produtos únicos</span></div>
-            <div><strong id="heroUniverseCount">—</strong><span>universos no mapa</span></div>
-            <div><strong id="heroJourneyCount">—</strong><span>jornadas ativas</span></div>
-            <div><strong id="heroImageCount">—</strong><span>fotos reais</span></div>
-          </div>
-        </div>
-
-        <aside class="home-decision-panel" aria-label="Como usar o Preço na Mira">
-          <div class="decision-topline"><span>MAPA DE DECISÃO</span><b>INTERATIVO</b></div>
-          <div class="decision-radar" aria-hidden="true">
-            <i></i><i></i><i></i><i></i>
-            <span>🎯</span>
-          </div>
-          <h2 id="decisionTitle">Comece por onde fizer sentido.</h2>
-          <p id="decisionText">Você não precisa saber a categoria certa. Pode começar por um produto, um ambiente ou simplesmente pelo que quer montar.</p>
-          <div class="decision-tabs" id="decisionTabs">
-            <button class="active" data-mode="buscar">⌕ <span>Buscar</span></button>
-            <button data-mode="comparar">⚖️ <span>Comparar</span></button>
-            <button data-mode="montar">🧩 <span>Montar</span></button>
-            <button data-mode="salvar">♡ <span>Salvar</span></button>
-          </div>
-          <a id="decisionCta" class="decision-cta" href="busca.html">COMEÇAR BUSCANDO →</a>
-        </aside>
-      </div>
-    </section>
-
-    <section class="home-how-section">
-      <div class="container">
-        <div class="home-section-label">COMO FUNCIONA</div>
-        <div class="home-how-grid">
-          <article><span>01</span><div><b>⌕ Encontre</b><p>Busque por produto, marca, categoria ou necessidade.</p></div></article>
-          <article><span>02</span><div><b>⚖️ Compare</b><p>Entenda diferenças técnicas, propostas, cores e alternativas.</p></div></article>
-          <article><span>03</span><div><b>🧩 Monte</b><p>Conecte produtos em setups, ambientes e projetos que fazem sentido juntos.</p></div></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section home-universe-section">
-      <div class="container">
-        <div class="section-head home-section-head">
-          <div>
-            <span class="home-section-label">ESCOLHA O CONTEXTO</span>
-            <h2>Entre por um universo</h2>
-            <p>Grandes áreas da vida. Cada uma reúne ambientes, jornadas e produtos conectados.</p>
-          </div>
-          <a class="link" href="universos.html">VER OS 10 UNIVERSOS →</a>
-        </div>
-        <div class="home-universe-grid home-universe-grid-v121" id="homeUniverses"></div>
-      </div>
-    </section>
-
-    <section class="home-casa-feature">
-      <div class="container home-casa-feature-grid">
-        <div class="home-casa-copy">
-          <span class="home-section-label light">UNIVERSO EM DESTAQUE • MINHA CASA</span>
-          <h2>Da primeira ideia ao último detalhe.</h2>
-          <p>O projeto da casa começa antes do eletrodoméstico. Obra Base, Instalações, Acabamentos, Cozinha, Lavanderia e Pequenos Espaços já conversam dentro da mesma jornada.</p>
-          <div class="home-casa-actions">
-            <a href="casa-studio.html">✏️ ABRIR CASA STUDIO</a>
-            <a class="ghost" href="minha-casa.html">🏡 VER MINHA CASA</a>
-          </div>
-        </div>
-        <div class="home-house-path" aria-label="Etapas futuras da Minha Casa">
-          <div class="house-path-line"></div>
-          <article class="active"><span>01</span><b>🧱 Obra base</b><small>impermeabilização, vedação e ferramentas</small></article>
-          <article class="active"><span>02</span><b>⚡ Instalações</b><small>fios, proteção e distribuição elétrica</small></article>
-          <article class="active"><span>03</span><b>🎨 Acabamentos</b><small>pisos, tintas, metais, louças</small></article>
-          <article class="active"><span>04</span><b>🛋️ Ambientes</b><small>sala, cozinha, escritório e mais</small></article>
-          <article class="active"><span>05</span><b>⚙️ Equipamentos</b><small>eletros, tecnologia e utilidades</small></article>
-          <article class="active"><span>06</span><b>💡 Automação</b><small>rede, segurança e casa inteligente</small></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section intent-section home-intent-v121">
-      <div class="container">
-        <div class="section-head home-section-head">
-          <div>
-            <span class="home-section-label">COMECE PELA INTENÇÃO</span>
-            <h2>O que você quer montar hoje?</h2>
-            <p>Você escolhe o objetivo. O Preço na Mira organiza as categorias por trás.</p>
-          </div>
-          <a class="link" href="jornadas.html">VER TODAS →</a>
-        </div>
-        <div class="journey-grid home home-journey-v121" id="homeJourneys"></div>
-      </div>
-    </section>
-
-    <section class="section v11-showcase home-visual-layer" id="imagensOficiais">
-      <div class="container">
-        <div class="v11-showcase-panel home-showcase-panel">
-          <div class="v11-showcase-head">
-            <div>
-              <span class="home-section-label light">CAMADA VISUAL</span>
-              <h2>Reconheça o produto. Entenda o contexto.</h2>
-              <p>Fotos reais entram quando o modelo é confirmado em uma fonte adequada. O objetivo não é só deixar bonito: é ajudar você a identificar o item certo antes de comparar e montar.</p>
-            </div>
-            <span class="v11-count" id="officialImageCount"></span>
-          </div>
-          <div class="official-product-strip home-official-strip" id="officialProductStrip"></div>
-          <p class="image-system-note">A imagem ajuda a reconhecer o produto; cor, acabamento, acessórios e configuração podem variar no anúncio.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="recentSection" style="display:none">
-      <div class="container">
-        <div class="section-head home-section-head">
-          <div><span class="home-section-label">CONTINUE DE ONDE PAROU</span><h2>Vistos recentemente</h2><p>Volte rápido para o que você estava pesquisando.</p></div>
-          <button class="pnm-share-btn" id="clearRecent">LIMPAR</button>
-        </div>
-        <div class="recent-grid" id="recentGrid"></div>
-      </div>
-    </section>
-
-    <section class="section home-catalog-section" id="categorias">
-      <div class="container">
-        <div class="section-head home-section-head">
-          <div><span class="home-section-label">PARA QUEM JÁ SABE O QUE PROCURA</span><h2>Catálogo por categoria</h2><p>A navegação clássica continua disponível — agora conectada aos universos e jornadas.</p></div>
-          <span class="kicker" id="totalCount"></span>
-        </div>
-        <div class="home-catalog-groups">
-          <div><h3 class="portal-group-title">📱 Mobile & pessoal</h3><div class="category-portal-grid pnm-compact" id="cat-mobile"></div></div>
-          <div><h3 class="portal-group-title">🎬 Áudio & entretenimento</h3><div class="category-portal-grid pnm-compact" id="cat-ent"></div></div>
-          <div><h3 class="portal-group-title">🎮 Computação & gamer</h3><div class="category-portal-grid pnm-compact" id="cat-pc"></div></div>
-          <div><h3 class="portal-group-title">🏠 Casa & conectividade</h3><div class="category-portal-grid pnm-compact" id="cat-house"></div></div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer home-footer">
-    <div class="container footer-grid">
-      <div><img src="assets/logo-full.png" alt="Preço na Mira"><p>Compare. Economize. Acerte.</p></div>
-      <div><strong>Uma lógica simples para uma decisão complexa.</strong><p>Categoria organiza. Universo dá contexto. Ambiente mostra onde entra. Jornada ajuda a montar.</p></div>
-    </div>
-  </footer>
-
-  <script src="data/produtos.js"></script>
-  <script src="data/experiencias.js"></script>
-  <script src="assets/core.js"></script>
-  <script>
-  const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const activeU=PNM_UNIVERSOS.filter(u=>u.status==='ativo');
-  const activeJ=PNM_JORNADAS.filter(j=>j.status==='ativo');
-  const officialProducts=PRODUTOS.filter(p=>p.imagemTipo==='oficial');
-
-  document.getElementById('heroProductCount').textContent=PRODUTOS.length;
-  document.getElementById('heroUniverseCount').textContent=PNM_UNIVERSOS.length;
-  document.getElementById('heroJourneyCount').textContent=activeJ.length;
-  document.getElementById('heroImageCount').textContent=officialProducts.length;
-
-  document.getElementById('homeUniverses').innerHTML=activeU.map((u,i)=>{
-    const n=PNMProductsForUniverse(u.id).length;
-    const highlights=u.id==='casa'?'CASA STUDIO • COZINHA • AUTOMAÇÃO':u.id==='gamer'?'PC • SETUP • PERIFÉRICOS':'MOBILE • ÁUDIO • ACESSÓRIOS';
-    return `<a class="home-universe-card ${u.cor} featured-${i}" href="${u.href}"><span class="universe-symbol">${u.icon}</span><div><small>${n} ${PNMPlural(n,'PRODUTO CONECTADO','PRODUTOS CONECTADOS')}</small><h3>${u.nome}</h3><p>${u.descricao}</p><em>${highlights}</em></div><b>→</b></a>`
-  }).join('')+`<a class="home-universe-card all" href="universos.html"><span class="universe-symbol">＋</span><div><small>7 NO ROTEIRO</small><h3>Outros universos</h3><p>Pets, Perfumaria, Kids, Fitness, Auto, Ferramentas e Viagem.</p><em>VER MAPA COMPLETO</em></div><b>→</b></a>`;
-
-  document.getElementById('homeJourneys').innerHTML=activeJ.slice(0,8).map((j,i)=>`<a class="journey-card active journey-rank-${i}" href="${j.href}"><span class="journey-icon">${j.icon}</span><small>COMEÇAR POR OBJETIVO</small><h3>${j.nome}</h3><p>${j.descricao}</p><strong>MONTAR →</strong></a>`).join('');
-
-  const cfg={
-    mobile:[['smartphone','📱','Smartphones','smartphones.html'],['smartwatch','⌚','Smartwatches','smartwatches.html'],['fone','🎧','Fones','fones-de-ouvido.html'],['tablet','📲','Tablets','tablets.html']],
-    ent:[['tv','📺','TVs','tvs.html'],['projetor','📽️','Projetores','projetores.html'],['soundbar','🎬','Soundbars','soundbars.html'],['caixa','🔊','Caixas de som','caixas-de-som.html']],
-    pc:[['notebook','💻','Notebooks','notebooks.html'],['monitor','🖥️','Monitores','monitores.html'],['gamer','🧩','Peças de PC','pecas-pc.html'],['acessorio','🔌','Acessórios Tech','acessorios-tech.html']],
-    house:[['casa','🏠','Casa Inteligente','ambiente-casa.html'],['cozinha','🍳','Cozinha','ambiente-cozinha.html'],['lavanderia','🧺','Lavanderia','lavanderia.html'],['internet','🛰️','Starlink & Internet','internet.html']]
-  };
-  function card(x){const [type,icon,name,href]=x,n=PRODUTOS.filter(p=>p.tipoProduto===type).length;return `<a class="category-portal-card" href="${href}"><div class="portal-icon">${icon}</div><span class="kicker">${n} ${PNMPlural(n,'produto','produtos')}</span><h3>${name}</h3><p>Explore, filtre e compare.</p><strong>EXPLORAR →</strong></a>`}
-  document.getElementById('cat-mobile').innerHTML=cfg.mobile.map(card).join('');
-  document.getElementById('cat-ent').innerHTML=cfg.ent.map(card).join('');
-  document.getElementById('cat-pc').innerHTML=cfg.pc.map(card).join('');
-  document.getElementById('cat-house').innerHTML=cfg.house.map(card).join('');
-  document.getElementById('totalCount').textContent=PRODUTOS.length+' produtos únicos no catálogo';
-
-  document.getElementById('officialImageCount').textContent=officialProducts.length+' '+PNMPlural(officialProducts.length,'imagem real','imagens reais')+' confirmadas';
-  document.getElementById('officialProductStrip').innerHTML=officialProducts.slice(0,10).map(p=>`<a class="official-showcase-card" href="produto.html?id=${p.id}"><div class="photo"><img src="${esc(p.imagem)}" loading="lazy" decoding="async" alt="${esc(p.imagemAlt||p.nome)}"></div><small>✓ FONTE OFICIAL</small><b>${esc(p.nome)}</b><span>${esc(p.marca)}</span></a>`).join('');
-
-  function recent(){const A=PNMRecent.get().map(id=>PRODUTOS.find(p=>p.id===id)).filter(Boolean).slice(0,12);document.getElementById('recentSection').style.display=A.length?'block':'none';document.getElementById('recentGrid').innerHTML=A.map(p=>`<a class="recent-card" href="produto.html?id=${p.id}"><img src="${esc(p.imagem)}" loading="lazy" decoding="async" alt=""><b>${esc(p.nome)}</b><span>${esc(p.marca)}</span></a>`).join('')}
-  document.getElementById('clearRecent').onclick=()=>{PNMRecent.clear();recent()};
-  document.getElementById('menu').onclick=()=>document.getElementById('nav').classList.toggle('open');
-  recent();
-
-  const decisionModes={
-    buscar:{title:'Comece por onde fizer sentido.',text:'Você não precisa saber a categoria certa. Busque por produto, marca ou ideia e descubra caminhos possíveis.',href:'busca.html',cta:'COMEÇAR BUSCANDO →'},
-    comparar:{title:'Veja a diferença antes do clique.',text:'Compare produtos lado a lado com linguagem simples, critérios técnicos e contexto de uso.',href:'comparativo-geral.html',cta:'ABRIR COMPARADORES →'},
-    montar:{title:'Transforme produtos em conjuntos.',text:'Monte PC, cinema, ecossistema móvel, cozinha ou comece a colocar sua casa inteira no papel.',href:'jornadas.html',cta:'ESCOLHER O QUE MONTAR →'},
-    salvar:{title:'Pesquise hoje. Decida depois.',text:'Use Favoritos e Minha Lista para guardar opções enquanto amadurece sua escolha.',href:'minha-lista.html',cta:'ABRIR MINHA LISTA →'}
-  };
-  document.querySelectorAll('#decisionTabs button').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('#decisionTabs button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');const m=decisionModes[btn.dataset.mode];document.getElementById('decisionTitle').textContent=m.title;document.getElementById('decisionText').textContent=m.text;const c=document.getElementById('decisionCta');c.href=m.href;c.textContent=m.cta;}));
-
-  const searchInput=document.getElementById('homeSearchInput'),suggest=document.getElementById('homeSearchSuggestions');
-  const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  function renderSuggestions(){const q=norm(searchInput.value.trim());if(q.length<2){suggest.hidden=true;suggest.innerHTML='';return}const matches=PRODUTOS.filter(p=>norm([p.nome,p.marca,p.tipoProduto,p.subtipoCasa,p.subtipoCozinha,p.subtipoLavanderia,p.subtipoGamer,p.subtipoAcessorio].join(' ')).includes(q)).slice(0,6);if(!matches.length){suggest.hidden=false;suggest.innerHTML=`<a class="search-all" href="busca.html?q=${encodeURIComponent(searchInput.value)}">Buscar por “${esc(searchInput.value)}” em todo o catálogo →</a>`;return}suggest.hidden=false;suggest.innerHTML=matches.map(p=>`<a href="produto.html?id=${p.id}"><img src="${esc(p.imagem)}" loading="lazy" decoding="async" alt=""><span><b>${esc(p.nome)}</b><small>${esc(p.marca)}</small></span><strong>→</strong></a>`).join('')+`<a class="search-all" href="busca.html?q=${encodeURIComponent(searchInput.value)}">Ver todos os resultados →</a>`}
-  searchInput.addEventListener('input',renderSuggestions);
-  searchInput.addEventListener('focus',renderSuggestions);
-  document.addEventListener('click',e=>{if(!e.target.closest('.home-search-field'))suggest.hidden=true});
-  document.querySelectorAll('.home-quick-searches [data-q]').forEach(b=>b.addEventListener('click',()=>{searchInput.value=b.dataset.q;location.href='busca.html?q='+encodeURIComponent(b.dataset.q)}));
-  </script>
-</body>
+<div class="topbar home-topbar">
+<div class="container home-topbar-inner">
+<span>Conteúdo independente • Alguns links podem gerar comissão de afiliado, sem custo extra para você.</span>
+<span class="home-topbar-trust">Compare • Combine • Decida melhor</span>
+</div>
+</div>
+<header class="site-header home-header">
+<div class="container nav">
+<a aria-label="Preço na Mira — página inicial" class="brand home-brand" href="index.html">
+<img alt="Preço na Mira" decoding="async" height="256" loading="eager" src="assets/logo-pnm-header.png" width="256"/>
+</a>
+<nav class="nav-links" id="nav"><a href="universos.html">Universos</a><a href="ofertas.html">Ofertas</a><a href="catalogo.html">Catálogo</a><a href="montar.html">Projetos</a><a href="minha-lista.html">Salvos</a><a class="pnm-cart-nav" href="carrinho.html">Carrinho <span aria-label="Itens no carrinho" class="pnm-cart-count">0</span></a></nav>
+<a class="nav-primary" href="ofertas.html">VER OFERTAS →</a>
+<button aria-expanded="false" aria-label="Abrir menu" class="menu-btn" id="menu" type="button">☰</button>
+</div>
+</header>
+<main>
+<section class="home-hero-v121">
+<div class="container home-hero-grid">
+<div class="home-hero-main">
+<div class="home-brand-line"><span class="home-target-dot">◎</span> PREÇO NA MIRA</div>
+<h1>Encontre com clareza.<br/><em>Monte do seu jeito.</em></h1>
+<p class="home-hero-lede">Um lugar para buscar produtos, comparar diferenças e transformar ideias em conjuntos e projetos completos — do PC à casa inteira.</p>
+<form action="busca.html" autocomplete="off" class="home-search-v121" id="homeSearchForm">
+<div class="home-search-field">
+<span>⌕</span>
+<input aria-label="Buscar no Preço na Mira" id="homeSearchInput" name="q" placeholder="Busque produto, marca ou ideia: iPhone, robô aspirador, air fryer..." type="search"/>
+<button type="submit">PROCURAR →</button>
+<div class="home-search-suggestions" hidden="" id="homeSearchSuggestions"></div>
+</div>
+<div aria-label="Buscas rápidas" class="home-quick-searches">
+<small>ATALHOS:</small>
+<button data-q="RTX 5070" type="button">RTX 5070</button>
+<button data-q="robô aspirador" type="button">Robô aspirador</button>
+<button data-q="air fryer" type="button">Air fryer</button>
+<button data-q="soundbar" type="button">Soundbar</button>
+<a href="casa-studio.html">Casa Studio</a>
+</div>
+</form>
+<div class="home-hero-actions">
+<a class="home-btn-primary" href="universos.html">EXPLORAR UNIVERSOS</a>
+<a class="home-btn-ghost" href="montar.html">CRIAR UM PROJETO</a>
+</div>
+<div class="home-stat-row">
+<div><strong id="heroProductCount">—</strong><span>produtos únicos</span></div>
+<div><strong id="heroUniverseCount">—</strong><span>universos no mapa</span></div>
+<div><strong id="heroJourneyCount">4</strong><span>formas de montar</span></div>
+<div><strong id="heroImageCount">—</strong><span>fotos reais</span></div>
+</div>
+</div>
+<aside aria-label="Como usar o Preço na Mira" class="home-decision-panel">
+<div aria-hidden="true" class="decision-topline"></div>
+<div class="decision-radar-wrap">
+<div aria-hidden="true" class="decision-radar">
+<i></i><i></i><i></i><i></i>
+<span><strong>PNM</strong><small>OFERTAS</small></span>
+</div>
+<div class="radar-legends radar-actions">
+<button class="radar-option tl" data-mode="buscar" type="button"><b>Buscar</b><small>produto ou marca</small></button>
+<button class="radar-option tr" data-mode="comparar" type="button"><b>Comparar</b><small>diferenças reais</small></button>
+<button class="radar-option bl" data-mode="montar" type="button"><b>Projetos</b><small>ambiente ou setup</small></button>
+<button class="radar-option br" data-mode="salvar" type="button"><b>Salvar</b><small>decidir depois</small></button>
+</div>
+</div>
+<h2 id="decisionTitle">Radar de ofertas e atalhos.</h2>
+<p id="decisionText">Busque, compare e planeje com mais clareza. O radar destaca caminhos rápidos e oportunidades para você começar melhor.</p>
+<div class="decision-tabs" id="decisionTabs">
+<button class="active" data-mode="buscar"><span>Buscar</span><small>produto ou marca</small></button>
+<button data-mode="comparar"><span>Comparar</span><small>diferenças reais</small></button>
+<button data-mode="montar"><span>Projetos</span><small>planejar e escolher</small></button>
+<button data-mode="salvar"><span>Salvar</span><small>decidir depois</small></button>
+</div>
+<a class="decision-cta" href="busca.html" id="decisionCta">COMEÇAR AGORA →</a>
+</aside>
+</div>
+</section>
+<section class="home-how-section">
+<div class="container">
+<div class="home-section-label">COMO FUNCIONA</div>
+<div class="home-how-grid">
+<article><span>01</span><div><b>Encontre</b><p>Busque por produto, marca, categoria ou necessidade.</p></div></article>
+<article><span>02</span><div><b>Compare</b><p>Entenda diferenças técnicas, propostas, cores e alternativas.</p></div></article>
+<article><span>03</span><div><b>Planeje</b><p>Registre contexto, restrições e produtos dentro de um projeto antes da compra.</p></div></article>
+</div>
+</div>
+</section>
+<section class="section home-universe-section">
+<div class="container">
+<div class="section-head home-section-head">
+<div>
+<span class="home-section-label">ESCOLHA O CONTEXTO</span>
+<h2>Entre por um universo</h2>
+<p>Escolha um contexto pronto para explorar ambientes, comparativos e produtos conectados.</p>
+</div>
+<a class="link" href="universos.html">VER UNIVERSOS →</a>
+</div>
+<div class="home-universe-grid home-universe-grid-v121" id="homeUniverses"></div>
+</div>
+</section>
+<section class="home-casa-feature">
+<div class="container home-casa-feature-grid">
+<div class="home-casa-copy">
+<span class="home-section-label light">UNIVERSO EM DESTAQUE • MINHA CASA</span>
+<h2>Da primeira ideia ao último detalhe.</h2>
+<p>Tudo fica mais fácil quando a casa é organizada por etapas: obra, instalações, acabamentos, ambientes, equipamentos e automação.</p>
+<div class="home-casa-actions">
+<a href="casa-studio.html">ABRIR CASA STUDIO</a>
+<a class="ghost" href="minha-casa.html">VER MINHA CASA</a>
+</div>
+</div>
+<div aria-label="Etapas futuras da Minha Casa" class="home-house-path">
+<div class="house-path-line"></div>
+<article class="active"><span>01</span><b>Obra base</b><small>impermeabilização, vedação e ferramentas</small></article>
+<article class="active"><span>02</span><b>Instalações</b><small>fios, proteção e distribuição elétrica</small></article>
+<article class="active"><span>03</span><b>Acabamentos</b><small>pisos, tintas, metais, louças</small></article>
+<article class="active"><span>04</span><b>Ambientes</b><small>sala, cozinha, escritório e mais</small></article>
+<article class="active"><span>05</span><b>Equipamentos</b><small>eletros, tecnologia e utilidades</small></article>
+<article class="active"><span>06</span><b>Automação</b><small>rede, segurança e casa inteligente</small></article>
+</div>
+</div>
+</section>
+<section class="section intent-section home-intent-v121">
+<div class="container">
+<div class="section-head home-section-head">
+<div>
+<span class="home-section-label">COMECE PELA INTENÇÃO</span>
+<h2>O que você quer montar hoje?</h2>
+<p>Escolha o resultado que você quer e o site organiza os produtos por trás para você.</p>
+</div>
+<a class="link" href="montar.html">ABRIR PROJETOS →</a>
+</div>
+<div class="journey-grid home home-journey-v121" id="homeJourneys"></div>
+</div>
+</section>
+<section class="section v11-showcase home-visual-layer" id="imagensOficiais">
+<div class="container">
+<div class="v11-showcase-panel home-showcase-panel">
+<div class="v11-showcase-head">
+<div>
+<span class="home-section-label light">CAMADA VISUAL</span>
+<h2>Reconheça o produto. Entenda o contexto.</h2>
+<p>Fotos reais entram quando o modelo é confirmado em uma fonte adequada. O objetivo não é só deixar bonito: é ajudar você a identificar o item certo antes de comparar e montar.</p>
+</div>
+<span class="v11-count" id="officialImageCount"></span>
+</div>
+<div class="official-product-strip home-official-strip" id="officialProductStrip"></div>
+<p class="image-system-note">A imagem ajuda a reconhecer o produto; cor, acabamento, acessórios e configuração podem variar no anúncio.</p>
+</div>
+</div>
+</section>
+<section class="section" id="recentSection" style="display:none">
+<div class="container">
+<div class="section-head home-section-head">
+<div><span class="home-section-label">CONTINUE DE ONDE PAROU</span><h2>Vistos recentemente</h2><p>Volte rápido para o que você estava pesquisando.</p></div>
+<button class="pnm-share-btn" id="clearRecent">LIMPAR</button>
+</div>
+<div class="recent-grid" id="recentGrid"></div>
+</div>
+</section>
+<section class="section home-catalog-section" id="categorias">
+<div class="container">
+<div class="section-head home-section-head">
+<div><span class="home-section-label">PARA QUEM JÁ SABE O QUE PROCURA</span><h2>Catálogo por categoria</h2><p>A navegação clássica continua disponível — conectada aos universos, comparativos e aos Projetos.</p></div>
+<span class="kicker" id="totalCount"></span>
+</div>
+<div class="home-catalog-groups">
+<div><h3 class="portal-group-title">Mobile &amp; pessoal</h3><div class="category-portal-grid pnm-compact" id="cat-mobile"></div></div>
+<div><h3 class="portal-group-title">Áudio &amp; entretenimento</h3><div class="category-portal-grid pnm-compact" id="cat-ent"></div></div>
+<div><h3 class="portal-group-title">Computação &amp; gamer</h3><div class="category-portal-grid pnm-compact" id="cat-pc"></div></div>
+<div><h3 class="portal-group-title">Casa &amp; conectividade</h3><div class="category-portal-grid pnm-compact" id="cat-house"></div></div>
+</div>
+</div>
+</section>
+</main>
+<footer class="footer home-footer">
+<div class="container home-footer-premium">
+<div class="home-footer-brandbox">
+<div class="home-footer-brandtop">
+<img alt="Preço na Mira" decoding="async" height="360" loading="lazy" src="assets/logo-pnm-footer.webp" width="360"/>
+<p>Compare melhor. Monte do seu jeito. Acerte na escolha.</p>
+</div>
+<div class="home-footer-pills">
+<span>Buscar</span>
+<span>Comparar</span>
+<span>Projetos</span>
+</div>
+</div>
+<div class="home-footer-note">
+<img alt="Mercado Livre" decoding="async" height="64" loading="lazy" src="assets/mercado-livre-logo.svg" width="290"/>
+<strong>Do radar para a oferta.</strong>
+<p>Os botões de oferta levam para anúncios externos. Preço, estoque, frete e vendedor devem ser conferidos antes da compra.</p>
+</div>
+</div>
+<div class="container home-footer-bottom">
+<small>Preço na Mira • Conteúdo independente</small>
+<small>Categoria organiza. Universo dá contexto. Projetos transformam escolhas em decisões registradas.</small>
+<a href="minha-lista.html?aba=favoritos">❤ Favoritos</a>
+</div>
+</footer>
+<script src="data/produtos-index.js"></script>
+<script src="data/experiencias.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/pages/index-1.js"></script>
+<script src="assets/pnm-runtime.js"></script><script src="assets/pnm-foundation-runtime.js"></script><script src="assets/pnm-accessibility.js"></script><script src="assets/pnm-real-product-images.js"></script></body>
 </html>

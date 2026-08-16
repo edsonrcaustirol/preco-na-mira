@@ -1,0 +1,118 @@
+{
+  "version": "V17.3.3",
+  "buildDate": "2026-08-15",
+  "environment": "production",
+  "baseUrl": "https://preco-na-mira.preco-na-mira.workers.dev",
+  "products": 556,
+  "identifiedAffiliateProducts": 556,
+  "pendingAffiliateLinks": 137,
+  "publicAnonymousOffers": 0,
+  "notes": [
+    "V17.3.3 — Mutirão Final de Cobertura de Imagens",
+    "556/556 produtos com foto real confirmada do produto/modelo",
+    "Ilustrações genéricas de categoria não são aceitas como foto de produto",
+    "11 casos resistentes foram validados por fonte oficial e incorporados ao pacote final",
+    "Fallback neutro permanece apenas para falha técnica de carregamento, não como cobertura declarada"
+  ],
+  "technicalSources": 209,
+  "externalImageFallbacks": 0,
+  "staticProductPages": 556,
+  "catalogDataStrategy": "split-by-context",
+  "cart": {
+    "enabled": true,
+    "storage": "local",
+    "quantities": true,
+    "shareable": true,
+    "checkout": "external-marketplace"
+  },
+  "foundationStatus": "consolidated",
+  "projects": {
+    "enabled": true,
+    "storage": "local",
+    "shareable": true,
+    "diagnostics": true,
+    "planning": true,
+    "styleReferences": true,
+    "productSelection": true,
+    "cartIntegration": true,
+    "templates": 9,
+    "styleStudio": "interactive-preview",
+    "missingProjectRecovery": true,
+    "compactRequirements": 8
+  },
+  "affiliateLinkIntegrity": {
+    "catalogProducts": 556,
+    "affiliateLinksPresent": 556,
+    "staticProductPurchaseCtasChecked": 1668,
+    "staticProductPurchaseCtaMismatches": 0,
+    "runtimeGuard": true
+  },
+  "smallSpaces": {
+    "planningFirst": true,
+    "measurementSeed": true,
+    "projectCreation": true,
+    "technicalChecklist": 6,
+    "requirements": 8,
+    "legacyStandaloneBuilder": false
+  },
+  "searchHub": {
+    "version": "3.0",
+    "intentFirst": true,
+    "guidedRoute": true,
+    "recentSearches": true,
+    "recentProducts": true,
+    "recentProjects": true,
+    "quickRoutes": 8,
+    "emptyCatalogDump": false
+  },
+  "runtimeStrategy": "single-runtime",
+  "savedExperience": "unified-hub",
+  "structuredData": "Product+Brand+BreadcrumbList",
+  "imageCoverage": {
+    "products": 556,
+    "confirmedRealPhotos": 556,
+    "staticOrValidatedReal": 556,
+    "autoResolver": 0,
+    "categoryIllustrationsAsProductImage": 0,
+    "neutralLoadingAsProductImage": 0,
+    "aiGenerated": 0,
+    "targetRealPhoto": 556,
+    "coveragePercent": 100.0,
+    "policy": "real product/model photo only; generic category illustrations and neutral loading states do not count as coverage"
+  },
+  "visualBuilders": {
+    "version": "2.1",
+    "liveStage": true,
+    "productCards": true,
+    "offerActions": true,
+    "pages": [
+      "cinema-em-casa",
+      "setup-ecossistema",
+      "setup-tv-soundbar"
+    ],
+    "visualMerchandising": true
+  },
+  "photoCoverage": {
+    "products": 556,
+    "confirmedRealPhotos": 556,
+    "staticOrValidatedReal": 556,
+    "autoResolver": 0,
+    "categoryIllustrationsAsProductImage": 0,
+    "neutralLoadingAsProductImage": 0,
+    "aiGenerated": 0,
+    "targetRealPhoto": 556,
+    "coveragePercent": 100.0,
+    "policy": "real product/model photo only; generic category illustrations and neutral loading states do not count as coverage"
+  },
+  "imageCoverageDashboard": {
+    "enabled": true,
+    "page": "cobertura-imagens.html",
+    "exports": [
+      "COBERTURA-IMAGENS-V17.3.3.json",
+      "COBERTURA-IMAGENS-V17.3.3.csv",
+      "FOTOS-AUTO-RESOLVER-V17.3.3.csv",
+      "FOTOS-IA-REVISAO-V17.3.3.csv"
+    ],
+    "version": "V17.3.3"
+  }
+}

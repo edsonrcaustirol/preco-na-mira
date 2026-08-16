@@ -1,0 +1,1 @@
+(function(){const plural=(n)=>n===1?'produto':'produtos';[['countCasa','casa'],['countGamer','gamer'],['countTech','tecnologia']].forEach(([el,id])=>{try{const n=PNMProductsForUniverse(id).length;document.getElementById(el).textContent=`${n} ${plural(n)}`}catch(e){}});})();

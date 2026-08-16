@@ -1,4 +1,4 @@
-/* Preço na Mira V13.3 — curadoria para pequenos espaços */
+/* Preço na Mira V17.1 — curadoria funcional para espaços compactos */
 (function(){
   const kitchen=['airfryer','microondas','cooktop','panela-eletrica','mixer','liquidificador','grill','purificador','cafeteira-capsula','cafeteira-espresso','cafeteira-filtro'];
   const bathroom=['louca-sanitaria','cuba','torneira-banheiro','acessorio-banheiro'];

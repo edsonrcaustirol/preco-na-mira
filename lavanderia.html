@@ -1,81 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="index,follow">
-  <title>Lavanderia — Pequenos e grandes espaços | Preço na Mira</title>
-  <meta name="description" content="Compare lavadoras para studios, apartamentos compactos e rotinas de maior capacidade.">
-  <link rel="icon" href="assets/favicon.svg">
-  <link rel="stylesheet" href="assets/site.css">
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="index,follow,max-image-preview:large" name="robots"/>
+<title>Lavanderia — Pequenos e grandes espaços | Preço na Mira</title>
+<meta content="Compare lavadoras para studios, apartamentos compactos e rotinas de maior capacidade." name="description"/>
+<link href="assets/favicon-pnm.png" rel="icon" type="image/png"/>
+<link href="assets/pnm-core.css" rel="stylesheet"/><link href="assets/pnm-layer-product.css" rel="stylesheet"/>
+<link href="https://preco-na-mira.preco-na-mira.workers.dev/lavanderia.html" rel="canonical"/><meta content="#070914" name="theme-color"/><meta content="Preço na Mira" property="og:site_name"/><meta content="website" property="og:type"/><meta content="Lavanderia — Pequenos e grandes espaços | Preço na Mira" property="og:title"/><meta content="Compare lavadoras para studios, apartamentos compactos e rotinas de maior capacidade." property="og:description"/><meta content="https://preco-na-mira.preco-na-mira.workers.dev/lavanderia.html" property="og:url"/><meta content="https://preco-na-mira.preco-na-mira.workers.dev/assets/logo-pnm-2026.png" property="og:image"/><meta content="summary_large_image" name="twitter:card"/><meta content="Lavanderia — Pequenos e grandes espaços | Preço na Mira" name="twitter:title"/><meta content="Compare lavadoras para studios, apartamentos compactos e rotinas de maior capacidade." name="twitter:description"/><meta content="https://preco-na-mira.preco-na-mira.workers.dev/assets/logo-pnm-2026.png" name="twitter:image"/></head>
 <body class="laundry-theme">
 <div class="topbar">Conteúdo independente • Alguns links podem gerar comissão de afiliado, sem custo extra para você.</div>
-<header class="site-header"><div class="container nav"><a class="brand" href="index.html"><img src="assets/logo-header.png" alt="Preço na Mira"></a><nav class="nav-links" id="nav"></nav><button class="menu-btn" id="menu" aria-label="Abrir menu">☰</button></div></header>
+<header class="site-header"><div class="container nav"><a class="brand" href="index.html"><img alt="Preço na Mira" decoding="async" height="256" loading="eager" src="assets/logo-pnm-header.png" width="256"/></a><nav class="nav-links" id="nav"><a href="universos.html">Universos</a><a href="ofertas.html">Ofertas</a><a href="catalogo.html">Catálogo</a><a href="montar.html">Projetos</a><a href="minha-lista.html">Salvos</a><a class="pnm-cart-nav" href="carrinho.html">Carrinho <span aria-label="Itens no carrinho" class="pnm-cart-count">0</span></a></nav><button aria-expanded="false" aria-label="Abrir menu" class="menu-btn" id="menu" type="button">☰</button></div></header>
 <main>
-  <section class="laundry-hero">
-    <div class="container laundry-hero-grid">
-      <div class="laundry-hero-copy">
-        <span class="kicker">🧺 MINHA CASA • LAVANDERIA</span>
-        <h1>A rotina cabe.<br><em>A escolha também.</em></h1>
-        <p>Uma lavanderia pequena pede porte e instalação sob controle. Uma rotina maior pede capacidade sem ignorar circulação, consumo e infraestrutura. Aqui as duas necessidades ficam separadas desde o começo.</p>
-        <div class="laundry-actions"><button data-jump="compacta">VER ESPAÇOS PEQUENOS</button><button class="ghost" data-jump="alta-capacidade">VER MAIOR CAPACIDADE</button></div>
-      </div>
-      <aside class="laundry-console" aria-label="Resumo do catálogo de lavanderia">
-        <small>CATÁLOGO V13.6</small><div><strong id="total">0</strong><span>lavadoras conectadas</span></div>
-        <div class="laundry-console-row"><b id="compactCount">0</b><span>pouco espaço</span></div>
-        <div class="laundry-console-row"><b id="largeCount">0</b><span>maior capacidade</span></div>
-        <i></i><p>Compare somente produtos da mesma régua.</p>
-      </aside>
-    </div>
-  </section>
-
-  <section class="laundry-choice">
-    <div class="container laundry-choice-grid">
-      <button class="laundry-profile active" data-profile="compacta"><span>📐</span><small>STUDIO • KITNET • APÊ COMPACTO</small><h2>Pouco espaço</h2><p>Prioriza porte, acesso, ponto de água, drenagem e abertura.</p><b>EXPLORAR →</b></button>
-      <button class="laundry-profile" data-profile="alta-capacidade"><span>🧺</span><small>FAMÍLIA • ENXOVAL • PEÇAS VOLUMOSAS</small><h2>Maior capacidade</h2><p>Prioriza volume de roupa, profundidade, circulação e infraestrutura.</p><b>EXPLORAR →</b></button>
-    </div>
-  </section>
-
-  <section class="section laundry-catalog" id="catalogo">
-    <div class="container">
-      <div class="laundry-alert"><strong>Meça antes de escolher</strong><p>Capacidade não informa o espaço que a máquina ocupa. Confirme largura, altura, profundidade, tampa ou porta aberta, mangueiras, torneira, drenagem, ventilação, voltagem e rota de entrega.</p></div>
-      <div class="section-head"><div><span class="kicker" id="eyebrow">POUCO ESPAÇO</span><h2 id="title">Lavadoras compactas</h2><p id="count"></p></div><a class="link" href="pequenos-espacos.html?perfil=lavanderia&foco=lavar" id="contextLink">VER EM PEQUENOS ESPAÇOS →</a></div>
-      <div class="laundry-product-grid" id="grid"></div>
-    </div>
-  </section>
-
-  <section class="section laundry-ruler">
-    <div class="container"><div class="section-head"><div><span class="kicker">RÉGUA DE DECISÃO</span><h2>Quatro conferências obrigatórias.</h2></div></div><div class="laundry-rule-grid">
-      <article><span>01</span><h3>O corpo cabe?</h3><p>Meça o local e a rota completa de entrada, inclusive portas e corredores.</p></article>
-      <article><span>02</span><h3>Abre com folga?</h3><p>Considere tampa, porta, dispenser, mangueiras e área para operar.</p></article>
-      <article><span>03</span><h3>A instalação atende?</h3><p>Confirme água, escoamento, voltagem, tomada e ventilação.</p></article>
-      <article><span>04</span><h3>A capacidade é coerente?</h3><p>Compare a rotina real; quilos maiores não compensam um espaço inviável.</p></article>
-    </div></div>
-  </section>
+<section class="laundry-hero">
+<div class="container laundry-hero-grid">
+<div class="laundry-hero-copy">
+<span class="kicker">🧺 MINHA CASA • LAVANDERIA</span>
+<h1>A rotina cabe.<br/><em>A escolha também.</em></h1>
+<p>Uma lavanderia pequena pede porte e instalação sob controle. Uma rotina maior pede capacidade sem ignorar circulação, consumo e infraestrutura. Aqui as duas necessidades ficam separadas desde o começo.</p>
+<div class="laundry-actions"><button data-jump="compacta">VER ESPAÇOS PEQUENOS</button><button class="ghost" data-jump="alta-capacidade">VER MAIOR CAPACIDADE</button></div>
+</div>
+<aside aria-label="Resumo do catálogo de lavanderia" class="laundry-console">
+<small>CATÁLOGO ATUALIZADO</small><div><strong id="total">0</strong><span>lavadoras conectadas</span></div>
+<div class="laundry-console-row"><b id="compactCount">0</b><span>pouco espaço</span></div>
+<div class="laundry-console-row"><b id="largeCount">0</b><span>maior capacidade</span></div>
+<i></i><p>Compare somente produtos da mesma régua.</p>
+</aside>
+</div>
+</section>
+<section class="laundry-choice">
+<div class="container laundry-choice-grid">
+<button class="laundry-profile active" data-profile="compacta"><span>📐</span><small>STUDIO • KITNET • APÊ COMPACTO</small><h2>Pouco espaço</h2><p>Prioriza porte, acesso, ponto de água, drenagem e abertura.</p><b>EXPLORAR →</b></button>
+<button class="laundry-profile" data-profile="alta-capacidade"><span>🧺</span><small>FAMÍLIA • ENXOVAL • PEÇAS VOLUMOSAS</small><h2>Maior capacidade</h2><p>Prioriza volume de roupa, profundidade, circulação e infraestrutura.</p><b>EXPLORAR →</b></button>
+</div>
+</section>
+<section class="section laundry-catalog" id="catalogo">
+<div class="container">
+<div class="laundry-alert"><strong>Meça antes de escolher</strong><p>Capacidade não informa o espaço que a máquina ocupa. Confirme largura, altura, profundidade, tampa ou porta aberta, mangueiras, torneira, drenagem, ventilação, voltagem e rota de entrega.</p></div>
+<div class="section-head"><div><span class="kicker" id="eyebrow">POUCO ESPAÇO</span><h2 id="title">Lavadoras compactas</h2><p id="count"></p></div><a class="link" href="pequenos-espacos.html?perfil=lavanderia&amp;foco=lavar" id="contextLink">VER EM PEQUENOS ESPAÇOS →</a></div>
+<div class="laundry-product-grid" id="grid"></div>
+</div>
+</section>
+<section class="section laundry-ruler">
+<div class="container"><div class="section-head"><div><span class="kicker">RÉGUA DE DECISÃO</span><h2>Quatro conferências obrigatórias.</h2></div></div><div class="laundry-rule-grid">
+<article><span>01</span><h3>O corpo cabe?</h3><p>Meça o local e a rota completa de entrada, inclusive portas e corredores.</p></article>
+<article><span>02</span><h3>Abre com folga?</h3><p>Considere tampa, porta, dispenser, mangueiras e área para operar.</p></article>
+<article><span>03</span><h3>A instalação atende?</h3><p>Confirme água, escoamento, voltagem, tomada e ventilação.</p></article>
+<article><span>04</span><h3>A capacidade é coerente?</h3><p>Compare a rotina real; quilos maiores não compensam um espaço inviável.</p></article>
+</div></div>
+</section>
 </main>
-<footer class="footer"><div class="container footer-grid"><div><img src="assets/logo-full.png" alt="Preço na Mira"><p>Compare capacidade, espaço e instalação antes da oferta.</p></div><div><strong>Importante</strong><p>Medidas, voltagem, consumo e instalação precisam ser confirmados no anúncio e no manual.</p></div></div></footer>
-<script src="data/produtos.js"></script><script src="data/experiencias.js"></script><script src="assets/comparador.js"></script><script src="assets/core.js"></script>
-<script>
-(()=>{
-  const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const all=PRODUTOS.filter(p=>p.tipoProduto==='lavanderia');
-  let profile=new URLSearchParams(location.search).get('tipo');if(!['compacta','alta-capacidade'].includes(profile))profile='compacta';
-  document.getElementById('total').textContent=all.length;document.getElementById('compactCount').textContent=all.filter(p=>p.subtipoLavanderia==='compacta').length;document.getElementById('largeCount').textContent=all.filter(p=>p.subtipoLavanderia==='alta-capacidade').length;
-  function render(){
-    const list=all.filter(p=>p.subtipoLavanderia===profile),compact=profile==='compacta';
-    document.querySelectorAll('[data-profile]').forEach(b=>b.classList.toggle('active',b.dataset.profile===profile));
-    document.getElementById('eyebrow').textContent=compact?'POUCO ESPAÇO':'MAIOR CAPACIDADE';
-    document.getElementById('title').textContent=compact?'Lavadoras para espaços pequenos':'Lavadoras de maior capacidade';
-    document.getElementById('count').textContent=list.length+' '+PNMPlural(list.length,'produto','produtos')+' nesta régua.';
-    const context=document.getElementById('contextLink');context.style.display=compact?'inline-flex':'none';
-    document.getElementById('grid').innerHTML=list.map(p=>`<article class="laundry-product"><div class="laundry-product-media"><img src="${esc(p.imagem)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${esc(p.imagemFallback)}'" alt="${esc(p.imagemAlt||p.nome)}">${p.imagemTipo==='oficial'?'<span class="official-image-badge">✓ FONTE OFICIAL</span>':''}</div><div class="laundry-product-copy"><small>${esc(p.marca)} • ${esc(p.selo)}</small><h3>${esc(p.nome)}</h3><p>${esc(p.resumo)}</p><div class="laundry-tags">${(p.chips||[]).slice(1).map(x=>`<span>${esc(x)}</span>`).join('')}</div><div class="actions"><a class="btn btn-dark" href="produto.html?id=${encodeURIComponent(p.id)}">ANALISAR →</a><a class="btn btn-outline" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer">OFERTA</a></div></div></article>`).join('');
-    history.replaceState(null,'','?tipo='+profile);
-  }
-  document.querySelectorAll('[data-profile]').forEach(b=>b.onclick=()=>{profile=b.dataset.profile;render();document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})});
-  document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>{profile=b.dataset.jump;render();document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})});
-  document.getElementById('menu').onclick=()=>document.getElementById('nav').classList.toggle('open');render();
-})();
-</script>
-</body>
+<footer class="footer"><div class="container footer-grid"><div><img alt="Preço na Mira" decoding="async" height="360" loading="lazy" src="assets/logo-pnm-footer.webp" width="360"/><p>Compare capacidade, espaço e instalação antes da oferta.</p></div><div><strong>Importante</strong><p>Medidas, voltagem, consumo e instalação precisam ser confirmados no anúncio e no manual.</p></div></div></footer>
+<script src="data/produtos-lavanderia.js"></script><script src="data/experiencias.js"></script><script src="assets/comparador.js"></script><script src="assets/core.js"></script>
+<script src="assets/pages/lavanderia-1.js"></script>
+<script src="assets/pnm-runtime.js"></script><script src="assets/pnm-foundation-runtime.js"></script><script src="assets/pnm-accessibility.js"></script><script src="assets/pnm-projects.js"></script><script src="assets/pnm-project-entry.js"></script><script src="assets/pnm-real-product-images.js"></script></body>
 </html>

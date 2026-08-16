@@ -1,0 +1,1 @@
+(()=>{const type=document.body.dataset.projectType||'cozinha';let p=PNMProjects.active();if(!p||p.type!==type)p=PNMProjects.create(type);location.replace(`projeto.html?projeto=${encodeURIComponent(p.id)}`)})();

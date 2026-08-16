@@ -1,4 +1,4 @@
-/* Preço na Mira V12 — arquitetura Universo → Ambiente → Jornada → Produto */
+/* Preço na Mira V12 — arquitetura de contexto Universo → Ambiente → Produto / Projeto */
 (function(){
   const U=[
     {id:'casa',icon:'🏠',nome:'Minha Casa',status:'ativo',href:'universo-casa.html',cor:'verde',descricao:'Do projeto e da obra aos ambientes, equipamentos, acabamento e automação da casa.'},
@@ -44,9 +44,9 @@
     {id:'casa-smart',icon:'💡',nome:'Minha casa inteligente',status:'ativo',href:'montar-casa.html',descricao:'Monte automação, rede, segurança, acesso e limpeza conectada.'},
     {id:'mobile',icon:'📱',nome:'Meu ecossistema móvel',status:'ativo',href:'setup-ecossistema.html',descricao:'Celular, relógio, fone, carregamento e mobilidade em conjunto.'},
     {id:'home-office',icon:'💻',nome:'Meu home office',status:'preparando',href:'ambiente-gamer.html',descricao:'Notebook ou PC, monitor, hubs e periféricos orientados para produtividade.'},
-    {id:'pet',icon:'🐶',nome:'Kit do meu pet',status:'planejado',descricao:'Uma futura jornada do Universo Pets.'},
-    {id:'bebe',icon:'👶',nome:'Quarto do bebê',status:'planejado',descricao:'Uma futura jornada do Universo Kids & Bebê.'},
-    {id:'viagem',icon:'🚗',nome:'Kit para viagem',status:'planejado',descricao:'Uma futura jornada que cruza Tecnologia, Auto e Viagem.'}
+    {id:'pet',icon:'🐶',nome:'Kit do meu pet',status:'planejado',descricao:'Um futuro projeto guiado do Universo Pets.'},
+    {id:'bebe',icon:'👶',nome:'Quarto do bebê',status:'planejado',descricao:'Um futuro projeto guiado do Universo Kids & Bebê.'},
+    {id:'viagem',icon:'🚗',nome:'Kit para viagem',status:'planejado',descricao:'Um futuro projeto guiado que cruza Tecnologia, Auto e Viagem.'}
   ];
   function uniq(a){return [...new Set(a.filter(Boolean))]}
   const coffee=['cafeteira-capsula','cafeteira-espresso','cafeteira-filtro'];

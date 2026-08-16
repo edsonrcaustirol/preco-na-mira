@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#09070d"/><stop offset="1" stop-color="#251047"/></linearGradient><radialGradient id="r"><stop stop-color="#8b5cf6" stop-opacity=".55"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient></defs>
+<rect width="900" height="620" rx="46" fill="url(#g)"/>
+<circle cx="700" cy="120" r="250" fill="url(#r)"/>
+<rect x="170" y="125" width="560" height="330" rx="42" fill="#121018" stroke="#8b5cf6" stroke-width="5"/>
+<path d="M130 495H770" stroke="#5eead4" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+<text x="450" y="290" text-anchor="middle" font-family="Arial,sans-serif" font-size="110" font-weight="800" fill="#e9d5ff">MB</text>
+<text x="450" y="365" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="700" letter-spacing="8" fill="#5eead4">PLACA-MÃE</text>
+<text x="450" y="555" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" letter-spacing="5" fill="#a78bfa">PREÇO NA MIRA // GAMER</text>
+</svg>

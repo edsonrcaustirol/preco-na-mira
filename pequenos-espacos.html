@@ -1,35 +1,121 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="index,follow">
-  <title>Pequenos Espaços — Minha Casa | Preço na Mira</title>
-  <meta name="description" content="Produtos, critérios e jornadas para studios, kitnets e apartamentos compactos.">
-  <link rel="icon" href="assets/favicon.svg"><link rel="stylesheet" href="assets/site.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="index,follow,max-image-preview:large" name="robots"/>
+<title>Pequenos Espaços — Planejamento e Produtos | Preço na Mira</title>
+<meta content="Planeje studios, kitnets e ambientes compactos por medidas, circulação, infraestrutura e função antes de escolher produtos." name="description"/>
+<link href="assets/favicon-pnm.png" rel="icon" type="image/png"/>
+<link href="assets/pnm-core.css" rel="stylesheet"/>
+<link href="assets/pnm-layer-product.css" rel="stylesheet"/>
+<link href="assets/pnm-layer-smallspaces-v17.css" rel="stylesheet"/>
+<link href="https://preco-na-mira.preco-na-mira.workers.dev/pequenos-espacos.html" rel="canonical"/>
+<meta content="#070914" name="theme-color"/>
+<meta content="Preço na Mira" property="og:site_name"/><meta content="website" property="og:type"/>
+<meta content="Pequenos Espaços — Planejamento e Produtos | Preço na Mira" property="og:title"/>
+<meta content="Planeje studios, kitnets e ambientes compactos por medidas, circulação, infraestrutura e função antes de escolher produtos." property="og:description"/>
+<meta content="https://preco-na-mira.preco-na-mira.workers.dev/pequenos-espacos.html" property="og:url"/>
+<meta content="https://preco-na-mira.preco-na-mira.workers.dev/assets/logo-pnm-2026.png" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
 </head>
-<body class="compact-theme">
-<div class="topbar">Conteúdo independente • Alguns links podem gerar comissão de afiliado, sem custo extra para você.</div>
-<header class="site-header"><div class="container nav"><a class="brand" href="index.html"><img src="assets/logo-header.png" alt="Preço na Mira"></a><nav class="nav-links" id="nav"></nav><button class="menu-btn" id="menu" aria-label="Abrir menu">☰</button></div></header>
+<body class="compact-theme pnm-smallspaces-v17">
+<div class="topbar">Links podem gerar comissão de afiliado, sem custo extra para você.</div>
+<header class="site-header"><div class="container nav"><a class="brand" href="index.html"><img alt="Preço na Mira" decoding="async" height="256" loading="eager" src="assets/logo-pnm-header.png" width="256"/></a><nav class="nav-links" id="nav"><a href="universos.html">Universos</a><a href="ofertas.html">Ofertas</a><a href="catalogo.html">Catálogo</a><a href="montar.html">Projetos</a><a href="minha-lista.html">Salvos</a><a class="pnm-cart-nav" href="carrinho.html">Carrinho <span aria-label="Itens no carrinho" class="pnm-cart-count">0</span></a></nav><button aria-expanded="false" aria-label="Abrir menu" class="menu-btn" id="menu" type="button">☰</button></div></header>
 <main>
-  <section class="compact-hero"><div class="container compact-hero-grid"><div><span class="kicker">📐 MINHA CASA • PEQUENOS ESPAÇOS</span><h1>Poucos metros.<br><em>Mais possibilidades.</em></h1><p>Uma fonte de procura para quem mora em studio, kitnet, apartamento compacto ou precisa fazer um cômodo pequeno funcionar melhor. Comece pelo uso, filtre produtos e confirme as medidas antes de comprar.</p><div class="compact-actions"><a id="buildTop" href="montar-espaco-compacto.html">MONTAR MEU ESPAÇO →</a><a class="ghost" href="comparativo-compactos.html">COMPARAR POR FUNÇÃO</a></div></div><aside class="compact-meter"><small>CATÁLOGO JÁ CONECTADO</small><strong id="heroCount">—</strong><h3>produtos para começar</h3><p>Curadoria dinâmica com itens que já estavam no site e imagens locais sempre que disponíveis.</p><div class="compact-meter-lines"><i></i><i></i><i></i></div></aside></div></section>
-  <section class="section"><div class="container"><div class="section-head"><div><span class="kicker">COMECE PELO SEU CONTEXTO</span><h2>Que tipo de espaço você quer resolver?</h2><p>A escolha leva o contexto para o montador; ela não substitui a medição real do ambiente.</p></div></div><div class="compact-profile-grid" id="profiles"></div></div></section>
-  <section class="section compact-guide"><div class="container"><div class="section-head"><div><span class="kicker">PRIMEIRO A ROTINA</span><h2>Comece pelo que está apertando.</h2><p>Em um lugar pequeno, uma boa compra resolve uma tarefa sem criar outro problema.</p></div></div><div class="compact-intent-grid" id="intents"></div></div></section>
-  <section class="section compact-catalog" id="catalogo"><div class="container"><div class="compact-warning"><strong>Medida é critério obrigatório</strong><p>“Compacto” aqui significa adequado ao contexto de pouco espaço, não garantia de encaixe. Meça largura, altura, profundidade, abertura de portas, ventilação, tomadas, pontos hidráulicos e circulação. Confirme a variante no anúncio e a ficha do fabricante.</p></div><div class="catalog-tools-v12"><div class="compact-filterbar" id="filters"></div><input class="compact-search" id="search" type="search" placeholder="Buscar marca, modelo ou característica"></div><div class="section-head"><div><h2 id="catalogTitle">Produtos para espaços compactos</h2><p id="catalogCount"></p></div><a class="link" id="compareLink" href="comparativo-compactos.html">COMPARAR A MESMA FUNÇÃO →</a></div><div class="compact-product-grid" id="products"></div><div class="empty" id="empty">Nenhum produto encontrado para este filtro.</div></div></section>
-  <section class="section"><div class="container"><div class="section-head"><div><span class="kicker">RÉGUA DE DECISÃO</span><h2>Quatro perguntas antes do carrinho.</h2></div></div><div class="compact-rule-grid"><article class="compact-rule"><span>01</span><h3>Cabe fechado e aberto?</h3><p>Considere portas, gavetas, cabos, ventilação e manutenção — não só o corpo do produto.</p></article><article class="compact-rule"><span>02</span><h3>Resolve mais de uma tarefa?</h3><p>Multifunção pode economizar espaço, desde que não sacrifique a função que você mais usa.</p></article><article class="compact-rule"><span>03</span><h3>Fica ou pode guardar?</h3><p>Defina o que merece bancada, parede, piso ou um lugar fácil para ser guardado.</p></article><article class="compact-rule"><span>04</span><h3>É alugado ou próprio?</h3><p>Em imóvel alugado, priorize soluções reversíveis e confirme qualquer intervenção antes da instalação.</p></article></div></div></section>
-  <section class="section compact-guide"><div class="container"><div class="section-head"><div><span class="kicker">ESTRUTURA PREPARADA</span><h2>O que entra nas próximas camadas.</h2><p>A V13.3 cria a fundação sem fingir que o catálogo já tem tudo.</p></div><a class="link" href="montar-espaco-compacto.html">ABRIR MONTADOR →</a></div><div class="compact-roadmap"><article><small>PRÓXIMA CAMADA</small><h3>🧺 Organização vertical</h3><p>Prateleiras, nichos, ganchos e soluções que usam melhor as paredes.</p></article><article><small>PRÓXIMA CAMADA</small><h3>🪑 Móveis multifuncionais</h3><p>Mesas dobráveis, sofás-cama, camas-baú e módulos com dupla função.</p></article><article><small>PRÓXIMA CAMADA</small><h3>📏 Medidas estruturadas</h3><p>Largura, altura e profundidade como filtros confiáveis quando houver fonte técnica.</p></article></div></div></section>
+<section class="ps-hero">
+<div class="container ps-hero-grid">
+<div class="ps-hero-copy">
+<span class="ps-eyebrow">PLANEJAMENTO • ESPAÇOS COMPACTOS</span>
+<h1>Cada centímetro precisa <em>ter função.</em></h1>
+<p>Em um espaço pequeno, produto bom não é apenas o menor. É o que cabe, abre, ventila, conecta e funciona sem comprometer circulação ou instalação.</p>
+<div class="ps-actions"><button class="ps-btn primary" id="createProjectTop" type="button">CRIAR PROJETO COMPACTO →</button><a class="ps-btn" href="#selecao">VER SELEÇÃO DE PRODUTOS</a></div>
+<div class="ps-proof"><span><b>01</b> Medidas reais</span><span><b>02</b> Circulação</span><span><b>03</b> Infraestrutura</span><span><b>04</b> Função</span></div>
+</div>
+<aside aria-label="Critérios para espaços compactos" class="ps-hero-panel">
+<div class="ps-panel-top"><span>BASE DE DECISÃO</span><strong id="heroCount">—</strong><small>produtos conectados</small></div>
+<div class="ps-panel-list">
+<div><b>Encaixe real</b><span>Corpo + portas + cabos + ventilação.</span></div>
+<div><b>Operação</b><span>Espaço necessário para usar, abrir e manter.</span></div>
+<div><b>Infraestrutura</b><span>Tomadas, tensão, água, esgoto e rede.</span></div>
+<div><b>Flexibilidade</b><span>O que fica fixo, móvel ou pode ser guardado.</span></div>
+</div>
+</aside>
+</div>
+</section>
+<section class="ps-section ps-planner" id="planejar">
+<div class="container">
+<div class="ps-section-head"><div><span>DIAGNÓSTICO INICIAL</span><h2>Defina as restrições antes dos produtos.</h2><p>Estas informações podem abrir um novo Projeto já com medidas e necessidade principal registradas.</p></div><a href="montar.html">VER MEUS PROJETOS →</a></div>
+<div class="ps-planner-grid">
+<div class="ps-planner-main">
+<section class="ps-step">
+<div class="ps-step-head"><span>01</span><div><h3>Que espaço é este?</h3><p>Escolha o contexto mais próximo da sua realidade.</p></div></div>
+<div class="ps-profile-grid" id="profiles"></div>
+</section>
+<section class="ps-step">
+<div class="ps-step-head"><span>02</span><div><h3>Quais são as medidas disponíveis?</h3><p>Use medidas internas aproximadas. Você poderá refiná-las no Projeto.</p></div></div>
+<div class="ps-measure-grid">
+<label for="spaceLength">Comprimento <span><input aria-label="Comprimento do espaço" id="spaceLength" inputmode="decimal" placeholder="0,00"/> m</span></label>
+<label for="spaceWidth">Largura <span><input aria-label="Largura do espaço" id="spaceWidth" inputmode="decimal" placeholder="0,00"/> m</span></label>
+<label for="spaceHeight">Pé-direito <span><input aria-label="Pé-direito do espaço" id="spaceHeight" inputmode="decimal" placeholder="0,00"/> m</span></label>
+</div>
+</section>
+<section class="ps-step">
+<div class="ps-step-head"><span>03</span><div><h3>O que precisa funcionar melhor?</h3><p>Essa escolha define a primeira necessidade do Projeto e a seleção abaixo.</p></div></div>
+<div class="ps-intent-grid" id="intents"></div>
+</section>
+</div>
+<aside aria-live="polite" class="ps-summary">
+<small>PONTO DE PARTIDA</small>
+<h3 id="summaryTitle">Studio compacto</h3>
+<div class="ps-summary-row"><span>Área aproximada</span><b id="summaryArea">Não informada</b></div>
+<div class="ps-summary-row"><span>Prioridade inicial</span><b id="summaryFocus">Cozinha</b></div>
+<div class="ps-summary-row"><span>Medidas</span><b id="summaryMeasure">Pendentes</b></div>
+<div class="ps-summary-alert" id="summaryAlert"><b>Antes de comprar</b><p>Registre comprimento e largura para o Projeto tratar encaixe como restrição real.</p></div>
+<button class="ps-btn primary full" id="createProject" type="button">CRIAR PROJETO COM ESTES DADOS →</button>
+<p class="ps-summary-note">O Projeto fica salvo neste navegador e pode ser compartilhado depois.</p>
+</aside>
+</div>
+</div>
+</section>
+<section class="ps-section ps-criteria">
+<div class="container">
+<div class="ps-section-head"><div><span>CHECKLIST TÉCNICO</span><h2>Seis verificações que evitam uma compra ruim.</h2><p>Em espaços compactos, centímetros e pontos de instalação importam tanto quanto a ficha técnica do produto.</p></div></div>
+<div class="ps-criteria-grid">
+<article><span>01</span><h3>Encaixe</h3><p>Largura, altura e profundidade do produto no local real.</p></article>
+<article><span>02</span><h3>Abertura</h3><p>Portas, gavetas, tampas e acesso para manutenção.</p></article>
+<article><span>03</span><h3>Circulação</h3><p>Passagem livre mesmo com o produto em uso.</p></article>
+<article><span>04</span><h3>Ventilação</h3><p>Folgas laterais, traseiras e superiores exigidas.</p></article>
+<article><span>05</span><h3>Instalação</h3><p>Tensão, tomadas, água, esgoto, gás e rede.</p></article>
+<article><span>06</span><h3>Acesso</h3><p>Portas, elevador, corredor e caminho até o ambiente.</p></article>
+</div>
+</div>
+</section>
+<section class="ps-section ps-catalog" id="selecao">
+<div class="container">
+<div class="ps-section-head"><div><span>SELEÇÃO POR FUNÇÃO</span><h2>Produtos para resolver o espaço — não para preenchê-lo.</h2><p>Escolha uma necessidade. A curadoria usa produtos já cadastrados no Preço na Mira e mantém a confirmação de medidas como critério obrigatório.</p></div></div>
+<div class="ps-catalog-tools"><div class="ps-filterbar" id="filters"></div><label class="ps-search" for="search"><span>BUSCAR NA SELEÇÃO</span><input aria-label="Buscar marca, modelo ou característica" id="search" placeholder="Marca, modelo ou característica" type="search"/></label></div>
+<div class="ps-catalog-head"><div><small>NECESSIDADE ATIVA</small><h3 id="catalogTitle">Cozinhar com pouca bancada</h3><p id="catalogCount"></p></div><a href="comparativo-compactos.html" id="compareLink">COMPARAR A MESMA FUNÇÃO →</a></div>
+<div class="compact-warning"><strong>Medida é critério obrigatório</strong><p>“Compacto” significa adequado ao contexto de pouco espaço, não garantia de encaixe. Confirme dimensões, abertura, ventilação, instalação e variante no anúncio/fabricante antes da compra.</p></div>
+<div class="compact-product-grid" id="products"></div><div class="empty" id="empty">Nenhum produto encontrado para este filtro.</div>
+</div>
+</section>
+<section class="ps-section ps-decision">
+<div class="container ps-decision-grid">
+<div><span class="ps-eyebrow">ANTES DO CARRINHO</span><h2>O melhor produto é o que melhora o espaço inteiro.</h2><p>Não avalie apenas tamanho. Considere o que ele substitui, quanto espaço exige durante o uso e quais adaptações cria ao redor.</p></div>
+<div class="ps-decision-list">
+<div><b>01</b><span><strong>Cabe fechado e aberto?</strong>Inclua portas, gavetas, cabos e manutenção.</span></div>
+<div><b>02</b><span><strong>Resolve mais de uma tarefa?</strong>Multifunção só vale quando preserva a função principal.</span></div>
+<div><b>03</b><span><strong>Precisa ficar exposto?</strong>Defina o que merece bancada, piso, parede ou armazenamento.</span></div>
+<div><b>04</b><span><strong>A instalação é reversível?</strong>Especialmente importante em imóveis alugados.</span></div>
+</div>
+</div>
+</section>
+<section class="ps-section ps-final">
+<div class="container ps-final-card"><div><small>V17 • PROJETOS</small><h2>Transforme a seleção em um plano.</h2><p>Leve medidas, necessidade e produtos para um Projeto compacto. Depois revise diagnóstico, infraestrutura, seleção e carrinho em um só lugar.</p></div><button class="ps-btn primary" id="createProjectBottom" type="button">CRIAR PROJETO COMPACTO →</button></div>
+</section>
 </main>
-<footer class="footer"><div class="container footer-grid"><div><img src="assets/logo-full.png" alt="Preço na Mira"><p>Compare. Economize. Acerte.</p></div><div><strong>Pequeno no tamanho, criterioso na escolha</strong><p>As medidas reais do ambiente e do produto sempre têm prioridade sobre a curadoria.</p></div></div></footer>
-<script src="data/produtos.js"></script><script src="data/experiencias.js"></script><script src="assets/comparador.js"></script><script src="assets/compactos.js"></script><script src="assets/core.js"></script>
-<script>(()=>{
-  const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const profiles=[['studio','🏙️','Studio','Ambientes integrados'],['kitnet','🔑','Kitnet','Essencial e funcional'],['ape-1-quarto','🏢','Apê 1 quarto','Poucos cômodos'],['quarto','🛏️','Quarto pequeno','Dormir e guardar'],['cozinha','🍳','Cozinha compacta','Bancada disputada'],['home-office','💻','Home office','Trabalho flexível'],['lavanderia','🧺','Lavanderia','Operação enxuta'],['banheiro','🚿','Banheiro','Medidas críticas']];
-  const compareByIntent={cozinhar:'cozinha-airfryer',lavar:'lavanderia-compacta',trabalhar:'trabalho-notebook',limpar:'limpeza-robot',banheiro:'banheiro-cuba',iluminar:'luz-conectada',conectar:'rede-roteador',relaxar:'entretenimento-tv'};
-  let profile=new URLSearchParams(location.search).get('perfil')||'studio',intent=new URLSearchParams(location.search).get('foco')||'cozinhar',query='';
-  document.getElementById('heroCount').textContent=PNMProductsForEnvironment('pequenos-espacos').length;
-  function profileHref(){return 'montar-espaco-compacto.html?perfil='+encodeURIComponent(profile)}
-  function renderProfiles(){document.getElementById('profiles').innerHTML=profiles.map(([id,ic,n,d])=>`<button class="compact-profile ${profile===id?'active':''}" data-profile="${id}"><span>${ic}</span><b>${n}</b><small>${d}</small></button>`).join('');document.querySelectorAll('[data-profile]').forEach(b=>b.onclick=()=>{profile=b.dataset.profile;document.getElementById('buildTop').href=profileHref();renderProfiles()});document.getElementById('buildTop').href=profileHref()}
-  function renderIntents(){document.getElementById('intents').innerHTML=PNM_COMPACT_INTENTS.map(x=>{const n=PNMCompactProducts(x.id).length;return `<button class="compact-intent ${intent===x.id?'active':''}" data-intent="${x.id}"><span>${x.icon}</span><h3>${esc(x.nome)}</h3><p>${esc(x.descricao)}</p><strong>${n} ${PNMPlural(n,'PRODUTO','PRODUTOS')} →</strong></button>`}).join('');document.querySelectorAll('[data-intent]').forEach(b=>b.onclick=()=>{intent=b.dataset.intent;renderIntents();renderFilters();renderProducts();document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})})}
-  function renderFilters(){document.getElementById('filters').innerHTML=PNM_COMPACT_INTENTS.map(x=>`<button class="${intent===x.id?'active':''}" data-filter="${x.id}">${x.icon} ${esc(x.nome.split(' ').slice(0,3).join(' '))}</button>`).join('');document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{intent=b.dataset.filter;renderIntents();renderFilters();renderProducts()})}
-  function renderProducts(){const info=PNM_COMPACT_INTENTS.find(x=>x.id===intent);const all=PNMCompactProducts(intent).filter(p=>!query||[p.nome,p.marca,p.resumo,...(p.chips||[]),...Object.values(p.especificacoes||{})].join(' ').toLowerCase().includes(query));const list=PNMCompactBest(all,12);document.getElementById('catalogTitle').textContent=info.icon+' '+info.nome;document.getElementById('catalogCount').textContent=all.length+' '+PNMPlural(all.length,'produto conectado','produtos conectados')+(all.length>list.length?' • exibindo 12':'');document.getElementById('compareLink').href='comparativo-compactos.html?tipo='+(compareByIntent[intent]||'cozinha-airfryer');document.getElementById('products').innerHTML=list.map(p=>`<article class="compact-product-card"><div class="compact-product-media">${p.imagemTipo==='oficial'?'<span class="official-image-badge">✓ FONTE OFICIAL</span>':''}<img src="${esc(p.imagem)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${esc(p.imagemFallback||p.imagem)}'" alt="${esc(p.imagemAlt||p.nome)}"></div><div class="compact-product-copy"><small>${esc(p.marca)} • ${esc(p.categoria)}</small><h3>${esc(p.nome)}</h3><p>${esc(p.resumo)}</p><div class="compact-tags">${PNMCompactTags(p).map(x=>`<span>${esc(x)}</span>`).join('')}</div><div class="actions"><a class="btn btn-dark" href="produto.html?id=${encodeURIComponent(p.id)}">ANALISAR →</a><a class="btn btn-outline" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer">OFERTA</a></div></div></article>`).join('');document.getElementById('empty').style.display=list.length?'none':'block'}
-  document.getElementById('search').oninput=e=>{query=e.target.value.trim().toLowerCase();renderProducts()};renderProfiles();renderIntents();renderFilters();renderProducts();
-})();</script><script>document.getElementById('menu')?.addEventListener('click',()=>document.getElementById('nav')?.classList.toggle('open'));</script>
-</body></html>
+<footer class="footer"><div class="container footer-grid"><div><img alt="Preço na Mira" decoding="async" height="360" loading="lazy" src="assets/logo-pnm-footer.webp" width="360"/><p>Planeje. Compare. Decida.</p></div><div><strong>Pequeno no tamanho, criterioso na escolha.</strong><p>As medidas reais do ambiente e do produto sempre têm prioridade sobre a curadoria.</p></div></div></footer>
+<script src="data/produtos-compact.js"></script><script src="data/experiencias.js"></script><script src="assets/comparador.js"></script><script src="assets/compactos.js"></script><script src="assets/pnm-projects.js"></script><script src="assets/core.js"></script><script src="assets/pages/pequenos-espacos-v17.js"></script><script src="assets/pnm-runtime.js"></script><script src="assets/pnm-foundation-runtime.js"></script><script src="assets/pnm-accessibility.js"></script>
+<script src="assets/pnm-real-product-images.js"></script></body></html>

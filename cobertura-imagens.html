@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="robots" content="noindex,follow,max-image-preview:large"/>
+<title>Cobertura total de imagens — Preço na Mira</title>
+<meta name="description" content="Diagnóstico da cobertura de imagens do catálogo, com fila manual e lista separada para imagens geradas por IA."/>
+<link rel="icon" href="assets/favicon-pnm.png" type="image/png"/>
+<link rel="stylesheet" href="assets/pnm-core.css"/>
+<link rel="stylesheet" href="assets/pnm-layer-marketplace.css"/>
+<link rel="canonical" href="https://preco-na-mira.preco-na-mira.workers.dev/cobertura-imagens.html"/>
+<meta name="theme-color" content="#070914"/>
+</head><body class="image-coverage-page">
+<div class="topbar">Diagnóstico interno • Cobertura total de imagens • V17.3.3</div>
+<header class="site-header"><div class="container nav"><a class="brand" href="index.html"><img src="assets/logo-pnm-header.png" alt="Preço na Mira" width="256" height="256" loading="eager" decoding="async"/></a><nav class="nav-links" id="nav"><a href="universos.html">Universos</a><a href="ofertas.html">Ofertas</a><a href="catalogo.html">Catálogo</a><a href="montar.html">Projetos</a><a href="minha-lista.html">Salvos</a><a class="pnm-cart-nav" href="carrinho.html">Carrinho <span class="pnm-cart-count" aria-label="Itens no carrinho">0</span></a></nav><button class="menu-btn" id="menu" type="button" aria-expanded="false" aria-label="Abrir menu">☰</button></div></header>
+<main>
+<section class="pnm-page-hero"><div class="container"><span class="pnm-eyebrow">V17.3.3 • SISTEMA DE COBERTURA TOTAL DE IMAGENS</span><h1>Foto do produto, não ilustração.<br/><em>Cobertura real como regra.</em></h1><p>Esta página organiza a saúde visual do catálogo. A V17.3.3 encerra o mutirão com 556 de 556 produtos cobertos por foto real confirmada. Ilustrações genéricas de categoria não são aceitas como imagem de produto.</p></div></section>
+<section class="pnm-coverage-shell"><div class="container">
+<div class="pnm-coverage-intro">
+  <article class="pnm-coverage-panel"><small>PAINEL DE CONTROLE</small><h2>Como o sistema trabalha</h2><p>1) O catálogo atual está em 556/556 com foto real. 2) Imagens oficiais e fotos validadas de anúncios/modelos têm prioridade. 3) SVG genérico e ilustração de categoria nunca contam como cobertura. 4) O resolvedor permanece apenas como proteção para futuras inclusões que ainda não tenham foto cadastrada.</p><div class="pnm-coverage-actions"><a href="FOTOS-AUTO-RESOLVER-V17.3.3.csv">Baixar fila automática CSV (zerada)</a><a href="FOTOS-IA-REVISAO-V17.3.3.csv">Baixar fila IA CSV</a><a href="COBERTURA-IMAGENS-V17.3.3.json">Abrir resumo JSON</a></div></article>
+  <div class="pnm-coverage-stats" id="coverageStats"></div>
+</div>
+<div class="pnm-coverage-toolbar">
+  <label><span>Buscar</span><input id="coverageSearch" type="search" placeholder="Produto, marca, categoria ou ID" autocomplete="off"/></label>
+  <label><span>Status</span><select id="coverageStatus"><option value="">Todos</option><option value="verified">Com foto real</option><option value="official">Fonte oficial</option><option value="pending">Busca automática</option><option value="ai">Feito por IA</option></select></label>
+  <label><span>Categoria</span><select id="coverageType"><option value="">Todas</option></select></label>
+  <label><span>Marca</span><select id="coverageBrand"><option value="">Todas</option></select></label>
+</div>
+<div class="pnm-coverage-grid">
+  <section class="pnm-coverage-section" id="ai-review"><div class="pnm-coverage-section-head"><div><small>LISTA SEPARADA</small><h2>Imagens geradas por IA</h2><p>Se algum produto precisar ser criado por IA como último recurso, ele fica separado aqui para você revisar depois.</p></div><span class="pnm-coverage-pill" data-count>0</span></div><div class="pnm-coverage-table" data-list></div></section>
+  <section class="pnm-coverage-section" id="manual-review"><div class="pnm-coverage-section-head"><div><small>FILA OPERACIONAL</small><h2>Pendências de foto real</h2><p>Fila zerada na conclusão da V17.3.3. Se um produto futuro entrar sem foto, ele aparece aqui sem usar ilustração genérica como substituta.</p></div><span class="pnm-coverage-pill" data-count>0</span></div><div class="pnm-coverage-table" data-list></div></section>
+  <section class="pnm-coverage-section" id="verified-review"><div class="pnm-coverage-section-head"><div><small>COBERTURA REAL</small><h2>Produtos já cobertos por foto real</h2><p>Inclui fonte oficial, foto local validada e fotos remotas validadas.</p></div><span class="pnm-coverage-pill" data-count>0</span></div><div class="pnm-coverage-table" data-list></div></section>
+</div>
+</div></section>
+</main>
+<footer class="footer"><div class="container footer-grid"><div><img src="assets/logo-pnm-footer.webp" alt="Preço na Mira" width="360" height="360" loading="lazy" decoding="async"/><p>Diagnóstico interno do catálogo e da cobertura visual do site.</p></div><div><strong>Cobertura total</strong><p>V17.3.3 concluída com 556/556 produtos cobertos por foto real confirmada e zero ilustrações genéricas usadas como imagem de produto.</p></div></div></footer>
+<script src="data/produtos-index.js"></script>
+<script src="data/experiencias.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/pages/cobertura-imagens-1.js"></script>
+<script src="assets/pnm-runtime.js"></script>
+<script src="assets/pnm-foundation-runtime.js"></script>
+<script src="assets/pnm-accessibility.js"></script>
+<script src="assets/pnm-real-product-images.js"></script></body></html>
