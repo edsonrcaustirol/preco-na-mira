@@ -1,16 +1,18 @@
 {
   "name": "preco-na-mira",
-  "version": "18.0.0",
+  "version": "18.0.1",
   "private": true,
   "scripts": {
     "prepare:platform": "node scripts/preparar-plataforma.mjs",
+    "build:mobile-data": "node scripts/gerar-dados-mobile.mjs",
+    "build:dewalt-queue": "node scripts/gerar-fila-dewalt.mjs",
     "sync:compatibility": "node scripts/sincronizar-compatibilidade.mjs",
     "audit": "node scripts/auditar-site.mjs",
     "audit:strict": "node scripts/auditar-site.mjs --strict",
     "preview": "node scripts/preview.mjs",
     "deploy": "wrangler deploy",
     "deploy:preview": "wrangler versions upload",
-    "check": "npm run audit:strict && wrangler deploy --dry-run"
+    "check": "npm run build:mobile-data && npm run build:dewalt-queue && npm run audit:strict && wrangler deploy --dry-run"
   },
   "devDependencies": {
     "wrangler": "4.123.0"
