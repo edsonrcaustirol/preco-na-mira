@@ -1,1 +1,1 @@
-Implantação V13.6 publicada com sucesso no GitHub Pages — 11/08/2026
+V17.3.4 — implantação automática Cloudflare — 16/08/2026
