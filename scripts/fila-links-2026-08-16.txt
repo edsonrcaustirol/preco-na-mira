@@ -1,7 +1,10 @@
 # Fila de links — 16/08/2026
-# Lote recebido no chat: 34 links
+# Total recebido nesta fila: 113 links (112 pendentes + 1 duplicado já identificado)
 # Regra: não publicar até identificar produto, categoria e validar imagem real.
+# Lote DeWalt/ferramentas: 79 links adicionados em 16/08/2026; classificar por produto antes de publicar.
+# Destaque solicitado: https://meli.la/24zmozq | SÉRIE ESPECIAL | tratar como vitrine da Linha DeWalt após confirmar modelo/foto.
 
+# Lote anterior — 34 links
 PENDENTE https://meli.la/1eJ5NAs
 PENDENTE https://meli.la/1ETCMRw
 PENDENTE https://meli.la/1Qzab2w
@@ -36,3 +39,86 @@ PENDENTE https://meli.la/2wKW4Fe
 DUPLICADO https://meli.la/2ELxV9e | Midea NutriPro Panela de Pressão Elétrica 5L | id: midea-nutripro-panela-de-pressao-eletrica-5l
 PENDENTE https://meli.la/1E1bmMt
 PENDENTE https://meli.la/1rjUYXe
+
+# Lote 2 — ferramentas / possível Linha DeWalt — 50 links
+PENDENTE https://meli.la/1Pf3Fx2
+PENDENTE https://meli.la/2Z6Ywa8
+PENDENTE https://meli.la/2D66GTg
+PENDENTE https://meli.la/1uuGBJq
+PENDENTE https://meli.la/34nUCho
+PENDENTE https://meli.la/28vS7f5
+PENDENTE https://meli.la/2vD8D8X
+PENDENTE https://meli.la/1xENzYL
+PENDENTE https://meli.la/1HPybCQ
+PENDENTE https://meli.la/2G3J1wF
+PENDENTE https://meli.la/2HGrH61
+PENDENTE https://meli.la/2wq3PmS
+PENDENTE https://meli.la/18kw9F7
+PENDENTE https://meli.la/1epJqAH
+PENDENTE https://meli.la/2YWumSu
+PENDENTE https://meli.la/1PKxM6z
+PENDENTE https://meli.la/1gR8abM
+PENDENTE https://meli.la/12zW9FT
+PENDENTE https://meli.la/1vQH4Uy
+PENDENTE https://meli.la/1bEwWxf
+PENDENTE https://meli.la/1h9ceZA
+PENDENTE https://meli.la/1tptfo7
+PENDENTE https://meli.la/2LnRGUn
+PENDENTE https://meli.la/2QkFkNM
+PENDENTE https://meli.la/2gP5JSg
+PENDENTE https://meli.la/333vQ1L
+PENDENTE https://meli.la/31L2qxP
+PENDENTE https://meli.la/29JYn72
+PENDENTE https://meli.la/1cs3pKF
+PENDENTE https://meli.la/2RuKiXn
+PENDENTE https://meli.la/2dgDBvS
+PENDENTE https://meli.la/1eHGsDZ
+PENDENTE https://meli.la/2LLUwtL
+PENDENTE https://meli.la/1cPgsbj
+PENDENTE https://meli.la/1ojHm6J
+PENDENTE https://meli.la/2C3kKag
+PENDENTE https://meli.la/24zmozq
+PENDENTE https://meli.la/1cx9qbU
+PENDENTE https://meli.la/1zNc2nr
+PENDENTE https://meli.la/1BDLju8
+PENDENTE https://meli.la/2xR746x
+PENDENTE https://meli.la/2J7yLut
+PENDENTE https://meli.la/2AzHRvi
+PENDENTE https://meli.la/2tVY6Cu
+PENDENTE https://meli.la/2uEtSFg
+PENDENTE https://meli.la/2ZHuk1C
+PENDENTE https://meli.la/1kDT27h
+PENDENTE https://meli.la/2ck9rRc
+PENDENTE https://meli.la/285e926
+PENDENTE https://meli.la/2BVC6jd
+
+# Lote 3 — ferramentas / continuidade — 29 links
+PENDENTE https://meli.la/2CSSE1n
+PENDENTE https://meli.la/25VYRPA
+PENDENTE https://meli.la/1Jgk5PG
+PENDENTE https://meli.la/2tbYSeN
+PENDENTE https://meli.la/2xbozGy
+PENDENTE https://meli.la/2Shm3rC
+PENDENTE https://meli.la/14hbKco
+PENDENTE https://meli.la/1GFYKoW
+PENDENTE https://meli.la/2aQonvE
+PENDENTE https://meli.la/1buBLWM
+PENDENTE https://meli.la/22meppP
+PENDENTE https://meli.la/2JACd9j
+PENDENTE https://meli.la/2h4Uh9Y
+PENDENTE https://meli.la/19miaxD
+PENDENTE https://meli.la/1uWG4o4
+PENDENTE https://meli.la/1LvJv9o
+PENDENTE https://meli.la/2p8wKVa
+PENDENTE https://meli.la/2kk6YCp
+PENDENTE https://meli.la/2fVibdP
+PENDENTE https://meli.la/2UpGrLh
+PENDENTE https://meli.la/32CWzob
+PENDENTE https://meli.la/1hcZCrL
+PENDENTE https://meli.la/2Fy1fAE
+PENDENTE https://meli.la/1X33GPk
+PENDENTE https://meli.la/1jX7yyf
+PENDENTE https://meli.la/2uqGZux
+PENDENTE https://meli.la/1UwYns8
+PENDENTE https://meli.la/1LLA5p1
+PENDENTE https://meli.la/1qTjdrX
