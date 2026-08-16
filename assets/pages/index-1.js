@@ -29,12 +29,16 @@ const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','
   document.getElementById('cat-house').innerHTML=cfg.house.map(card).join('');
   document.getElementById('totalCount').textContent=PRODUTOS.length+' produtos únicos no catálogo';
 
+  const homeNav=document.getElementById('nav');
+  if(homeNav&&!homeNav.querySelector('a[href="dewalt.html"]')){const catalogLink=homeNav.querySelector('a[href="catalogo.html"]'),dw=document.createElement('a');dw.href='dewalt.html';dw.textContent='DeWalt';if(catalogLink)catalogLink.insertAdjacentElement('afterend',dw);else homeNav.appendChild(dw)}
+  const quickRow=document.querySelector('.home-quick-searches');
+  if(quickRow&&!quickRow.querySelector('a[href="dewalt.html"]'))quickRow.insertAdjacentHTML('beforeend','<a href="dewalt.html">Linha DeWalt</a>');
+
   document.getElementById('officialImageCount').textContent=officialProducts.length+' '+PNMPlural(officialProducts.length,'imagem real','imagens reais')+' confirmadas';
   document.getElementById('officialProductStrip').innerHTML=officialProducts.slice(0,10).map(p=>`<a class="official-showcase-card" href="produto-${p.id}.html"><div class="photo"><img src="${esc(p.imagem)}" loading="lazy" decoding="async" alt="${esc(p.imagemAlt||p.nome)}"></div><small>✓ FONTE OFICIAL</small><b>${esc(p.nome)}</b><span>${esc(p.marca)}</span></a>`).join('');
 
   function recent(){const A=PNMRecent.get().map(id=>PRODUTOS.find(p=>p.id===id)).filter(Boolean).slice(0,12);document.getElementById('recentSection').style.display=A.length?'block':'none';document.getElementById('recentGrid').innerHTML=A.map(p=>`<a class="recent-card" href="produto-${p.id}.html"><img src="${esc(p.imagem)}" loading="lazy" decoding="async" alt=""><b>${esc(p.nome)}</b><span>${esc(p.marca)}</span></a>`).join('')}
   document.getElementById('clearRecent').onclick=()=>{PNMRecent.clear();recent()};
-  
   recent();
 
   const decisionModes={
