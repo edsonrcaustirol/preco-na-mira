@@ -69,6 +69,16 @@ body {
   color: var(--pnm-v18-text) !important;
 }
 
+/* As camadas V17 usam :not() em cadeia com !important. Esta regra deliberadamente
+   mais específica mantém o fundo oficial da plataforma sem depender da página. */
+html[data-pnm-version][data-pnm-area] body:not(.catalog-admin):not(.pnm-admin) {
+  background:
+    radial-gradient(circle at 8% 2%, rgba(var(--pnm-v18-sector-rgb), .12), transparent 25rem),
+    radial-gradient(circle at 92% 14%, rgba(64, 142, 255, .09), transparent 28rem),
+    linear-gradient(180deg, var(--pnm-v18-bg), var(--pnm-v18-bg-2) 48%, #080c16) !important;
+  color: var(--pnm-v18-text) !important;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -219,6 +229,43 @@ body:not(.home-v121) :is(.data-quality.verified, .data-quality.check) {
 }
 body:not(.home-v121) .data-quality.verified { border-left: 4px solid var(--pnm-v18-success) !important; }
 body:not(.home-v121) .data-quality.check { border-left: 4px solid var(--pnm-v18-warning) !important; }
+
+/* Ambiente Casa: elimina os últimos blocos claros herdados sem retirar o palco
+   neutro das fotografias reais. */
+html[data-pnm-area="casa"] body.house-v136 :is(.house-entry-zone, .house-smart-zone, .house-new-zone) {
+  background:
+    radial-gradient(circle at 88% 12%, rgba(var(--pnm-v18-sector-rgb), .09), transparent 26rem),
+    linear-gradient(180deg, rgba(10, 18, 29, .96), rgba(7, 13, 23, .98)) !important;
+  border-color: var(--pnm-v18-line) !important;
+}
+
+html[data-pnm-area="casa"] body.house-v136 :is(
+  .house-entry, .house-hub-card, .house-new-grid > a, .house-method-steps article,
+  .house-plan .room
+) {
+  background: linear-gradient(180deg, rgba(19, 31, 43, .96), rgba(10, 19, 30, .98)) !important;
+  border-color: rgba(var(--pnm-v18-sector-rgb), .16) !important;
+  color: var(--pnm-v18-text) !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .2) !important;
+}
+
+html[data-pnm-area="casa"] body.house-v136 .house-entry::after {
+  background: rgba(var(--pnm-v18-sector-rgb), .07) !important;
+}
+
+html[data-pnm-area="casa"] body.house-v136 :is(
+  .house-entry, .house-hub-card, .house-new-grid > a, .house-method-steps article,
+  .house-plan .room
+) :is(h3, b, strong) { color: var(--pnm-v18-text) !important; }
+
+html[data-pnm-area="casa"] body.house-v136 :is(
+  .house-entry, .house-hub-card, .house-new-grid > a, .house-method-steps article,
+  .house-plan .room
+) :is(p, small, i) { color: var(--pnm-v18-muted) !important; }
+
+html[data-pnm-area="casa"] body.house-v136 .house-new-grid > a > div:first-child {
+  background: linear-gradient(145deg, #f8fafc, #e8eef4) !important;
+}
 
 /* Palco uniforme para fotos reais */
 body :is(
