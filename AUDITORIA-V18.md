@@ -53,6 +53,7 @@ O inventário completo, página por página, está em `INVENTARIO-ROTAS-V18.csv`
 10. Centralizada a identificação da versão e criada proteção para links desabilitados controlados por JavaScript.
 11. Localizadas 61 imagens que antes dependiam externamente do marketplace.
 12. Completada a compatibilidade AM4/DDR4/mATX de uma placa-mãe somente com dados explícitos no título do anúncio.
+13. Corrigida após inspeção publicada a disputa de especificidade que ainda deixava faixas claras em Casa e Tecnologia.
 
 ## Cobertura de conteúdo e imagens
 
@@ -112,6 +113,13 @@ O inventário completo, página por página, está em `INVENTARIO-ROTAS-V18.csv`
 - Imagens agora têm palco estável, proporção reservada e contenção em cards verticais, horizontais e quadrados.
 - Comparadores largos mantêm rolagem interna em vez de estourar a página.
 - Menu móvel, foco, teclado, links desabilitados, estado offline e redução de movimento possuem tratamento centralizado.
+
+## Validação da versão publicada
+
+- 13 rotas representativas foram reabertas no domínio próprio depois da implantação: início, ofertas, Casa, Gamer, Tecnologia, Montar PC, catálogo, DeWalt, busca, comparador, pequenos espaços, produto e 404.
+- Todas carregaram a camada V18, um único H1, conteúdo principal, link de salto e largura sem estouro horizontal no navegador de inspeção (1.363 px).
+- Nenhuma fotografia quebrada foi observada nessas rotas e não houve erro de console originado pelo site; os únicos registros de erro pertenciam à extensão do navegador de teste.
+- Celular e tablet foram verificados por regras fluidas, limites de largura, grades, menu, tabelas e breakpoints de 850/620 px. O navegador remoto disponível é fixo em desktop e o Chromium local foi bloqueado pelo isolamento do ambiente; portanto, não é correto afirmar que houve ensaio em aparelhos físicos nesta rodada.
 
 ## Arquivos da entrega
 
