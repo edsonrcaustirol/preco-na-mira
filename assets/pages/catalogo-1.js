@@ -9,8 +9,6 @@ const pathPage=Number(location.pathname.match(/catalogo-pagina-(\d+)/i)?.[1]||do
 let page=Math.max(1,pathPage),offset=(page-1)*PAGE_SIZE,limit=PAGE_SIZE;
 let preservePrerender=grid?.dataset.pnmPrerendered==='1';
 
-const toolbar=document.querySelector('.pnm-catalog-toolbar');
-if(toolbar){const shortcut=document.createElement('div');shortcut.className='pnm-catalog-meta';shortcut.innerHTML='<strong>LINHA DEWALT</strong><span>Ferramentas da marca têm uma vitrine própria, organizada por família e séries especiais.</span><a class="pnm-catalog-more" href="dewalt" style="text-decoration:none;white-space:nowrap">ABRIR DEWALT →</a>';toolbar.parentNode.insertBefore(shortcut,toolbar)}
 const universeDefs=[['casa','Casa'],['gamer','Gamer'],['tecnologia','Tecnologia']];
 if(universe)universe.innerHTML+=[...universeDefs].map(([v,t])=>`<option value="${v}">${t}</option>`).join('');
 const products=typeof PRODUTOS!=='undefined'&&Array.isArray(PRODUTOS)?PRODUTOS:[];
