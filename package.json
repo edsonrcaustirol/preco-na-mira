@@ -1,14 +1,15 @@
 {
   "name": "preco-na-mira",
-  "version": "18.2.0",
+  "version": "18.2.2",
   "private": true,
   "scripts": {
     "prepare:platform": "node scripts/preparar-plataforma.mjs",
     "build:mobile-data": "node scripts/gerar-dados-mobile.mjs",
     "build:dewalt-queue": "node scripts/gerar-fila-dewalt.mjs",
     "build:seo": "node scripts/gerar-seo-estatico.mjs",
+    "refine:offers": "node scripts/refinar-ofertas-curadas.mjs",
     "finalize:seo": "node scripts/finalizar-seo.mjs",
-    "build:site": "npm run build:mobile-data && npm run build:dewalt-queue && npm run build:seo && npm run prepare:platform && npm run finalize:seo",
+    "build:site": "npm run build:mobile-data && npm run build:dewalt-queue && npm run build:seo && npm run refine:offers && npm run prepare:platform && npm run finalize:seo",
     "sync:compatibility": "node scripts/sincronizar-compatibilidade.mjs",
     "audit": "node scripts/auditar-site.mjs",
     "audit:strict": "node scripts/auditar-site.mjs --strict",
