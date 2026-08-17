@@ -1,6 +1,6 @@
 {
   "name": "preco-na-mira",
-  "version": "18.2.2",
+  "version": "18.3.0",
   "private": true,
   "scripts": {
     "prepare:platform": "node scripts/preparar-plataforma.mjs",

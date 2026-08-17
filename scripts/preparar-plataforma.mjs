@@ -7,6 +7,7 @@ const ROOT = process.cwd();
 const OFFICIAL_ORIGIN = 'https://preconamira.com.br';
 const LEGACY_ORIGIN = 'https://preco-na-mira.preco-na-mira.workers.dev';
 const PLATFORM_CSS = 'assets/pnm-platform-v18.css';
+const MOBILE_CSS = 'assets/pnm-mobile-v183.css';
 const PLATFORM_JS = 'assets/pnm-platform-v18.js';
 const SOCIAL_IMAGE = `${OFFICIAL_ORIGIN}/assets/og-preco-na-mira.png`;
 const SKIP_DEPLOYED = new Set(['automacao.html', 'gerenciador.html']);
@@ -117,6 +118,7 @@ function prepareHtml(file) {
 
   if (!SKIP_DEPLOYED.has(fileName)) {
     if (!content.includes(PLATFORM_CSS)) content = content.replace(/<\/head>/i, `<link rel="stylesheet" href="${PLATFORM_CSS}"></head>`);
+    if (!content.includes(MOBILE_CSS)) content = content.replace(/<\/head>/i, `<link rel="stylesheet" href="${MOBILE_CSS}"></head>`);
     if (!content.includes(PLATFORM_JS)) content = content.replace(/<\/head>/i, `<script defer src="${PLATFORM_JS}"></script></head>`);
   }
 
