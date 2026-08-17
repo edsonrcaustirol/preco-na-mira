@@ -1,4 +1,4 @@
-/* Preço na Mira V18.3 — correções mobile validadas em 360px e 390px.
+/* Preço na Mira V18.3.1 — correções mobile validadas em 360px e 390px.
    Esta camada é carregada por último e atua apenas em telas pequenas. */
 
 @media (max-width: 620px) {
@@ -51,6 +51,13 @@
   body.v15-offers .pnm-offer-card button {
     min-width: 44px !important;
     min-height: 46px !important;
+  }
+  body.v15-offers .section-head > a.link {
+    min-height: 46px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 2px !important;
   }
   .pnm-seo-pagination a {
     min-width: 44px !important;
