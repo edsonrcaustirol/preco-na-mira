@@ -25,133 +25,19 @@
 <script defer src="assets/pnm-platform-v18.js"></script>
 </head>
 <body class="home-v121">
-<div class="topbar home-topbar">
-<div class="container home-topbar-inner">
-<span>Conteúdo independente • Alguns links podem gerar comissão de afiliado, sem custo extra para você.</span>
-<span class="home-topbar-trust">Compare • Combine • Decida melhor</span>
-</div>
-</div>
-<header class="site-header home-header">
-<div class="container nav">
-<a aria-label="Preço na Mira — página inicial" class="brand home-brand" href="/">
-<img alt="Preço na Mira" decoding="async" height="256" loading="eager" src="assets/logo-pnm-header.png" width="256"/>
-</a>
-<nav class="nav-links" id="nav">
-<a href="universos">Universos</a>
-<a href="ofertas">Ofertas</a>
-<a href="catalogo">Catálogo</a>
-<a href="montar">Projetos</a>
-<a href="minha-lista">Salvos</a>
-<a class="pnm-cart-nav" href="carrinho">Carrinho <span aria-label="Itens no carrinho" class="pnm-cart-count">0</span></a>
-</nav>
-<button aria-expanded="false" aria-label="Abrir menu" class="menu-btn" id="menu" type="button">☰</button>
-</div>
-</header>
+<div class="topbar home-topbar"><div class="container home-topbar-inner"><span>Conteúdo independente • Alguns links podem gerar comissão de afiliado, sem custo extra para você.</span><span class="home-topbar-trust">Compare • Combine • Decida melhor</span></div></div>
+<header class="site-header home-header"><div class="container nav"><a aria-label="Preço na Mira — página inicial" class="brand home-brand" href="/"><img alt="Preço na Mira" decoding="async" height="256" loading="eager" src="assets/logo-pnm-header.png" width="256"/></a><nav class="nav-links" id="nav"><a href="universos">Universos</a><a href="ofertas">Ofertas</a><a href="catalogo">Catálogo</a><a href="montar">Projetos</a><a href="minha-lista">Salvos</a><a class="pnm-cart-nav" href="carrinho">Carrinho <span aria-label="Itens no carrinho" class="pnm-cart-count">0</span></a></nav><button aria-expanded="false" aria-label="Abrir menu" class="menu-btn" id="menu" type="button">☰</button></div></header>
 <main>
-<section class="home-hero-v121">
-<div class="container home-hero-grid" style="grid-template-columns:minmax(0,1fr)">
-<div class="home-hero-main">
-<div class="home-brand-line"><span class="home-target-dot">◎</span> PREÇO NA MIRA</div>
-<h1>Encontre com clareza.<br/><em>Escolha do seu jeito.</em></h1>
-<p class="home-hero-lede">Procure o produto que você quer. Depois compare, descubra boas opções e organize sua escolha sem atravessar um catálogo inteiro.</p>
-<form action="busca" autocomplete="off" class="home-search-v121" id="homeSearchForm">
-<div class="home-search-field">
-<span aria-hidden="true">⌕</span>
-<input aria-label="Buscar no Preço na Mira" id="homeSearchInput" name="q" placeholder="Busque produto ou marca: iPhone, Air Fryer, DeWalt..." type="search"/>
-<button type="submit">PROCURAR →</button>
-<div class="home-search-suggestions" hidden id="homeSearchSuggestions"></div>
-</div>
-<div aria-label="Buscas rápidas" class="home-quick-searches">
-<small>ATALHOS:</small>
-<button data-q="RTX 5070" type="button">RTX 5070</button>
-<button data-q="robô aspirador" type="button">Robô aspirador</button>
-<button data-q="air fryer" type="button">Air Fryer</button>
-<button data-q="soundbar" type="button">Soundbar</button>
-<a href="casa-studio">Casa Studio</a>
-<a href="dewalt">Linha DeWalt</a>
-</div>
-</form>
-<div class="home-hero-actions">
-<a class="home-btn-primary" href="universos">EXPLORAR UNIVERSOS</a>
-<a class="home-btn-ghost" href="montar">CRIAR UM PROJETO</a>
-</div>
-</div>
-</div>
-</section>
-
-<section class="smart-highlights-section" id="smartHighlights">
-<div class="container">
-<div class="smart-highlights-head">
-<div>
-<span class="home-section-label">DESTAQUES DO RADAR</span>
-<h2>Algumas boas opções para começar.</h2>
-<p>Uma seleção curta do catálogo. Para procurar entre todos os produtos, use o Catálogo; para descobrir, fique nos Destaques e Ofertas.</p>
-</div>
-<a class="link" href="ofertas">VER TODAS AS OFERTAS →</a>
-</div>
-<div class="smart-ad-grid" id="homeOfferGrid" aria-live="polite"></div>
-</div>
-</section>
-
-<section class="section pnm-home-how-compact" aria-labelledby="como-funciona-title">
-<div class="container">
-<div class="section-head home-section-head">
-<div>
-<span class="home-section-label">COMO FUNCIONA</span>
-<h2 id="como-funciona-title">Busque. Compare. Escolha.</h2>
-</div>
-</div>
-<div class="home-how-grid">
-<article><span>01</span><div><b>Busque</b><p>Encontre produto, marca ou categoria.</p></div></article>
-<article><span>02</span><div><b>Compare</b><p>Veja diferenças e escolha com contexto.</p></div></article>
-<article><span>03</span><div><b>Escolha</b><p>Salve ou leve a seleção para um Projeto.</p></div></article>
-</div>
-<div class="home-hero-actions">
-<a class="home-btn-primary" href="comparativo-geral">ABRIR COMPARADOR</a>
-<a class="home-btn-ghost" href="montar">ABRIR PROJETOS</a>
-</div>
-</div>
-</section>
-
-<section class="section" id="recentSection" style="display:none">
-<div class="container">
-<div class="section-head home-section-head">
-<div>
-<span class="home-section-label">CONTINUE DE ONDE PAROU</span>
-<h2>Vistos recentemente</h2>
-<p>Volte rápido para o que você estava pesquisando.</p>
-</div>
-<button class="pnm-share-btn" id="clearRecent" type="button">LIMPAR</button>
-</div>
-<div class="recent-grid" id="recentGrid"></div>
-</div>
-</section>
+<section class="home-hero-v121"><div class="container home-hero-grid" style="grid-template-columns:minmax(0,1fr)"><div class="home-hero-main"><div class="home-brand-line"><span class="home-target-dot">◎</span> PREÇO NA MIRA</div><h1>Encontre com clareza.<br/><em>Escolha do seu jeito.</em></h1><p class="home-hero-lede">Procure o produto que você quer. Depois compare, descubra boas opções e organize sua escolha sem atravessar um catálogo inteiro.</p><form action="busca" autocomplete="off" class="home-search-v121" id="homeSearchForm"><div class="home-search-field"><span aria-hidden="true">⌕</span><input aria-label="Buscar no Preço na Mira" id="homeSearchInput" name="q" placeholder="Busque produto ou marca: iPhone, Air Fryer, DeWalt..." type="search"/><button type="submit">PROCURAR →</button><div class="home-search-suggestions" hidden id="homeSearchSuggestions"></div></div><div aria-label="Buscas rápidas" class="home-quick-searches"><small>ATALHOS:</small><button data-q="RTX 5070" type="button">RTX 5070</button><button data-q="robô aspirador" type="button">Robô aspirador</button><button data-q="air fryer" type="button">Air Fryer</button><button data-q="soundbar" type="button">Soundbar</button><a href="casa-studio">Casa Studio</a><a href="dewalt">Linha DeWalt</a></div></form><div class="home-hero-actions"><a class="home-btn-primary" href="universos">EXPLORAR UNIVERSOS</a><a class="home-btn-ghost" href="montar">CRIAR UM PROJETO</a></div></div></div></section>
+<section class="smart-highlights-section" id="smartHighlights"><div class="container"><div class="smart-highlights-head"><div><span class="home-section-label">DESTAQUES DO RADAR</span><h2>Algumas boas opções para começar.</h2><p>Uma seleção curta do catálogo. Para procurar entre todos os produtos, use o Catálogo; para descobrir, fique nos Destaques e Ofertas.</p></div><a class="link" href="ofertas">VER TODAS AS OFERTAS →</a></div><div class="smart-ad-grid" id="homeOfferGrid" aria-live="polite"></div></div></section>
+<section class="section pnm-home-how-compact" aria-labelledby="como-funciona-title"><div class="container"><div class="section-head home-section-head"><div><span class="home-section-label">COMO FUNCIONA</span><h2 id="como-funciona-title">Busque. Compare. Escolha.</h2></div></div><div class="home-how-grid"><article><span>01</span><div><b>Busque</b><p>Encontre produto, marca ou categoria.</p></div></article><article><span>02</span><div><b>Compare</b><p>Veja diferenças e escolha com contexto.</p></div></article><article><span>03</span><div><b>Escolha</b><p>Salve ou leve a seleção para um Projeto.</p></div></article></div><div class="home-hero-actions"><a class="home-btn-primary" href="comparativo-geral">ABRIR COMPARADOR</a><a class="home-btn-ghost" href="montar">ABRIR PROJETOS</a></div></div></section>
+<section class="section" id="recentSection" style="display:none"><div class="container"><div class="section-head home-section-head"><div><span class="home-section-label">CONTINUE DE ONDE PAROU</span><h2>Vistos recentemente</h2><p>Volte rápido para o que você estava pesquisando.</p></div><button class="pnm-share-btn" id="clearRecent" type="button">LIMPAR</button></div><div class="recent-grid" id="recentGrid"></div></div></section>
 </main>
-<footer class="footer home-footer">
-<div class="container home-footer-premium">
-<div class="home-footer-brandbox">
-<div class="home-footer-brandtop">
-<img alt="Preço na Mira" decoding="async" height="360" loading="lazy" src="assets/logo-pnm-footer.webp" width="360"/>
-<p>Compare melhor. Monte do seu jeito. Acerte na escolha.</p>
-</div>
-<div class="home-footer-pills"><span>Buscar</span><span>Comparar</span><span>Projetos</span></div>
-</div>
-<div class="home-footer-note">
-<img alt="Mercado Livre" decoding="async" height="64" loading="lazy" src="assets/mercado-livre-logo.svg" width="290"/>
-<strong>Do radar para a oferta.</strong>
-<p>Os botões de oferta levam para anúncios externos. Preço, estoque, frete e vendedor devem ser conferidos antes da compra.</p>
-</div>
-</div>
-<div class="container home-footer-bottom">
-<small>Preço na Mira • Conteúdo independente</small>
-<small>Buscar → Catálogo • Descobrir → Ofertas • Explorar → Universos • Planejar → Projetos</small>
-<a href="minha-lista?aba=favoritos">❤ Favoritos</a>
-</div>
-</footer>
+<footer class="footer home-footer"><div class="container home-footer-premium"><div class="home-footer-brandbox"><div class="home-footer-brandtop"><img alt="Preço na Mira" decoding="async" height="360" loading="lazy" src="assets/logo-pnm-footer.webp" width="360"/><p>Compare melhor. Monte do seu jeito. Acerte na escolha.</p></div><div class="home-footer-pills"><span>Buscar</span><span>Comparar</span><span>Projetos</span></div></div><div class="home-footer-note"><img alt="Mercado Livre" decoding="async" height="64" loading="lazy" src="assets/mercado-livre-logo.svg" width="290"/><strong>Do radar para a oferta.</strong><p>Os botões de oferta levam para anúncios externos. Preço, estoque, frete e vendedor devem ser conferidos antes da compra.</p></div></div><div class="container home-footer-bottom"><small>Preço na Mira • Conteúdo independente</small><small>Buscar → Catálogo • Descobrir → Ofertas • Explorar → Universos • Planejar → Projetos</small><a href="minha-lista?aba=favoritos">❤ Favoritos</a></div></footer>
 <script defer src="data/produtos-mobile.js"></script>
-<script defer src="assets/core.js"></script>
 <script defer src="assets/pages/index-1.js"></script>
 <script defer src="assets/pnm-runtime.js"></script>
+<script defer src="assets/pnm-cart-lite.js"></script>
 <script defer src="assets/pnm-foundation-runtime.js"></script>
 <script defer src="assets/pnm-accessibility.js"></script>
 </body>
