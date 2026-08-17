@@ -1,7 +1,9 @@
-name: Validar Preco na Mira
+name: Validar e publicar Preco na Mira
 
 on:
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
   workflow_dispatch:
 
@@ -9,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: validar-site-${{ github.ref }}
+  group: preco-na-mira-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -41,3 +43,33 @@ jobs:
           test -f assets/pnm-montar-pc-immersive.css
           test -f assets/pages/montar-pc-immersive.js
           test -f data/produtos-montar-pc.js
+
+  publicar:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    needs: validar
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Baixar o repositorio
+        uses: actions/checkout@v5
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar ferramentas travadas
+        run: npm ci
+
+      - name: Regenerar dados publicados
+        run: npm run build:mobile-data && npm run build:dewalt-queue
+
+      - name: Auditoria final antes da producao
+        run: npm run audit:strict
+
+      - name: Publicar no Cloudflare Workers
+        run: npm run deploy
