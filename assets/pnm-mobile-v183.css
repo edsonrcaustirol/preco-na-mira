@@ -1,0 +1,131 @@
+/* Preço na Mira V18.3 — correções mobile validadas em 360px e 390px.
+   Esta camada é carregada por último e atua apenas em telas pequenas. */
+
+@media (max-width: 620px) {
+  /* Home: chips e CTAs com área de toque adequada. */
+  body.home-v121 .home-quick-searches button {
+    min-height: 44px !important;
+    padding: 8px 12px !important;
+  }
+  body.home-v121 .smart-highlights-head > a.link,
+  body.home-v121 .smart-ad-actions a {
+    min-height: 46px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  body.home-v121 .smart-highlights-head > a.link {
+    padding: 8px 2px !important;
+  }
+
+  /* Catálogo: ações deixam de disputar largura no celular. */
+  body.v15-catalog .pnm-product-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+  body.v15-catalog .pnm-product-actions a {
+    width: 100% !important;
+    min-height: 46px !important;
+    padding: 10px 12px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.25 !important;
+  }
+  body.v15-catalog .pnm-product-card button {
+    min-width: 44px !important;
+    width: 44px;
+    min-height: 44px !important;
+  }
+  body.v15-catalog .pnm-catalog-meta .pnm-catalog-more {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 12px !important;
+  }
+
+  /* Ofertas e paginação: controles rastreáveis continuam confortáveis ao toque. */
+  body.v15-offers .pnm-offer-card button {
+    min-width: 44px !important;
+    min-height: 46px !important;
+  }
+  .pnm-seo-pagination a {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 8px 10px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Universos, Projetos e Guias: links de ação pequenos viram alvos de toque reais. */
+  body.universes-v152 .uv-hero-links a,
+  body.universes-v152 .uv-decision-actions a,
+  body.universes-v152 .guide-related .uv-head > a.link,
+  body.pnm-projects .pj-hero-actions a,
+  body.pnm-projects .pj-section-head > a,
+  body.guide-body .guide-actions a {
+    min-height: 46px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding-top: 9px !important;
+    padding-bottom: 9px !important;
+  }
+
+  /* Página de produto: utilidades e alternativas deixam de ficar apertadas. */
+  body[data-product-id] .product-utility-row button,
+  body[data-product-id] .product-compare-box button {
+    min-height: 46px !important;
+  }
+  body[data-product-id] .back,
+  body[data-product-id] .product-compare-box a.link,
+  body[data-product-id] a.source-link {
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+  body[data-product-id] .related-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+  body[data-product-id] .related-actions a {
+    width: 100% !important;
+    min-height: 46px !important;
+    padding: 10px 12px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.25 !important;
+  }
+  body[data-product-id] .related-mini button {
+    width: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  /* Evita botões de ação espremidos em linhas muito estreitas. */
+  body[data-product-id] .product-utility-row {
+    gap: 8px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  body[data-product-id] .product-utility-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+  body[data-product-id] .product-utility-row button {
+    width: 100% !important;
+  }
+}
