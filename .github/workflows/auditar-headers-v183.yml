@@ -1,0 +1,16 @@
+name: Auditar Headers V18.3
+
+on:
+  push:
+    branches:
+      - spi-v18-3-mobile-audit
+
+permissions:
+  contents: read
+
+jobs:
+  headers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Headers da Home
+        run: curl --silent --show-error --head https://preconamira.com.br/
