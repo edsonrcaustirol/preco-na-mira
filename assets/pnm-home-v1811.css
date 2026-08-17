@@ -1,11 +1,10 @@
-/* Preço na Mira V18.1.1 — atalhos organizados e contraste da Home */
+/* Preço na Mira V18.2 — atalhos, contraste e orientação da busca */
 body.home-v121{--h1811-line:rgba(174,190,224,.14);--h1811-muted:#aab6c8;--h1811-violet:#8f6cff;--h1811-magenta:#d86bd8;--h1811-orange:#ff936e}
 .home-header{background:rgba(7,10,18,.92)!important;backdrop-filter:blur(16px);border-bottom:1px solid var(--h1811-line)}
 .home-header .home-brand{display:flex!important;align-items:center!important;min-width:138px!important;visibility:visible!important;opacity:1!important;overflow:visible!important}
 .home-header .home-brand img{display:block!important;width:138px!important;height:auto!important;max-height:46px!important;object-fit:contain!important;opacity:1!important;visibility:visible!important;filter:none!important}
 .home-header .nav{min-height:68px}.home-header .nav-links a{color:#c5cfde}.home-header .nav-links a:hover{color:#fff}
-.home-quick-searches small{color:#929fb3!important}.home-quick-searches button{background:#10192a!important;border-color:rgba(174,190,224,.14)!important;color:#d3dbe7!important}.home-quick-searches button:hover{border-color:rgba(143,108,255,.48)!important;color:#fff!important}
-
+.home-search-support{margin:8px 4px 0;color:#909db1;font-size:9px;line-height:1.5}.home-quick-searches small{color:#929fb3!important}.home-quick-searches button{background:#10192a!important;border-color:rgba(174,190,224,.14)!important;color:#d3dbe7!important}.home-quick-searches button:hover{border-color:rgba(143,108,255,.48)!important;color:#fff!important}
 .home-paths-section{padding:0 0 34px;background:linear-gradient(180deg,#070a12,#080d17)}
 .home-paths-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:14px}.home-paths-head h2{margin:5px 0 0;color:#fff;font-size:clamp(22px,2.8vw,30px);letter-spacing:-.035em}.home-paths-head p{max-width:560px;margin:0;color:#8f9cb0;font-size:10px;line-height:1.5;text-align:right}
 .home-paths-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
@@ -13,12 +12,9 @@ body.home-v121{--h1811-line:rgba(174,190,224,.14);--h1811-muted:#aab6c8;--h1811-
 .home-path-card:after{content:"";position:absolute;right:-30px;bottom:-42px;width:112px;height:112px;border-radius:50%;background:var(--path-glow,rgba(143,108,255,.14));pointer-events:none}.home-path-card:hover{transform:translateY(-2px);border-color:rgba(155,120,255,.46)}
 .home-path-card>*{position:relative;z-index:1}.home-path-card small{color:#8997aa;font-size:8px;font-weight:900;letter-spacing:.11em}.home-path-card strong{display:block;margin:7px 0 5px;color:#fff;font-size:16px}.home-path-card span{color:#a8b4c5;font-size:10px;line-height:1.45}.home-path-card b{align-self:flex-start;margin-top:13px;color:#c8b8ff;font-size:9px;letter-spacing:.05em}
 .home-path-card[data-tone="studio"]{--path-glow:rgba(216,107,216,.15)}.home-path-card[data-tone="compact"]{--path-glow:rgba(77,187,255,.14)}.home-path-card[data-tone="build"]{--path-glow:rgba(255,147,110,.16)}.home-path-card[data-tone="tools"]{--path-glow:rgba(249,200,70,.13)}
-
-/* Contraste explícito nos cards: texto nunca depende da cor da imagem. */
 .smart-ad-kicker{background:rgba(7,10,18,.88)!important;color:#fff!important;border:1px solid rgba(255,255,255,.11)}
 .smart-ad-copy{background:linear-gradient(180deg,#111a2a,#0b121f)}.smart-ad-copy h3{color:#fff!important}.smart-ad-copy p{color:#b2bdcd!important}.smart-ad-copy>small{color:#95a2b6!important}
 .home-how-grid article{background:linear-gradient(145deg,#111a2a,#0c1321)!important}.home-how-grid p{color:#aab6c7!important}
-
 @media(max-width:980px){.home-paths-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-paths-head{align-items:flex-start}.home-paths-head p{text-align:left}}
-@media(max-width:620px){.home-header .home-brand{min-width:116px!important}.home-header .home-brand img{width:116px!important;max-height:42px!important}.home-paths-section{padding-bottom:28px}.home-paths-head{display:block}.home-paths-head p{margin-top:7px}.home-paths-grid{grid-template-columns:1fr 1fr;gap:8px}.home-path-card{min-height:118px;padding:14px}}
+@media(max-width:620px){.home-header .home-brand{min-width:116px!important}.home-header .home-brand img{width:116px!important;max-height:42px!important}.home-search-support{font-size:8px}.home-paths-section{padding-bottom:28px}.home-paths-head{display:block}.home-paths-head p{margin-top:7px}.home-paths-grid{grid-template-columns:1fr 1fr;gap:8px}.home-path-card{min-height:118px;padding:14px}}
 @media(max-width:430px){.home-paths-grid{grid-template-columns:1fr}.home-path-card{min-height:102px}}
