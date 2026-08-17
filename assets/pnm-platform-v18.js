@@ -1,10 +1,15 @@
 (() => {
   'use strict';
 
-  const VERSION = '18.0.0';
+  const VERSION = '18.2.0';
   const root = document.documentElement;
   const path = location.pathname.toLowerCase();
   const productFallback = 'assets/product-photo-unavailable.svg';
+  const navDescriptions = {
+    'universos': 'Explore produtos por contexto, ambiente e tipo de uso.',
+    'ofertas': 'Descubra produtos em destaque e oportunidades selecionadas.',
+    'catalogo': 'Busque todos os produtos por marca, categoria ou nome.',
+  };
 
   const area = /(?:gamer|montar-pc|pecas-pc|produto-(?:amd|intel|asus|asrock|gigabyte|msi|corsair|cooler|montech|be-quiet|redragon|hyperx|logitech|kingston))/.test(path)
     ? 'gamer'
@@ -41,6 +46,20 @@
     }
   }
 
+  function normalizeAffiliate(link) {
+    if (!(link instanceof HTMLAnchorElement) || !/meli\.la|mercadolivre/i.test(link.href)) return;
+    const rel = new Set((link.rel || '').split(/\s+/).filter(Boolean));
+    ['noopener', 'noreferrer', 'sponsored', 'nofollow'].forEach(value => rel.add(value));
+    link.rel = [...rel].join(' ');
+    const text = link.textContent.trim();
+    const generic = /^(?:ver\s+(?:oferta|na\s+loja|pre[cç]o)|comprar|oferta|ir\s+para\s+(?:a\s+)?loja)\s*[↗→]?$/i;
+    if (text && generic.test(text) && !link.querySelector('img,svg')) link.textContent = 'VER NO MERCADO LIVRE ↗';
+    if (!link.getAttribute('aria-label') || /ver oferta|ver na loja|comprar/i.test(link.getAttribute('aria-label'))) {
+      link.setAttribute('aria-label', 'Ver no Mercado Livre — abre em nova aba');
+    }
+    if (!link.title) link.title = 'Abre o anúncio no Mercado Livre em nova aba';
+  }
+
   function onReady() {
     const main = document.querySelector('main');
     if (main && !main.id) main.id = 'conteudo-principal';
@@ -54,19 +73,30 @@
 
     const current = normalizeRoute(location.href);
     document.querySelectorAll('.nav-links a').forEach(link => {
-      if (normalizeRoute(link.href) === current) link.setAttribute('aria-current', 'page');
+      const route = normalizeRoute(link.href);
+      if (route === current) link.setAttribute('aria-current', 'page');
+      const key = route.replace(/^\//, '');
+      if (navDescriptions[key]) {
+        link.title = navDescriptions[key];
+        link.dataset.pnmDescription = navDescriptions[key];
+      }
     });
 
     document.querySelectorAll('a[target="_blank"]').forEach(link => {
       const rel = new Set((link.rel || '').split(/\s+/).filter(Boolean));
       rel.add('noopener');
       rel.add('noreferrer');
-      if (/meli\.la|mercadolivre/i.test(link.href)) {
-        rel.add('sponsored');
-        rel.add('nofollow');
-      }
       link.rel = [...rel].join(' ');
+      normalizeAffiliate(link);
     });
+    document.querySelectorAll('a[href]').forEach(normalizeAffiliate);
+    new MutationObserver(records => records.forEach(record => {
+      record.addedNodes.forEach(node => {
+        if (!(node instanceof Element)) return;
+        if (node.matches?.('a[href]')) normalizeAffiliate(node);
+        node.querySelectorAll?.('a[href]').forEach(normalizeAffiliate);
+      });
+    })).observe(document.body, { childList: true, subtree: true });
 
     const images = [...document.images];
     images.forEach((image, index) => {
@@ -114,7 +144,7 @@
       if (cta) {
         const note = document.createElement('p');
         note.className = 'pnm-price-disclaimer';
-        note.textContent = 'Preço, frete, estoque e disponibilidade são definidos pela loja parceira e podem mudar sem aviso.';
+        note.textContent = 'Preço, frete, estoque e disponibilidade são definidos pelo Mercado Livre e podem mudar sem aviso.';
         cta.append(note);
       }
     }
