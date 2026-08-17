@@ -3,6 +3,12 @@
   "name": "preco-na-mira",
   "compatibility_date": "2026-08-16",
   "preview_urls": true,
+  "routes": [
+    {
+      "pattern": "preconamira.com.br",
+      "custom_domain": true
+    }
+  ],
   "assets": {
     "directory": ".",
     "html_handling": "auto-trailing-slash",
