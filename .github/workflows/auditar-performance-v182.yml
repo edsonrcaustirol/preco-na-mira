@@ -14,10 +14,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Identificar Chrome
-        run: |
-          google-chrome --version || chromium --version || true
+        run: google-chrome --version || chromium --version || true
 
-      - name: PageSpeed e Lighthouse — catálogo e ofertas
+      - name: PageSpeed e Lighthouse
         shell: bash
         run: |
           set -uo pipefail
@@ -25,39 +24,11 @@ jobs:
             URL="https://preconamira.com.br/$PAGE"
             echo "===== $PAGE ====="
             API="https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
-            if curl --fail --silent --show-error --retry 2 --get "$API" \
-              --data-urlencode "url=$URL" \
-              --data "strategy=mobile" \
-              --data "category=performance" \
-              -o "psi-$PAGE.json"; then
-              node - "$PAGE" <<'NODE'
-const fs=require('fs');
-const page=process.argv[2];
-const r=JSON.parse(fs.readFileSync(`psi-${page}.json`,'utf8'));
-const a=r.lighthouseResult?.audits||{};
-const field=r.loadingExperience?.metrics||{};
-const fmt=(v,d=0)=>typeof v==='number'?v.toFixed(d):'n/d';
-console.log(`PSI ${page} mobile performance=${fmt((r.lighthouseResult?.categories?.performance?.score||0)*100)}`);
-console.log(`PSI ${page} lab LCP=${fmt((a['largest-contentful-paint']?.numericValue||0)/1000,2)}s CLS=${fmt(a['cumulative-layout-shift']?.numericValue,3)} TBT=${fmt(a['total-blocking-time']?.numericValue)}ms`);
-console.log(`PSI ${page} field LCP=${field.LARGEST_CONTENTFUL_PAINT_MS?.percentile??'n/d'}ms CLS=${field.CUMULATIVE_LAYOUT_SHIFT_SCORE?.percentile??'n/d'} INP=${field.INTERACTION_TO_NEXT_PAINT?.percentile??'n/d'}ms`);
-NODE
+            if curl --fail --silent --show-error --retry 2 --get "$API" --data-urlencode "url=$URL" --data "strategy=mobile" --data "category=performance" -o "psi-$PAGE.json"; then
+              PAGE="$PAGE" node -e 'const fs=require("fs");const p=process.env.PAGE;const r=JSON.parse(fs.readFileSync(`psi-${p}.json`,"utf8"));const a=r.lighthouseResult?.audits||{};const f=r.loadingExperience?.metrics||{};const n=(v,d=0)=>typeof v==="number"?v.toFixed(d):"n/d";console.log(`PSI ${p} mobile performance=${n((r.lighthouseResult?.categories?.performance?.score||0)*100)}`);console.log(`PSI ${p} lab LCP=${n((a["largest-contentful-paint"]?.numericValue||0)/1000,2)}s CLS=${n(a["cumulative-layout-shift"]?.numericValue,3)} TBT=${n(a["total-blocking-time"]?.numericValue)}ms`);console.log(`PSI ${p} field LCP=${f.LARGEST_CONTENTFUL_PAINT_MS?.percentile??"n/d"}ms CLS=${f.CUMULATIVE_LAYOUT_SHIFT_SCORE?.percentile??"n/d"} INP=${f.INTERACTION_TO_NEXT_PAINT?.percentile??"n/d"}ms`);'
             else
               echo "PSI $PAGE indisponível sem chave/quota; seguindo com Lighthouse local."
             fi
-
-            npx --yes lighthouse@12.8.2 "$URL" \
-              --quiet \
-              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
-              --only-categories=performance \
-              --output=json \
-              --output-path="lh-$PAGE.json"
-            node - "$PAGE" <<'NODE'
-const fs=require('fs');
-const page=process.argv[2];
-const r=JSON.parse(fs.readFileSync(`lh-${page}.json`,'utf8'));
-const a=r.audits||{};
-const fmt=(v,d=0)=>typeof v==='number'?v.toFixed(d):'n/d';
-console.log(`LH ${page} performance=${fmt((r.categories?.performance?.score||0)*100)}`);
-console.log(`LH ${page} LCP=${fmt((a['largest-contentful-paint']?.numericValue||0)/1000,2)}s CLS=${fmt(a['cumulative-layout-shift']?.numericValue,3)} TBT=${fmt(a['total-blocking-time']?.numericValue)}ms FCP=${fmt((a['first-contentful-paint']?.numericValue||0)/1000,2)}s`);
-NODE
+            npx --yes lighthouse@12.8.2 "$URL" --quiet --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" --only-categories=performance --output=json --output-path="lh-$PAGE.json"
+            PAGE="$PAGE" node -e 'const fs=require("fs");const p=process.env.PAGE;const r=JSON.parse(fs.readFileSync(`lh-${p}.json`,"utf8"));const a=r.audits||{};const n=(v,d=0)=>typeof v==="number"?v.toFixed(d):"n/d";console.log(`LH ${p} performance=${n((r.categories?.performance?.score||0)*100)}`);console.log(`LH ${p} LCP=${n((a["largest-contentful-paint"]?.numericValue||0)/1000,2)}s CLS=${n(a["cumulative-layout-shift"]?.numericValue,3)} TBT=${n(a["total-blocking-time"]?.numericValue)}ms FCP=${n((a["first-contentful-paint"]?.numericValue||0)/1000,2)}s`);'
           done
