@@ -1,58 +1,114 @@
-const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const activeU=PNM_UNIVERSOS.filter(u=>u.status==='ativo');
-  const activeJ=PNM_JORNADAS.filter(j=>j.status==='ativo');
-  const officialProducts=PRODUTOS.filter(p=>p.imagemTipo==='oficial');
+(()=>{
+  'use strict';
 
-  document.getElementById('heroProductCount').textContent=PRODUTOS.length;
-  document.getElementById('heroUniverseCount').textContent=activeU.length;
-  document.getElementById('heroJourneyCount').textContent='4';
-  document.getElementById('heroImageCount').textContent=officialProducts.length;
+  const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const products=typeof PRODUTOS!=='undefined'&&Array.isArray(PRODUTOS)?PRODUTOS:[];
 
-  document.getElementById('homeUniverses').innerHTML=activeU.map((u,i)=>{
-    const n=PNMProductsForUniverse(u.id).length;
-    const highlights=u.id==='casa'?'CASA STUDIO • COZINHA • AUTOMAÇÃO':u.id==='gamer'?'PC • SETUP • PERIFÉRICOS':'MOBILE • ÁUDIO • ACESSÓRIOS';
-    return `<a class="home-universe-card ${u.cor} featured-${i}" href="${u.href}"><span class="universe-symbol">${u.icon}</span><div><small>${n} ${PNMPlural(n,'PRODUTO CONECTADO','PRODUTOS CONECTADOS')}</small><h3>${u.nome}</h3><p>${u.descricao}</p><em>${highlights}</em></div><b>→</b></a>`
-  }).join('');
+  function hasUsefulImage(p){
+    const image=String(p?.imagem||'');
+    return p?.imagemTipo==='oficial'||/\.(?:webp|png|jpe?g|avif)(?:\?|$)/i.test(image);
+  }
 
-  document.getElementById('homeJourneys').innerHTML=activeJ.slice(0,8).map((j,i)=>`<a class="journey-card active journey-rank-${i}" href="${j.href}"><span class="journey-icon">${j.icon}</span><small>PROJETO OU GUIA</small><h3>${j.nome}</h3><p>${j.descricao}</p><strong>COMEÇAR →</strong></a>`).join('');
+  function highlightLabel(p){
+    if(p?.selo)return p.selo;
+    if(p?.faixa)return p.faixa;
+    if(p?.destaque)return 'Destaque selecionado';
+    return 'Boa opção';
+  }
 
-  const cfg={
-    mobile:[['smartphone','📱','Smartphones','smartphones'],['smartwatch','⌚','Smartwatches','smartwatches'],['fone','🎧','Fones','fones-de-ouvido'],['tablet','📲','Tablets','tablets']],
-    ent:[['tv','📺','TVs','tvs'],['projetor','📽️','Projetores','projetores'],['soundbar','🎬','Soundbars','soundbars'],['caixa','🔊','Caixas de som','caixas-de-som']],
-    pc:[['notebook','💻','Notebooks','notebooks'],['monitor','🖥️','Monitores','monitores'],['gamer','🧩','Peças de PC','pecas-pc'],['acessorio','🔌','Acessórios Tech','acessorios-tech']],
-    house:[['casa','🏠','Casa Inteligente','ambiente-casa'],['cozinha','🍳','Cozinha','ambiente-cozinha'],['lavanderia','🧺','Lavanderia','lavanderia'],['internet','🛰️','Starlink & Internet','internet']]
-  };
-  function card(x){const [type,icon,name,href]=x,n=PRODUTOS.filter(p=>p.tipoProduto===type).length;return `<a class="category-portal-card" href="${href}"><div class="portal-icon">${icon}</div><span class="kicker">${n} ${PNMPlural(n,'produto','produtos')}</span><h3>${name}</h3><p>Explore, filtre e compare.</p><strong>EXPLORAR →</strong></a>`}
-  document.getElementById('cat-mobile').innerHTML=cfg.mobile.map(card).join('');
-  document.getElementById('cat-ent').innerHTML=cfg.ent.map(card).join('');
-  document.getElementById('cat-pc').innerHTML=cfg.pc.map(card).join('');
-  document.getElementById('cat-house').innerHTML=cfg.house.map(card).join('');
-  document.getElementById('totalCount').textContent=PRODUTOS.length+' produtos únicos no catálogo';
+  function chooseHighlights(limit=6){
+    const eligible=products
+      .filter(p=>p?.linkAfiliado&&(p.destaque||p.faixa||p.selo))
+      .sort((a,b)=>(b.destaque?1:0)-(a.destaque?1:0)||(hasUsefulImage(b)?1:0)-(hasUsefulImage(a)?1:0)||String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR'));
+    const pool=eligible.length?eligible:products.filter(p=>p?.linkAfiliado);
+    const selected=[],types=new Map(),brands=new Map();
+    for(const p of pool){
+      const type=String(p.tipoProduto||'outro');
+      const brand=norm(p.marca||'');
+      if((types.get(type)||0)>=2)continue;
+      if(brand&&(brands.get(brand)||0)>=1)continue;
+      selected.push(p);
+      types.set(type,(types.get(type)||0)+1);
+      if(brand)brands.set(brand,(brands.get(brand)||0)+1);
+      if(selected.length>=limit)break;
+    }
+    if(selected.length<limit){
+      for(const p of pool){
+        if(selected.some(x=>x.id===p.id))continue;
+        selected.push(p);
+        if(selected.length>=limit)break;
+      }
+    }
+    return selected;
+  }
 
-  const homeNav=document.getElementById('nav');
-  if(homeNav&&!homeNav.querySelector('a[href="dewalt"]')){const catalogLink=homeNav.querySelector('a[href="catalogo"]'),dw=document.createElement('a');dw.href='dewalt';dw.textContent='DeWalt';if(catalogLink)catalogLink.insertAdjacentElement('afterend',dw);else homeNav.appendChild(dw)}
-  const quickRow=document.querySelector('.home-quick-searches');
-  if(quickRow&&!quickRow.querySelector('a[href="dewalt"]'))quickRow.insertAdjacentHTML('beforeend','<a href="dewalt">Linha DeWalt</a>');
+  function highlightCard(p){
+    const image=p.imagem||p.imagemFallback||'assets/product-placeholder.svg';
+    const fallback=p.imagemFallback||'assets/product-placeholder.svg';
+    const category=p.categoria||p.tipoProduto||'Produto';
+    return `<article class="smart-ad-card">
+      <div class="smart-ad-inner is-compact">
+        <a class="smart-ad-media" href="produto-${encodeURIComponent(p.id)}" aria-label="Analisar ${esc(p.nome)}">
+          <span class="smart-ad-kicker">${esc(highlightLabel(p))}</span>
+          <img src="${esc(image)}" data-fallback-src="${esc(fallback)}" width="600" height="600" loading="lazy" decoding="async" alt="${esc(p.imagemAlt||p.nome)}">
+        </a>
+        <div class="smart-ad-copy">
+          <small>${esc(p.marca||'Marca')} • ${esc(category)}</small>
+          <h3>${esc(p.nome)}</h3>
+          <p>${esc(p.chamada||p.resumo||'Veja a análise e confira se esta opção faz sentido para você.')}</p>
+          <div class="smart-ad-actions">
+            <a href="produto-${encodeURIComponent(p.id)}">ANALISAR →</a>
+            <a class="offer" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer">VER OFERTA ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>`;
+  }
 
-  document.getElementById('officialImageCount').textContent=officialProducts.length+' '+PNMPlural(officialProducts.length,'imagem real','imagens reais')+' confirmadas';
-  document.getElementById('officialProductStrip').innerHTML=officialProducts.slice(0,10).map(p=>`<a class="official-showcase-card" href="produto-${p.id}"><div class="photo"><img src="${esc(p.imagem)}" loading="lazy" decoding="async" alt="${esc(p.imagemAlt||p.nome)}"></div><small>✓ FONTE OFICIAL</small><b>${esc(p.nome)}</b><span>${esc(p.marca)}</span></a>`).join('');
+  const offerGrid=document.getElementById('homeOfferGrid');
+  if(offerGrid){
+    const highlights=chooseHighlights(6);
+    offerGrid.innerHTML=highlights.length
+      ?highlights.map(highlightCard).join('')
+      :'<div class="pnm-empty" data-empty-state>Nenhum destaque disponível neste momento. Use a busca para explorar o catálogo.</div>';
+  }
 
-  function recent(){const A=PNMRecent.get().map(id=>PRODUTOS.find(p=>p.id===id)).filter(Boolean).slice(0,12);document.getElementById('recentSection').style.display=A.length?'block':'none';document.getElementById('recentGrid').innerHTML=A.map(p=>`<a class="recent-card" href="produto-${p.id}"><img src="${esc(p.imagem)}" loading="lazy" decoding="async" alt=""><b>${esc(p.nome)}</b><span>${esc(p.marca)}</span></a>`).join('')}
-  document.getElementById('clearRecent').onclick=()=>{PNMRecent.clear();recent()};
+  function recent(){
+    const section=document.getElementById('recentSection');
+    const grid=document.getElementById('recentGrid');
+    if(!section||!grid||!window.PNMRecent)return;
+    const recentProducts=PNMRecent.get().map(id=>products.find(p=>p.id===id)).filter(Boolean).slice(0,8);
+    section.style.display=recentProducts.length?'block':'none';
+    grid.innerHTML=recentProducts.map(p=>`<a class="recent-card" href="produto-${encodeURIComponent(p.id)}"><img src="${esc(p.imagem||p.imagemFallback||'assets/product-placeholder.svg')}" width="360" height="360" loading="lazy" decoding="async" alt="${esc(p.imagemAlt||p.nome)}"><b>${esc(p.nome)}</b><span>${esc(p.marca||'')}</span></a>`).join('');
+  }
+
+  const clearRecent=document.getElementById('clearRecent');
+  if(clearRecent)clearRecent.addEventListener('click',()=>{PNMRecent.clear();recent()});
   recent();
 
-  const decisionModes={
-    buscar:{title:'Escolha o caminho mais rápido.',text:'Você não precisa saber a categoria certa. Busque por produto, marca ou ideia e descubra caminhos possíveis.',href:'busca',cta:'COMEÇAR AGORA →'},
-    comparar:{title:'Veja a diferença antes do clique.',text:'Compare produtos lado a lado com linguagem simples, critérios técnicos e contexto de uso.',href:'comparativo-geral',cta:'ABRIR COMPARADORES →'},
-    montar:{title:'Planeje antes de comprar.',text:'Crie um projeto de ambiente, registre restrições e leve ao carrinho apenas o que fizer sentido.',href:'montar',cta:'ABRIR PROJETOS →'},
-    salvar:{title:'Pesquise hoje. Decida depois.',text:'Use Favoritos e Minha Lista para guardar opções enquanto amadurece sua escolha.',href:'minha-lista',cta:'ABRIR MINHA LISTA →'}
-  };
-  document.querySelectorAll('#decisionTabs button').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('#decisionTabs button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');const m=decisionModes[btn.dataset.mode];document.getElementById('decisionTitle').textContent=m.title;document.getElementById('decisionText').textContent=m.text;const c=document.getElementById('decisionCta');c.href=m.href;c.textContent=m.cta;}));
+  const searchInput=document.getElementById('homeSearchInput');
+  const suggest=document.getElementById('homeSearchSuggestions');
+  if(searchInput&&suggest){
+    function renderSuggestions(){
+      const q=norm(searchInput.value.trim());
+      if(q.length<2){suggest.hidden=true;suggest.innerHTML='';return;}
+      const matches=products.filter(p=>norm([p.nome,p.marca,p.categoria,p.tipoProduto,p.subtipoCasa,p.subtipoCozinha,p.subtipoLavanderia,p.subtipoGamer,p.subtipoAcessorio,p.subtipoObra,p.subtipoInstalacao,p.subtipoAcabamento].join(' ')).includes(q)).slice(0,6);
+      suggest.hidden=false;
+      if(!matches.length){
+        suggest.innerHTML=`<a class="search-all" href="busca?q=${encodeURIComponent(searchInput.value)}">Buscar por “${esc(searchInput.value)}” em todo o catálogo →</a>`;
+        return;
+      }
+      suggest.innerHTML=matches.map(p=>`<a href="produto-${encodeURIComponent(p.id)}"><img src="${esc(p.imagem||p.imagemFallback||'assets/product-placeholder.svg')}" width="56" height="56" loading="lazy" decoding="async" alt=""><span><b>${esc(p.nome)}</b><small>${esc(p.marca||'')}</small></span><strong>→</strong></a>`).join('')+`<a class="search-all" href="busca?q=${encodeURIComponent(searchInput.value)}">Ver todos os resultados →</a>`;
+    }
+    searchInput.addEventListener('input',renderSuggestions);
+    searchInput.addEventListener('focus',renderSuggestions);
+    document.addEventListener('click',e=>{if(!e.target.closest('.home-search-field'))suggest.hidden=true});
+  }
 
-  const searchInput=document.getElementById('homeSearchInput'),suggest=document.getElementById('homeSearchSuggestions');
-  const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  function renderSuggestions(){const q=norm(searchInput.value.trim());if(q.length<2){suggest.hidden=true;suggest.innerHTML='';return}const matches=PRODUTOS.filter(p=>norm([p.nome,p.marca,p.tipoProduto,p.subtipoCasa,p.subtipoCozinha,p.subtipoLavanderia,p.subtipoGamer,p.subtipoAcessorio].join(' ')).includes(q)).slice(0,6);if(!matches.length){suggest.hidden=false;suggest.innerHTML=`<a class="search-all" href="busca?q=${encodeURIComponent(searchInput.value)}">Buscar por “${esc(searchInput.value)}” em todo o catálogo →</a>`;return}suggest.hidden=false;suggest.innerHTML=matches.map(p=>`<a href="produto-${p.id}"><img src="${esc(p.imagem)}" loading="lazy" decoding="async" alt=""><span><b>${esc(p.nome)}</b><small>${esc(p.marca)}</small></span><strong>→</strong></a>`).join('')+`<a class="search-all" href="busca?q=${encodeURIComponent(searchInput.value)}">Ver todos os resultados →</a>`}
-  searchInput.addEventListener('input',renderSuggestions);
-  searchInput.addEventListener('focus',renderSuggestions);
-  document.addEventListener('click',e=>{if(!e.target.closest('.home-search-field'))suggest.hidden=true});
-  document.querySelectorAll('.home-quick-searches [data-q]').forEach(b=>b.addEventListener('click',()=>{searchInput.value=b.dataset.q;location.href='busca?q='+encodeURIComponent(b.dataset.q)}));
+  document.querySelectorAll('.home-quick-searches [data-q]').forEach(button=>button.addEventListener('click',()=>{
+    const q=button.dataset.q||'';
+    if(searchInput)searchInput.value=q;
+    location.href='busca?q='+encodeURIComponent(q);
+  }));
+})();
