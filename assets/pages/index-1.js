@@ -3,7 +3,7 @@
 
   const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  const products=Array.isArray(window.PRODUTOS)?window.PRODUTOS:[];
+  const products=typeof PRODUTOS!=='undefined'&&Array.isArray(PRODUTOS)?PRODUTOS:[];
 
   function hasUsefulImage(p){
     const image=String(p?.imagem||'');
