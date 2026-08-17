@@ -1,0 +1,32 @@
+name: Auditar Mobile V18.3 B
+
+on:
+  push:
+    branches:
+      - spi-v18-3-mobile-audit
+
+permissions:
+  contents: read
+
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Instalar puppeteer-core
+        run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+      - name: Auditar produção mobile
+        run: node scripts/auditar-mobile-v183.cjs
+      - name: Guardar evidências
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auditoria-mobile-v183b
+          path: |
+            mobile-audit.json
+            mobile-*.png
+          retention-days: 3
