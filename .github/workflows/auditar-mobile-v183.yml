@@ -1,0 +1,106 @@
+name: Auditar Mobile V18.3
+
+on:
+  push:
+    branches:
+      - spi-v18-3-mobile-audit
+
+permissions:
+  contents: read
+
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar navegador de controle
+        run: npm install --no-save --ignore-scripts puppeteer-core@24.16.0
+
+      - name: Auditar produção em 390px e 360px
+        shell: bash
+        run: |
+          cat > /tmp/mobile-audit.cjs <<'NODE'
+          const puppeteer = require('puppeteer-core');
+          const fs = require('fs');
+          const BASE = 'https://preconamira.com.br';
+          const routes = ['/', '/catalogo', '/ofertas', '/universos', '/montar', '/guias', '/produto-philips-tas1505b-00'];
+          const widths = [390,360];
+          const results=[];
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+          async function auditPage(browser, route, width){
+            const page=await browser.newPage();
+            await page.setViewport({width,height:844,isMobile:true,hasTouch:true,deviceScaleFactor:1});
+            const errors=[];
+            page.on('pageerror',e=>errors.push('pageerror: '+e.message));
+            page.on('console',msg=>{if(msg.type()==='error') errors.push('console: '+msg.text())});
+            const response=await page.goto(BASE+route,{waitUntil:'networkidle2',timeout:60000});
+            await sleep(700);
+            const data=await page.evaluate(()=>{
+              const visible=el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0};
+              const interactives=[...document.querySelectorAll('main a,main button,main input,main select,.menu-btn')].filter(visible);
+              const small=interactives.map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,text:(el.innerText||el.getAttribute('aria-label')||el.getAttribute('placeholder')||'').trim().slice(0,70),w:Math.round(r.width),h:Math.round(r.height)}}).filter(x=>x.w<44||x.h<44);
+              const broken=[...document.images].filter(img=>img.complete&&img.naturalWidth===0).map(img=>img.src);
+              const viewport=document.documentElement.clientWidth;
+              const scrollWidth=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);
+              const tooWide=[...document.querySelectorAll('body *')].filter(visible).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,cls:el.className||'',text:(el.innerText||'').trim().slice(0,45),left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width)}}).filter(x=>x.right>viewport+2||x.left<-2).slice(0,20);
+              return {title:document.title,viewport,scrollWidth,overflow:scrollWidth-viewport,small:small.slice(0,35),smallCount:small.length,broken,tooWide,bodyText:(document.body.innerText||'').slice(0,300)};
+            });
+
+            let menu=null;
+            const menuBtn=await page.$('.menu-btn');
+            if(menuBtn){
+              const box=await menuBtn.boundingBox();
+              if(box){
+                await menuBtn.click(); await sleep(150);
+                menu=await page.evaluate(()=>{const nav=document.querySelector('.nav-links');if(!nav)return null;const r=nav.getBoundingClientRect(),s=getComputedStyle(nav);return {display:s.display,open:nav.classList.contains('open'),w:Math.round(r.width),left:Math.round(r.left),right:Math.round(r.right),links:[...nav.querySelectorAll('a')].filter(a=>getComputedStyle(a).display!=='none').length}});
+              }
+            }
+
+            let functional={};
+            if(route==='/catalogo'){
+              functional.initialCards=await page.$$eval('.pnm-product-card',els=>els.length);
+              functional.selectOptions=await page.$$eval('.pnm-catalog-toolbar select',els=>els.map(e=>e.options.length));
+              const more=await page.$('#catalogMore');
+              if(more){const b=await more.boundingBox(); if(b){await more.click(); await sleep(250); functional.afterMore=await page.$$eval('.pnm-product-card',els=>els.length)}}
+              const search=await page.$('#catalogSearch');
+              if(search){await search.click({clickCount:3});await search.type('JBL');await sleep(250);functional.afterSearch=await page.$$eval('.pnm-product-card',els=>els.length)}
+            }
+            if(route==='/ofertas'){
+              functional.initialCards=await page.$$eval('.pnm-offer-card',els=>els.length);
+              const gamer=await page.$('#offerTabs [data-filter="gamer"]');
+              if(gamer){await gamer.click();await sleep(250);functional.gamerCards=await page.$$eval('.pnm-offer-card',els=>els.length)}
+            }
+            if(route==='/montar'){
+              functional.projectButtons=await page.$$eval('main button',els=>els.filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0}).length);
+              functional.projectLinks=await page.$$eval('main a',els=>els.filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0}).length);
+            }
+            await page.screenshot({path:`mobile-${width}-${route==='/'?'home':route.slice(1).replaceAll('/','-')}.png`,fullPage:true});
+            await page.close();
+            return {route,width,status:response?.status()||0,errors:[...new Set(errors)].slice(0,20),menu,functional,...data};
+          }
+
+          (async()=>{
+            const browser=await puppeteer.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+            for(const width of widths){for(const route of routes){try{const r=await auditPage(browser,route,width);results.push(r);console.log('MOBILE_AUDIT '+JSON.stringify(r));}catch(e){const r={route,width,fatal:e.message};results.push(r);console.log('MOBILE_AUDIT '+JSON.stringify(r));}}}
+            await browser.close();
+            fs.writeFileSync('mobile-audit.json',JSON.stringify(results,null,2));
+            const fatal=results.filter(r=>r.fatal||r.status>=400||r.overflow>2||r.broken?.length||r.errors?.length);
+            console.log('MOBILE_SUMMARY '+JSON.stringify({tested:results.length,issues:fatal.length,issuePages:fatal.map(r=>({route:r.route,width:r.width,status:r.status,overflow:r.overflow,broken:r.broken?.length||0,errors:r.errors?.length||0,fatal:r.fatal||null}))}));
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node /tmp/mobile-audit.cjs
+
+      - name: Guardar evidências mobile
+        uses: actions/upload-artifact@v4
+        with:
+          name: auditoria-mobile-v183
+          path: |
+            mobile-audit.json
+            mobile-*.png
+          retention-days: 3
