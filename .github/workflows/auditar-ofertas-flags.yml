@@ -1,0 +1,20 @@
+name: Auditar Curadoria Ofertas
+on:
+  push:
+    branches: [spi-v18-2-performance-audit]
+permissions:
+  contents: read
+jobs:
+  contar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Contar critérios editoriais
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const s=fs.readFileSync('data/produtos-mobile.js','utf8');
+          const a=JSON.parse(s.slice(s.indexOf('['),s.lastIndexOf(']')+1));
+          const c=(fn)=>a.filter(fn).length;
+          console.log(JSON.stringify({total:a.length,destaque:c(p=>p.destaque===true),faixa:c(p=>!!p.faixa),selo:c(p=>!!p.selo),destaqueOuFaixaOuSelo:c(p=>p.destaque||p.faixa||p.selo)},null,2));
+          NODE
