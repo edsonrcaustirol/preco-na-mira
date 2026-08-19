@@ -1,0 +1,280 @@
+/* Preço na Mira V18.3 — correções cirúrgicas de experiência mobile
+   Escopo: Home, Ofertas e Linha DeWalt. Não altera desktop nem regras de negócio. */
+
+@media (max-width: 620px) {
+  /* Base mobile: impede que filhos e menus criem largura maior que a viewport. */
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .container {
+    width: calc(100% - 24px) !important;
+    max-width: 1180px;
+  }
+
+  .site-header .nav {
+    position: relative;
+  }
+
+  .site-header .nav-links.open {
+    max-height: calc(100dvh - 74px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .site-header .nav-links a {
+    min-height: 46px;
+    padding-block: 8px;
+  }
+
+  .site-header .menu-btn {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  /* HOME */
+  body.home-v121 main > section:not(:first-child) {
+    /* A reserva fixa de 520px era muito menor que seções com vários cards em
+       uma coluna e podia provocar salto de página ao entrar na viewport. */
+    content-visibility: visible !important;
+    contain-intrinsic-size: none !important;
+  }
+
+  body.home-v121 .home-hero-main,
+  body.home-v121 .home-search-field,
+  body.home-v121 .smart-ad-card,
+  body.home-v121 .home-path-card {
+    max-width: 100%;
+  }
+
+  body.home-v121 .home-search-field input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.home-v121 .home-search-field > button,
+  body.home-v121 .home-btn-primary,
+  body.home-v121 .home-btn-ghost,
+  body.home-v121 .smart-ad-actions a {
+    min-height: 46px;
+  }
+
+  body.home-v121 .home-quick-searches button,
+  body.home-v121 .home-quick-searches a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  body.home-v121 .smart-ad-copy h3,
+  body.home-v121 .recent-card b {
+    overflow-wrap: anywhere;
+  }
+
+  body.home-v121 .smart-ad-media img,
+  body.home-v121 .recent-card img {
+    max-width: 100% !important;
+    object-fit: contain !important;
+  }
+
+  /* OFERTAS */
+  body.v15-offers .section-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.v15-offers .pnm-offer-tabs {
+    gap: 8px;
+  }
+
+  body.v15-offers .pnm-offer-tabs button,
+  body.v15-offers .pnm-catalog-more {
+    min-height: 44px;
+  }
+
+  body.v15-offers .pnm-offer-card,
+  body.v15-offers .pnm-offer-image,
+  body.v15-offers .pnm-offer-copy {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  body.v15-offers .pnm-offer-copy h3 {
+    overflow-wrap: anywhere;
+  }
+
+  body.v15-offers .pnm-offer-copy > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.v15-offers .pnm-offer-copy a {
+    min-height: 46px;
+    padding-inline: 10px;
+  }
+
+  body.v15-offers .pnm-offer-image img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  /* DEWALT */
+  body.dewalt-page .dw-hero {
+    padding-top: 2.5rem;
+    padding-bottom: 3rem;
+  }
+
+  body.dewalt-page .dw-hero-grid,
+  body.dewalt-page .dw-special-card {
+    gap: 1.4rem;
+  }
+
+  body.dewalt-page .dw-kicker {
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.35;
+  }
+
+  body.dewalt-page .dw-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  body.dewalt-page .dw-btn {
+    width: 100%;
+    min-height: 48px;
+    padding-inline: .9rem;
+    text-align: center;
+  }
+
+  body.dewalt-page .dw-hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  body.dewalt-page .dw-stat {
+    min-width: 0;
+  }
+
+  body.dewalt-page .dw-radar {
+    min-height: 240px;
+  }
+
+  body.dewalt-page .dw-radar::before {
+    width: 210px;
+    height: 210px;
+  }
+
+  body.dewalt-page .dw-radar::after {
+    width: 140px;
+    height: 140px;
+  }
+
+  body.dewalt-page .dw-special {
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+  }
+
+  body.dewalt-page .dw-special-card {
+    padding: 18px;
+  }
+
+  body.dewalt-page .dw-special-visual {
+    min-height: 240px;
+  }
+
+  body.dewalt-page .dw-special-placeholder {
+    width: min(180px, 75vw);
+    height: min(180px, 75vw);
+  }
+
+  body.dewalt-page .dw-filter-row {
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+
+  body.dewalt-page .dw-filter-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.dewalt-page .dw-filter {
+    flex: 0 0 auto;
+    min-height: 44px;
+  }
+
+  body.dewalt-page .dw-card,
+  body.dewalt-page .dw-photo,
+  body.dewalt-page .dw-card-body,
+  body.dewalt-page .dw-pending-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  body.dewalt-page .dw-card-top {
+    flex-wrap: wrap;
+  }
+
+  body.dewalt-page .dw-card h3,
+  body.dewalt-page .dw-card p,
+  body.dewalt-page .dw-pending-card b,
+  body.dewalt-page .dw-pending-card small {
+    overflow-wrap: anywhere;
+  }
+
+  body.dewalt-page .dw-card p {
+    min-height: 0;
+  }
+
+  body.dewalt-page .dw-card-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.dewalt-page .dw-card-actions a {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  body.dewalt-page .dw-photo img,
+  body.dewalt-page .dw-special-visual img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body.home-v121 .home-hero-main h1 {
+    font-size: 36px;
+    line-height: .98;
+  }
+
+  body.v15-offers .pnm-page-hero h1 {
+    font-size: 38px;
+    line-height: .98;
+    letter-spacing: -1.6px;
+  }
+
+  body.dewalt-page .dw-hero h1 {
+    font-size: 3.15rem;
+  }
+
+  body.dewalt-page .dw-hero-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
