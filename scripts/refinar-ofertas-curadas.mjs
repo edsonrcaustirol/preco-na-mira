@@ -36,8 +36,8 @@ function imageAttrs(product,index){
 function bucket(product){
   const text=norm([product.tipoProduto,product.categoriaId,product.categoria,product.subtipo,product.subtipoCozinha,product.subtipoCasa,product.subtipoObra,product.subtipoInstalacao,product.subtipoAcabamento].join(' '));
   if(/gamer|pc|gpu|processador|monitor|mouse|teclado|memoria|placa/.test(text))return'gamer';
-  if(/casa|obra|instal|acabamento|banheiro|hidraul/.test(text))return'casa';
   if(/cozinha|airfryer|air fryer|cafeteira|geladeira|fogao|forno|panela|lava-loucas/.test(text))return'cozinha';
+  if(/casa|obra|instal|acabamento|banheiro|hidraul/.test(text))return'casa';
   return'tecnologia';
 }
 function criterion(product){
