@@ -77,6 +77,7 @@ body.build-theme .catalog-tools-v12 {
   align-items: stretch;
   max-width: 100%;
 }
+
 body.build-theme .kitchen-filterbar {
   min-width: 0;
   max-width: 100%;
@@ -316,6 +317,7 @@ body.build-theme .compare-tray-go {
   background: var(--obra-accent);
   color: #fff;
 }
+
 body.build-theme .compare-tray-go[aria-disabled="true"] {
   opacity: .45;
   cursor: not-allowed;
