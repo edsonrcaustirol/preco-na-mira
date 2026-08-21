@@ -8,7 +8,9 @@
   const more=document.getElementById('offerMore');
   const count=document.getElementById('offerCount');
   const pagination=document.querySelector('.pnm-seo-pagination');
-  const PAGE_SIZE=24;
+  const CURATION_TARGET=30;
+  const PAGE_SIZE=30;
+  const BUCKET_QUOTAS={casa:8,tecnologia:8,gamer:7,cozinha:7};
   const pathPage=Number(location.pathname.match(/ofertas-pagina-(\d+)/i)?.[1]||document.body.dataset.pnmStaticPage||1);
   let page=Math.max(1,pathPage),offset=(page-1)*PAGE_SIZE,visible=PAGE_SIZE,filter='';
   let preservePrerender=grid?.dataset.pnmPrerendered==='1';
@@ -20,14 +22,53 @@
     if(/cozinha|airfryer|air fryer|cafeteira|geladeira|fogao|forno|panela|lava-loucas/.test(text))return'cozinha';
     return'tecnologia';
   }
-  function safeLabel(p){const candidates=[p.faixa,p.selo].filter(Boolean),allowed=/custo|benef[ií]cio|premium|intermedi|entrada|destaque|escolha|selecion|recomend/i;return String(candidates.find(value=>allowed.test(String(value)))||'DESTAQUE')}
-  function card(p,index){const img=p.imagem||p.imagemFallback||'assets/product-placeholder.svg',fallback=p.imagemFallback||'assets/product-placeholder.svg',loading=index===0?'eager':'lazy',priority=index===0?' fetchpriority="high"':'';return `<article class="pnm-offer-card" data-pnm-product-id="${esc(p.id)}"><div class="pnm-offer-image"><img src="${esc(img)}" data-fallback-src="${esc(fallback)}" width="600" height="600" alt="${esc(p.imagemAlt||p.nome)}" loading="${loading}" decoding="async"${priority}><span>${esc(safeLabel(p))}</span></div><div class="pnm-offer-copy"><small>${esc(p.marca||p.categoria||'Produto')}</small><h3>${esc(p.nome)}</h3><p>${esc(p.chamada||p.resumo||'Veja a análise e confirme se esta opção combina com o que você procura.')}</p><div><a href="produto-${encodeURIComponent(p.id)}">ANALISAR</a><a class="hot" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer">VER NO MERCADO LIVRE ↗</a></div></div></article>`}
-  function currentList(){let list=products.filter(p=>p?.linkAfiliado&&p.destaque===true);if(filter)list=list.filter(p=>bucket(p)===filter);return list.sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR'))}
+  function criterion(p){
+    const explicit=norm([p.faixa,p.selo].filter(Boolean).join(' '));
+    if(/custo.?beneficio|beneficio/.test(explicit))return{label:'CUSTO-BENEFÍCIO',score:60};
+    if(/entrada|econom|acessivel/.test(explicit))return{label:'OPÇÃO DE ENTRADA',score:50};
+    if(/premium|topo|avancad/.test(explicit))return{label:'PREMIUM',score:40};
+    if(/intermedi|equilibr/.test(explicit))return{label:'EQUILÍBRIO',score:35};
+    if(/recomend|escolha|selecion/.test(explicit))return{label:'SELECIONADO',score:30};
+    if(/destaque/.test(explicit))return{label:'DESTAQUE',score:25};
+    return{label:'DESTAQUE',score:20};
+  }
+  function reasonText(p){return String(p.chamada||p.resumo||'').trim()}
+  function compareCandidates(a,b){const scoreDiff=criterion(b).score-criterion(a).score;return scoreDiff||String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')}
+  function takeBalanced(candidates,limit,selected,brandCounts){
+    const chosen=[];
+    for(const maxPerBrand of [1,2,3,Number.POSITIVE_INFINITY]){
+      for(const p of candidates){
+        if(chosen.length>=limit)break;
+        if(selected.some(item=>item.id===p.id)||chosen.some(item=>item.id===p.id))continue;
+        const brandKey=norm(p.marca||'sem-marca');
+        if((brandCounts.get(brandKey)||0)>=maxPerBrand)continue;
+        chosen.push(p);
+        brandCounts.set(brandKey,(brandCounts.get(brandKey)||0)+1);
+      }
+      if(chosen.length>=limit)break;
+    }
+    selected.push(...chosen);
+  }
+  function curate(list){
+    const eligible=list.filter(p=>p?.linkAfiliado&&p.destaque===true&&reasonText(p)).sort(compareCandidates);
+    const selected=[],brandCounts=new Map();
+    for(const [group,quota] of Object.entries(BUCKET_QUOTAS))takeBalanced(eligible.filter(p=>bucket(p)===group),quota,selected,brandCounts);
+    if(selected.length<CURATION_TARGET)takeBalanced(eligible,CURATION_TARGET-selected.length,selected,brandCounts);
+    if(selected.length<CURATION_TARGET){for(const p of eligible){if(selected.length>=CURATION_TARGET)break;if(!selected.some(item=>item.id===p.id))selected.push(p)}}
+    return selected.slice(0,CURATION_TARGET).sort(compareCandidates);
+  }
+  const curated=curate(products);
+
+  function card(p,index){
+    const img=p.imagem||p.imagemFallback||'assets/product-placeholder.svg',fallback=p.imagemFallback||'assets/product-placeholder.svg',loading=index===0?'eager':'lazy',priority=index===0?' fetchpriority="high"':'',meta=criterion(p);
+    return `<article class="pnm-offer-card" data-pnm-product-id="${esc(p.id)}"><div class="pnm-offer-image"><img src="${esc(img)}" data-fallback-src="${esc(fallback)}" width="600" height="600" alt="${esc(p.imagemAlt||p.nome)}" loading="${loading}" decoding="async"${priority}><span>${esc(meta.label)}</span></div><div class="pnm-offer-copy"><small>${esc(p.marca||p.categoria||'Produto')}</small><h3>${esc(p.nome)}</h3><p><strong>Por que olhar:</strong> ${esc(reasonText(p))}</p><div><a href="produto-${encodeURIComponent(p.id)}">ANALISAR</a><a class="hot" href="${esc(p.linkAfiliado)}" target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label="Ver ${esc(p.nome)} no Mercado Livre — abre em nova aba">VER NO MERCADO LIVRE ↗</a></div></div></article>`;
+  }
+  function currentList(){return filter?curated.filter(p=>bucket(p)===filter):curated}
   function render({reset=false}={}){
     if(reset){page=1;offset=0;visible=PAGE_SIZE;preservePrerender=false}
     const list=currentList(),shown=list.slice(offset,offset+visible),canPreserve=preservePrerender&&!filter&&page===pathPage&&visible===PAGE_SIZE&&grid?.children.length>0;
-    if(count)count.textContent=`${list.length} ${list.length===1?'destaque':'destaques'} selecionados`;
-    if(grid&&!canPreserve)grid.innerHTML=shown.length?shown.map(card).join(''):'<div class="pnm-empty" data-empty-state>Nenhum destaque encontrado neste filtro. Tente outra categoria ou abra o Catálogo.</div>';
+    if(count)count.textContent=`${list.length} ${list.length===1?'produto selecionado':'produtos selecionados'}`;
+    if(grid&&!canPreserve)grid.innerHTML=shown.length?shown.map(card).join(''):'<div class="pnm-empty" data-empty-state>Nenhum item desta curadoria está neste filtro. Tente outra categoria ou abra o Catálogo completo.</div>';
     preservePrerender=false;
     if(more){const remaining=Math.max(0,list.length-(offset+visible));more.hidden=remaining===0;more.textContent=remaining?`CARREGAR MAIS (${Math.min(PAGE_SIZE,remaining)})`:'TODOS CARREGADOS';more.setAttribute('aria-expanded',String(remaining===0))}
     if(pagination)pagination.hidden=Boolean(filter);
