@@ -2,83 +2,92 @@
   'use strict';
   const $=s=>document.querySelector(s);
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  const order=['casa','cozinha','sala-cinema','banheiro','lavanderia','home-office','setup-gamer','compacto','casa-inteligente'];
-  const products=typeof PRODUTOS!=='undefined'&&Array.isArray(PRODUTOS)?PRODUTOS:[];
-  const usedImages=new Set();
-  const envIcons={casa:'⌂',cozinha:'◫','sala-cinema':'▣',banheiro:'◌',lavanderia:'↻','home-office':'⌨','setup-gamer':'◆',compacto:'↔','casa-inteligente':'◎'};
-  const envLabels={casa:'CASA COMPLETA',cozinha:'ROTINA E PREPARO','sala-cinema':'IMAGEM E ÁUDIO',banheiro:'LOUÇAS E METAIS',lavanderia:'LAVAGEM E APOIO','home-office':'TRABALHO E REDE','setup-gamer':'PC E PERIFÉRICOS',compacto:'MEDIDAS PRIMEIRO','casa-inteligente':'AUTOMAÇÃO E REDE'};
+  const primaryOrder=['cozinha','sala-cinema','banheiro','home-office'];
+  const moreOrder=['casa','lavanderia','setup-gamer','casa-inteligente'];
+  const envIcons={casa:'⌂',cozinha:'◫','sala-cinema':'▣',banheiro:'◌',lavanderia:'↻','home-office':'⌨','setup-gamer':'◆','casa-inteligente':'◎'};
+  let selectedType='';
+  let selectedButton=null;
 
-  function haystack(p){return norm([p.nome,p.marca,p.categoria,p.categoriaId,p.tipoProduto,p.subtipoCozinha,p.subtipoCasa,p.subtipoAcabamento,p.subtipoInstalacao,p.subtipoGamer,p.subtipoLavanderia].filter(Boolean).join(' '));}
-  const matchers={
-    casa:p=>['casa','obra','acabamento','instalacao','cozinha'].includes(String(p.tipoProduto||'')),
-    cozinha:p=>p.tipoProduto==='cozinha'||/air fryer|cafeteira|micro-ondas|microondas|cooktop|geladeira/.test(haystack(p)),
-    'sala-cinema':p=>['tv','soundbar','projetor'].includes(String(p.tipoProduto||''))||/televisao|televisão|soundbar|projetor/.test(haystack(p)),
-    banheiro:p=>(p.tipoProduto==='acabamento'&&/banheiro|cuba|torneira|ducha|louca|louça|vaso/.test(haystack(p)))||/chuveiro|ducha|cuba|vaso sanitario|vaso sanitário/.test(haystack(p)),
-    lavanderia:p=>p.tipoProduto==='lavanderia'||/lavadora|lava e seca|maquina de lavar|máquina de lavar/.test(haystack(p)),
-    'home-office':p=>['notebook','monitor','internet'].includes(String(p.tipoProduto||''))||/notebook|monitor|hub usb|roteador/.test(haystack(p)),
-    'setup-gamer':p=>p.tipoProduto==='gamer'||/rtx|geforce|radeon|teclado gamer|mouse gamer|monitor gamer/.test(haystack(p)),
-    compacto:p=>(p.tipoProduto==='casa'&&p.subtipoCasa==='robot')||(p.tipoProduto==='cozinha'&&['airfryer','microondas','cooktop','panela-eletrica'].includes(p.subtipoCozinha))||/robo aspirador|robô aspirador/.test(haystack(p)),
-    'casa-inteligente':p=>p.tipoProduto==='casa'||p.tipoProduto==='internet'||/smart|camera|câmera|roteador|assistente/.test(haystack(p))
-  };
-
-  function productImageFor(type){
-    const match=matchers[type]||(()=>true);
-    const candidates=products.filter(p=>{
-      const image=String(p?.imagem||'');
-      return image.startsWith('assets/')&&match(p)&&!usedImages.has(image);
-    }).sort((a,b)=>(b.imagemTipo==='oficial'?1:0)-(a.imagemTipo==='oficial'?1:0)||(b.destaque?1:0)-(a.destaque?1:0));
-    const selected=candidates[0]||products.find(p=>String(p?.imagem||'').startsWith('assets/')&&match(p));
-    if(selected?.imagem)usedImages.add(selected.imagem);
-    return selected||null;
+  function issueCount(project){
+    return PNMProjects.diagnostics(project).filter(item=>['critical','warning'].includes(item.level)).length;
   }
 
-  function mediaMarkup(type,index){
-    const product=productImageFor(type);
-    if(!product)return `<div class="pj-template-media is-empty"><div class="pj-template-badges"><span>${String(index+1).padStart(2,'0')}</span><span>${esc(envLabels[type]||'PROJETO')}</span></div></div>`;
-    return `<div class="pj-template-media"><img src="${esc(product.imagem)}" alt="${esc(product.imagemAlt||product.nome||'Referência visual do ambiente')}" width="600" height="420" loading="lazy" decoding="async"><div class="pj-template-badges"><span>${String(index+1).padStart(2,'0')}</span><span>${esc(envLabels[type]||'PROJETO')}</span></div></div>`;
-  }
-
-  function projectCard(p){
-    const env=PNMProjects.environments[p.type]||PNMProjects.environments.cozinha;
-    const pct=PNMProjects.completion(p);
-    const issues=PNMProjects.diagnostics(p).filter(x=>['critical','warning'].includes(x.level)).length;
-    return `<a class="pj-project-card" href="projeto?projeto=${encodeURIComponent(p.id)}">
-      <span class="pj-card-no">${esc(env.label).toUpperCase()}</span>
-      <span class="pj-project-icon" aria-hidden="true">${esc(envIcons[p.type]||'◎')}</span>
-      <h3>${esc(p.name)}</h3>
-      <p>${esc(env.description)}</p>
-      <div class="pj-card-foot"><span>${issues?issues+' pendência'+(issues===1?'':'s'):'sem pendências críticas'}</span><b>${pct}%</b></div>
-      <div class="pj-progress-line"><i style="width:${Math.max(0,Math.min(100,pct))}%"></i></div>
+  function projectCard(project){
+    const env=PNMProjects.environments[project.type]||PNMProjects.environments.cozinha;
+    const issues=issueCount(project);
+    const products=Array.isArray(project.selection)?project.selection.length:0;
+    return `<a class="p4-project-card" href="projeto?projeto=${encodeURIComponent(project.id)}">
+      <span class="p4-project-icon" aria-hidden="true">${esc(envIcons[project.type]||'◎')}</span>
+      <span class="p4-project-type">${esc(env.label)}</span>
+      <h3>${esc(project.name)}</h3>
+      <p>${products?`${products} ${products===1?'produto selecionado':'produtos selecionados'}`:'Nenhum produto selecionado ainda'}</p>
+      <span class="p4-project-meta">${issues?`${issues} ${issues===1?'pendência para revisar':'pendências para revisar'}`:'Sem pendências críticas'} <b>ABRIR →</b></span>
     </a>`;
   }
 
-  function templateCard(key,index){
-    const env=PNMProjects.environments[key];
-    return `<button type="button" class="pj-template-card" data-new="${esc(key)}" data-env="${esc(key)}">
-      ${mediaMarkup(key,index)}
-      <span class="pj-template-copy"><h3>${esc(env.label)}</h3><p>${esc(env.description)}</p><span class="pj-card-foot"><span>COMEÇAR PROJETO</span><b>→</b></span></span>
+  function templateCard(type){
+    const env=PNMProjects.environments[type];
+    if(!env)return '';
+    return `<button type="button" class="p4-choice-card" data-new="${esc(type)}" aria-pressed="${selectedType===type?'true':'false'}">
+      <span class="p4-choice-icon" aria-hidden="true">${esc(envIcons[type]||'◎')}</span>
+      <span><strong>${esc(env.label)}</strong><small>${esc(env.description)}</small></span>
+      <b aria-hidden="true">→</b>
     </button>`;
   }
 
   function render(){
-    const list=PNMProjects.list();
-    const listBox=$('#projectList');
+    const projects=PNMProjects.list();
     const existing=$('#existingProjectsSection');
-    const templates=$('#templates');
-    if(listBox)listBox.innerHTML=list.length?`<div class="pj-project-grid">${list.slice(0,6).map(projectCard).join('')}</div>`:'';
-    if(templates){usedImages.clear();templates.innerHTML=order.map(templateCard).join('');}
-    if(existing)existing.hidden=!list.length;
+    const projectList=$('#projectList');
+    const continueLink=$('#continueProjectLink');
+    const primary=$('#templatesPrimary');
+    const more=$('#templatesMore');
+
+    if(primary)primary.innerHTML=primaryOrder.map(templateCard).join('');
+    if(more)more.innerHTML=moreOrder.map(templateCard).join('');
+
+    if(existing&&projectList){
+      existing.hidden=!projects.length;
+      projectList.innerHTML=projects.length?`<div class="p4-project-grid">${projects.map(projectCard).join('')}</div>`:'';
+    }
+    if(continueLink){
+      continueLink.hidden=!projects.length;
+      if(projects.length)continueLink.href=`projeto?projeto=${encodeURIComponent(projects[0].id)}`;
+    }
+  }
+
+  function choose(type,button){
+    const env=PNMProjects.environments[type];
+    if(!env)return;
+    selectedType=type;
+    selectedButton=button||null;
+    document.querySelectorAll('[data-new]').forEach(el=>el.setAttribute('aria-pressed',el.dataset.new===type?'true':'false'));
+    const panel=$('#projectStartPanel');
+    $('#selectedProjectLabel').textContent=env.label;
+    $('#selectedProjectDescription').textContent=env.description;
+    panel.hidden=false;
+    panel.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});
+    setTimeout(()=>$('#newProjectName')?.focus({preventScroll:true}),0);
   }
 
   document.addEventListener('click',event=>{
-    const button=event.target.closest('[data-new]');
-    if(!button)return;
-    const typedName=$('#newProjectName')?.value?.trim();
-    const seed=typedName?{name:typedName}:{};
-    const project=PNMProjects.create(button.dataset.new,seed);
-    location.href=`projeto?projeto=${encodeURIComponent(project.id)}`;
+    const choice=event.target.closest('[data-new]');
+    if(choice){choose(choice.dataset.new,choice);return;}
+    if(event.target.closest('#changeProjectButton')){
+      selectedType='';
+      document.querySelectorAll('[data-new]').forEach(el=>el.setAttribute('aria-pressed','false'));
+      $('#projectStartPanel').hidden=true;
+      selectedButton?.focus();
+      return;
+    }
+    if(event.target.closest('#createProjectButton')){
+      if(!selectedType)return;
+      const typedName=$('#newProjectName')?.value?.trim();
+      const project=PNMProjects.create(selectedType,typedName?{name:typedName}:{});
+      location.href=`projeto?projeto=${encodeURIComponent(project.id)}`;
+    }
   });
 
+  document.addEventListener('pnm:projects',render);
   render();
 })();
