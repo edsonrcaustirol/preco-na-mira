@@ -91,3 +91,4 @@
   .cs-hero-note,.cs-room-card,.cs-product-copy,.cs-guide-box{padding-left:15px;padding-right:15px}
   .cs-section-head h2{font-size:23px}
 }
+.cs-project-link,.cs-status a{display:inline-flex;min-height:44px;align-items:center}
