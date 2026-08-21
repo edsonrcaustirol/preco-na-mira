@@ -5,11 +5,14 @@ import path from 'node:path';
 
 const ROOT=process.cwd();
 const ORIGIN='https://preconamira.com.br';
-const PAGE_SIZE=24;
+const CURATION_TARGET=30;
+const PAGE_SIZE=30;
 const DATA=path.join(ROOT,'data','produtos-mobile.js');
 const TEMPLATE=path.join(ROOT,'ofertas.html');
+const BUCKET_QUOTAS={casa:8,tecnologia:8,gamer:7,cozinha:7};
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const norm=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 
 function readProducts(){
   const source=fs.readFileSync(DATA,'utf8');
@@ -30,13 +33,71 @@ function imageAttrs(product,index){
   const priority=index===0?' fetchpriority="high"':'';
   return `src="${esc(src)}" data-fallback-src="${esc(fallback)}" width="600" height="600" loading="${loading}" decoding="async"${priority} alt="${esc(product.imagemAlt||product.nome)}"`;
 }
-function safeLabel(product){
-  const candidates=[product.faixa,product.selo].filter(Boolean);
-  const allowed=/custo|benef[ií]cio|premium|intermedi|entrada|destaque|escolha|selecion|recomend/i;
-  return String(candidates.find(value=>allowed.test(String(value)))||'DESTAQUE');
+function bucket(product){
+  const text=norm([product.tipoProduto,product.categoriaId,product.categoria,product.subtipo,product.subtipoCozinha,product.subtipoCasa,product.subtipoObra,product.subtipoInstalacao,product.subtipoAcabamento].join(' '));
+  if(/gamer|pc|gpu|processador|monitor|mouse|teclado|memoria|placa/.test(text))return'gamer';
+  if(/casa|obra|instal|acabamento|banheiro|hidraul/.test(text))return'casa';
+  if(/cozinha|airfryer|air fryer|cafeteira|geladeira|fogao|forno|panela|lava-loucas/.test(text))return'cozinha';
+  return'tecnologia';
+}
+function criterion(product){
+  const explicit=norm([product.faixa,product.selo].filter(Boolean).join(' '));
+  if(/custo.?beneficio|beneficio/.test(explicit))return{label:'CUSTO-BENEFÍCIO',score:60};
+  if(/entrada|econom|acessivel/.test(explicit))return{label:'OPÇÃO DE ENTRADA',score:50};
+  if(/premium|topo|avancad/.test(explicit))return{label:'PREMIUM',score:40};
+  if(/intermedi|equilibr/.test(explicit))return{label:'EQUILÍBRIO',score:35};
+  if(/recomend|escolha|selecion/.test(explicit))return{label:'SELECIONADO',score:30};
+  if(/destaque/.test(explicit))return{label:'DESTAQUE',score:25};
+  return{label:'DESTAQUE',score:20};
+}
+function reasonText(product){
+  return String(product.chamada||product.resumo||'').trim();
+}
+function compareCandidates(a,b){
+  const scoreDiff=criterion(b).score-criterion(a).score;
+  if(scoreDiff)return scoreDiff;
+  return String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR');
+}
+function takeBalanced(candidates,limit,selected,brandCounts){
+  const chosen=[];
+  for(const maxPerBrand of [1,2,3,Number.POSITIVE_INFINITY]){
+    for(const product of candidates){
+      if(chosen.length>=limit)break;
+      if(selected.some(item=>item.id===product.id)||chosen.some(item=>item.id===product.id))continue;
+      const brand=norm(product.marca||'sem-marca');
+      if((brandCounts.get(brand)||0)>=maxPerBrand)continue;
+      chosen.push(product);
+      brandCounts.set(brand,(brandCounts.get(brand)||0)+1);
+    }
+    if(chosen.length>=limit)break;
+  }
+  selected.push(...chosen);
+}
+function curate(products){
+  const eligible=products
+    .filter(product=>product?.linkAfiliado&&product.destaque===true&&reasonText(product))
+    .sort(compareCandidates);
+  if(eligible.length<CURATION_TARGET)throw new Error(`Curadoria insuficiente: ${eligible.length} produtos elegíveis para meta ${CURATION_TARGET}.`);
+
+  const selected=[];
+  const brandCounts=new Map();
+  for(const [group,quota] of Object.entries(BUCKET_QUOTAS)){
+    takeBalanced(eligible.filter(product=>bucket(product)===group),quota,selected,brandCounts);
+  }
+  if(selected.length<CURATION_TARGET)takeBalanced(eligible,CURATION_TARGET-selected.length,selected,brandCounts);
+  if(selected.length<CURATION_TARGET){
+    for(const product of eligible){
+      if(selected.length>=CURATION_TARGET)break;
+      if(!selected.some(item=>item.id===product.id))selected.push(product);
+    }
+  }
+  const curated=selected.slice(0,CURATION_TARGET).sort(compareCandidates);
+  if(curated.length!==CURATION_TARGET)throw new Error(`Curadoria final inválida: ${curated.length}.`);
+  return{eligible,curated};
 }
 function card(product,index){
-  return `<article class="pnm-offer-card" data-pnm-product-id="${esc(product.id)}"><div class="pnm-offer-image"><img ${imageAttrs(product,index)}><span>${esc(safeLabel(product))}</span></div><div class="pnm-offer-copy"><small>${esc(product.marca||product.categoria||'Produto')}</small><h3>${esc(product.nome)}</h3><p>${esc(product.chamada||product.resumo||'Veja a análise e confirme se esta opção combina com o que você procura.')}</p><div><a href="${productUrl(product)}">ANALISAR</a><a class="hot" href="${esc(product.linkAfiliado||'#')}" target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label="Ver ${esc(product.nome)} no Mercado Livre — abre em nova aba">VER NO MERCADO LIVRE ↗</a></div></div></article>`;
+  const meta=criterion(product);
+  return `<article class="pnm-offer-card" data-pnm-product-id="${esc(product.id)}"><div class="pnm-offer-image"><img ${imageAttrs(product,index)}><span>${esc(meta.label)}</span></div><div class="pnm-offer-copy"><small>${esc(product.marca||product.categoria||'Produto')}</small><h3>${esc(product.nome)}</h3><p><strong>Por que olhar:</strong> ${esc(reasonText(product))}</p><div><a href="${productUrl(product)}">ANALISAR</a><a class="hot" href="${esc(product.linkAfiliado||'#')}" target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label="Ver ${esc(product.nome)} no Mercado Livre — abre em nova aba">VER NO MERCADO LIVRE ↗</a></div></div></article>`;
 }
 function pagePath(page){return page<=1?'ofertas':`ofertas-pagina-${page}`;}
 function pageUrl(page){return `${ORIGIN}/${pagePath(page)}`;}
@@ -44,14 +105,10 @@ function pagination(page,totalPages){
   if(totalPages<=1)return '';
   const prev=page>1?`<a rel="prev" href="${pagePath(page-1)}">← ANTERIOR</a>`:'<span aria-hidden="true"></span>';
   const next=page<totalPages?`<a rel="next" href="${pagePath(page+1)}">PRÓXIMA →</a>`:'<span aria-hidden="true"></span>';
-  const nearby=[];
-  for(let current=Math.max(1,page-2);current<=Math.min(totalPages,page+2);current+=1){
-    nearby.push(current===page?`<strong aria-current="page">${current}</strong>`:`<a href="${pagePath(current)}" aria-label="Ofertas — página ${current}">${current}</a>`);
-  }
-  return `<nav class="pnm-seo-pagination" aria-label="Paginação de Ofertas">${prev}<span class="pnm-seo-pages">${nearby.join('')}</span><span class="pnm-seo-page-status">Página ${page} de ${totalPages}</span>${next}</nav>`;
+  return `<nav class="pnm-seo-pagination" aria-label="Paginação de Ofertas">${prev}<span class="pnm-seo-page-status">Página ${page} de ${totalPages}</span>${next}</nav>`;
 }
 function itemList(items,page){
-  const schema={'@context':'https://schema.org','@type':'ItemList',name:`Ofertas e destaques selecionados — página ${page}`,itemListElement:items.map((product,index)=>({'@type':'ListItem',position:(page-1)*PAGE_SIZE+index+1,url:`${ORIGIN}/${productUrl(product)}`,name:product.nome}))};
+  const schema={'@context':'https://schema.org','@type':'ItemList',name:`Curadoria do Preço na Mira — página ${page}`,itemListElement:items.map((product,index)=>({'@type':'ListItem',position:(page-1)*PAGE_SIZE+index+1,url:`${ORIGIN}/${productUrl(product)}`,name:product.nome}))};
   return `<script type="application/ld+json">${JSON.stringify(schema)}</script>`;
 }
 function headSeo(items,page,totalPages){
@@ -63,7 +120,7 @@ function headSeo(items,page,totalPages){
 }
 function updateMeta(html,page){
   const canonical=pageUrl(page);
-  const title=page===1?'Ofertas e destaques selecionados — Preço na Mira':`Ofertas e destaques selecionados — Preço na Mira — Página ${page}`;
+  const title=page===1?'Ofertas — curadoria para descobrir — Preço na Mira':`Ofertas — curadoria para descobrir — Preço na Mira — Página ${page}`;
   html=html.replace(/<title>[^<]*<\/title>/i,`<title>${esc(title)}</title>`);
   html=html.replace(/<link\b(?=[^>]*\brel=(?:"canonical"|'canonical'))[^>]*>/i,`<link rel="canonical" href="${canonical}">`);
   html=html.replace(/<meta\b(?=[^>]*\bproperty=(?:"og:url"|'og:url'))[^>]*>/i,`<meta property="og:url" content="${canonical}">`);
@@ -73,11 +130,7 @@ function updateMeta(html,page){
 }
 
 const products=readProducts();
-const curated=products
-  .filter(product=>product?.linkAfiliado&&product.destaque===true)
-  .sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR'));
-if(curated.length<20)throw new Error(`Curadoria insuficiente: apenas ${curated.length} produtos com destaque=true.`);
-
+const {eligible,curated}=curate(products);
 let base=fs.readFileSync(TEMPLATE,'utf8');
 for(const old of fs.readdirSync(ROOT).filter(name=>/^ofertas-pagina-\d+\.html$/.test(name)))fs.unlinkSync(path.join(ROOT,old));
 const totalPages=Math.ceil(curated.length/PAGE_SIZE);
@@ -93,5 +146,7 @@ for(let page=1;page<=totalPages;page+=1){
 
 const first=fs.readFileSync(TEMPLATE,'utf8');
 const firstCards=(first.match(/data-pnm-product-id=/g)||[]).length;
-if(firstCards!==Math.min(PAGE_SIZE,curated.length))throw new Error(`Ofertas prerenderizadas inválidas: ${firstCards}.`);
-console.log(JSON.stringify({curatedOffers:curated.length,offerPages:totalPages,firstPageCards:firstCards,criterion:'destaque=true'},null,2));
+if(firstCards!==curated.length)throw new Error(`Ofertas prerenderizadas inválidas: ${firstCards}/${curated.length}.`);
+const byBucket=Object.fromEntries(Object.keys(BUCKET_QUOTAS).map(group=>[group,curated.filter(product=>bucket(product)===group).length]));
+const byCriterion=curated.reduce((acc,product)=>{const label=criterion(product).label;acc[label]=(acc[label]||0)+1;return acc;},{});
+console.log(JSON.stringify({eligibleOffers:eligible.length,curatedOffers:curated.length,offerPages:totalPages,firstPageCards:firstCards,byBucket,byCriterion,criterion:'destaque=true + motivo editorial existente + equilíbrio entre áreas e marcas'},null,2));
