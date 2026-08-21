@@ -19,7 +19,7 @@
     const text=norm([p.tipoProduto,p.categoriaId,p.categoria,p.subtipo,p.subtipoCozinha,p.subtipoCasa,p.subtipoObra,p.subtipoInstalacao,p.subtipoAcabamento].join(' '));
     if(/gamer|pc|gpu|processador|monitor|mouse|teclado|memoria|placa/.test(text))return'gamer';
     if(/cozinha|airfryer|air fryer|cafeteira|geladeira|fogao|forno|panela|lava-loucas/.test(text))return'cozinha';
-    if(/casa|obra|instal|acabamento|banheiro|hidraul/.test(text))return'casa';
+    if(/casa|obra|instal|acabamento|banheiro|hidraul|lavanderia|limpeza|aspirador/.test(text))return'casa';
     return'tecnologia';
   }
   function criterion(p){
@@ -28,12 +28,16 @@
     if(/entrada|econom|acessivel/.test(explicit))return{label:'OPÇÃO DE ENTRADA',score:50};
     if(/premium|topo|avancad/.test(explicit))return{label:'PREMIUM',score:40};
     if(/intermedi|equilibr/.test(explicit))return{label:'EQUILÍBRIO',score:35};
-    if(/recomend|escolha|selecion/.test(explicit))return{label:'SELECIONADO',score:30};
-    if(/destaque/.test(explicit))return{label:'DESTAQUE',score:25};
-    return{label:'DESTAQUE',score:20};
+    if(/recomend|escolha|selecion/.test(explicit))return{label:'SELECIONADO',score:25};
+    if(/destaque/.test(explicit)||p.destaque===true)return{label:'DESTAQUE',score:30};
+    return{label:'SELECIONADO',score:20};
   }
   function reasonText(p){return String(p.chamada||p.resumo||'').trim()}
-  function compareCandidates(a,b){const scoreDiff=criterion(b).score-criterion(a).score;return scoreDiff||String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR')}
+  function compareCandidates(a,b){
+    const scoreA=criterion(a).score+(a.destaque===true?10:0);
+    const scoreB=criterion(b).score+(b.destaque===true?10:0);
+    return scoreB-scoreA||String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR');
+  }
   function takeBalanced(candidates,limit,selected,brandCounts){
     const chosen=[];
     for(const maxPerBrand of [1,2,3,Number.POSITIVE_INFINITY]){
@@ -50,11 +54,11 @@
     selected.push(...chosen);
   }
   function curate(list){
-    const eligible=list.filter(p=>p?.linkAfiliado&&p.destaque===true&&reasonText(p)).sort(compareCandidates);
+    const candidates=list.filter(p=>p?.linkAfiliado&&reasonText(p)).sort(compareCandidates);
     const selected=[],brandCounts=new Map();
-    for(const [group,quota] of Object.entries(BUCKET_QUOTAS))takeBalanced(eligible.filter(p=>bucket(p)===group),quota,selected,brandCounts);
-    if(selected.length<CURATION_TARGET)takeBalanced(eligible,CURATION_TARGET-selected.length,selected,brandCounts);
-    if(selected.length<CURATION_TARGET){for(const p of eligible){if(selected.length>=CURATION_TARGET)break;if(!selected.some(item=>item.id===p.id))selected.push(p)}}
+    for(const [group,quota] of Object.entries(BUCKET_QUOTAS))takeBalanced(candidates.filter(p=>bucket(p)===group),quota,selected,brandCounts);
+    if(selected.length<CURATION_TARGET)takeBalanced(candidates,CURATION_TARGET-selected.length,selected,brandCounts);
+    if(selected.length<CURATION_TARGET){for(const p of candidates){if(selected.length>=CURATION_TARGET)break;if(!selected.some(item=>item.id===p.id))selected.push(p)}}
     return selected.slice(0,CURATION_TARGET).sort(compareCandidates);
   }
   const curated=curate(products);
