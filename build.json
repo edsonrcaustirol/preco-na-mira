@@ -1,6 +1,6 @@
 {
-  "version": "V18.0.0",
-  "buildDate": "2026-08-16",
+  "version": "V18.4.0",
+  "buildDate": "2026-08-20",
   "environment": "production",
   "baseUrl": "https://preconamira.com.br",
   "source": {
@@ -29,10 +29,13 @@
     "extensionlessCanonicalRoutes": true,
     "branded404": true,
     "reducedMotion": true,
-    "automatedStaticAudit": true
+    "automatedStaticAudit": true,
+    "catalogOffersSeparation": true
   },
   "notes": [
-    "V18.0.0 establishes the professional platform foundation without replacing verified product data.",
+    "V18.4.0 preserves the 556-product canonical catalog and separates discovery from search.",
+    "Offers is generated as a short editorial curation without changing the canonical product source.",
+    "No discount, price history, stock, freight or urgency is inferred by the curation.",
     "External product-image dependencies remain visible for progressive localization.",
     "Prices, stock, freight and variants are confirmed in the partner store."
   ]
