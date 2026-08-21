@@ -18,8 +18,8 @@
   function bucket(p){
     const text=norm([p.tipoProduto,p.categoriaId,p.categoria,p.subtipo,p.subtipoCozinha,p.subtipoCasa,p.subtipoObra,p.subtipoInstalacao,p.subtipoAcabamento].join(' '));
     if(/gamer|pc|gpu|processador|monitor|mouse|teclado|memoria|placa/.test(text))return'gamer';
-    if(/casa|obra|instal|acabamento|banheiro|hidraul/.test(text))return'casa';
     if(/cozinha|airfryer|air fryer|cafeteira|geladeira|fogao|forno|panela|lava-loucas/.test(text))return'cozinha';
+    if(/casa|obra|instal|acabamento|banheiro|hidraul/.test(text))return'casa';
     return'tecnologia';
   }
   function criterion(p){
