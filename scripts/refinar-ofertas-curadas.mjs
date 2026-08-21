@@ -37,7 +37,7 @@ function bucket(product){
   const text=norm([product.tipoProduto,product.categoriaId,product.categoria,product.subtipo,product.subtipoCozinha,product.subtipoCasa,product.subtipoObra,product.subtipoInstalacao,product.subtipoAcabamento].join(' '));
   if(/gamer|pc|gpu|processador|monitor|mouse|teclado|memoria|placa/.test(text))return'gamer';
   if(/cozinha|airfryer|air fryer|cafeteira|geladeira|fogao|forno|panela|lava-loucas/.test(text))return'cozinha';
-  if(/casa|obra|instal|acabamento|banheiro|hidraul/.test(text))return'casa';
+  if(/casa|obra|instal|acabamento|banheiro|hidraul|lavanderia|limpeza|aspirador/.test(text))return'casa';
   return'tecnologia';
 }
 function criterion(product){
@@ -46,16 +46,17 @@ function criterion(product){
   if(/entrada|econom|acessivel/.test(explicit))return{label:'OPÇÃO DE ENTRADA',score:50};
   if(/premium|topo|avancad/.test(explicit))return{label:'PREMIUM',score:40};
   if(/intermedi|equilibr/.test(explicit))return{label:'EQUILÍBRIO',score:35};
-  if(/recomend|escolha|selecion/.test(explicit))return{label:'SELECIONADO',score:30};
-  if(/destaque/.test(explicit))return{label:'DESTAQUE',score:25};
-  return{label:'DESTAQUE',score:20};
+  if(/recomend|escolha|selecion/.test(explicit))return{label:'SELECIONADO',score:25};
+  if(/destaque/.test(explicit)||product.destaque===true)return{label:'DESTAQUE',score:30};
+  return{label:'SELECIONADO',score:20};
 }
 function reasonText(product){
   return String(product.chamada||product.resumo||'').trim();
 }
 function compareCandidates(a,b){
-  const scoreDiff=criterion(b).score-criterion(a).score;
-  if(scoreDiff)return scoreDiff;
+  const scoreA=criterion(a).score+(a.destaque===true?10:0);
+  const scoreB=criterion(b).score+(b.destaque===true?10:0);
+  if(scoreA!==scoreB)return scoreB-scoreA;
   return String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR');
 }
 function takeBalanced(candidates,limit,selected,brandCounts){
@@ -74,26 +75,27 @@ function takeBalanced(candidates,limit,selected,brandCounts){
   selected.push(...chosen);
 }
 function curate(products){
-  const eligible=products
-    .filter(product=>product?.linkAfiliado&&product.destaque===true&&reasonText(product))
+  const previousHighlights=products.filter(product=>product?.linkAfiliado&&product.destaque===true).length;
+  const candidates=products
+    .filter(product=>product?.linkAfiliado&&reasonText(product))
     .sort(compareCandidates);
-  if(eligible.length<CURATION_TARGET)throw new Error(`Curadoria insuficiente: ${eligible.length} produtos elegíveis para meta ${CURATION_TARGET}.`);
+  if(candidates.length<CURATION_TARGET)throw new Error(`Curadoria insuficiente: ${candidates.length} produtos elegíveis para meta ${CURATION_TARGET}.`);
 
   const selected=[];
   const brandCounts=new Map();
   for(const [group,quota] of Object.entries(BUCKET_QUOTAS)){
-    takeBalanced(eligible.filter(product=>bucket(product)===group),quota,selected,brandCounts);
+    takeBalanced(candidates.filter(product=>bucket(product)===group),quota,selected,brandCounts);
   }
-  if(selected.length<CURATION_TARGET)takeBalanced(eligible,CURATION_TARGET-selected.length,selected,brandCounts);
+  if(selected.length<CURATION_TARGET)takeBalanced(candidates,CURATION_TARGET-selected.length,selected,brandCounts);
   if(selected.length<CURATION_TARGET){
-    for(const product of eligible){
+    for(const product of candidates){
       if(selected.length>=CURATION_TARGET)break;
       if(!selected.some(item=>item.id===product.id))selected.push(product);
     }
   }
   const curated=selected.slice(0,CURATION_TARGET).sort(compareCandidates);
   if(curated.length!==CURATION_TARGET)throw new Error(`Curadoria final inválida: ${curated.length}.`);
-  return{eligible,curated};
+  return{previousHighlights,candidates,curated};
 }
 function card(product,index){
   const meta=criterion(product);
@@ -130,7 +132,7 @@ function updateMeta(html,page){
 }
 
 const products=readProducts();
-const {eligible,curated}=curate(products);
+const {previousHighlights,candidates,curated}=curate(products);
 let base=fs.readFileSync(TEMPLATE,'utf8');
 for(const old of fs.readdirSync(ROOT).filter(name=>/^ofertas-pagina-\d+\.html$/.test(name)))fs.unlinkSync(path.join(ROOT,old));
 const totalPages=Math.ceil(curated.length/PAGE_SIZE);
@@ -149,4 +151,4 @@ const firstCards=(first.match(/data-pnm-product-id=/g)||[]).length;
 if(firstCards!==curated.length)throw new Error(`Ofertas prerenderizadas inválidas: ${firstCards}/${curated.length}.`);
 const byBucket=Object.fromEntries(Object.keys(BUCKET_QUOTAS).map(group=>[group,curated.filter(product=>bucket(product)===group).length]));
 const byCriterion=curated.reduce((acc,product)=>{const label=criterion(product).label;acc[label]=(acc[label]||0)+1;return acc;},{});
-console.log(JSON.stringify({eligibleOffers:eligible.length,curatedOffers:curated.length,offerPages:totalPages,firstPageCards:firstCards,byBucket,byCriterion,criterion:'destaque=true + motivo editorial existente + equilíbrio entre áreas e marcas'},null,2));
+console.log(JSON.stringify({previousHighlights,candidatePool:candidates.length,curatedOffers:curated.length,offerPages:totalPages,firstPageCards:firstCards,byBucket,byCriterion,criterion:'prioriza destaques e critérios editoriais existentes; completa variedade por área e marca sem inventar dados'},null,2));
