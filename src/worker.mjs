@@ -1,15 +1,17 @@
 const ENDPOINT = '/__pnm/analytics';
-const EVENTS = new Set(['page_view', 'affiliate_click']);
+const EVENTS = new Set(['page_view', 'affiliate_click', 'commercial_impression']);
 const PLACEMENTS = new Set(['card','primary','sidebar','sticky','related','search_result','saved','cart','comparison','project','studio','small_spaces','obra_base','dewalt_pending']);
+const IMPRESSION_PLACEMENTS = new Set(['card','related']);
 const PAGE_FIELDS = new Set(['page','page_type','product_id','utm_source','utm_medium','utm_campaign','referrer_host']);
 const CLICK_FIELDS = new Set(['product_id','store','page','placement','utm_source','utm_medium','utm_campaign','referrer_host']);
+const IMPRESSION_FIELDS = new Set(['product_id','store','page','page_type','placement','utm_source','utm_medium','utm_campaign','referrer_host']);
 
 const clean = (value, max = 120) => String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
 const slug = (value, max = 120) => clean(value, max).toLowerCase().replace(/[^a-z0-9._/-]+/g, '_').replace(/^_+|_+$/g, '');
 const campaign = value => clean(value, 120).replace(/[^\p{L}\p{N} _./:-]/gu, '').slice(0, 120);
 
 function sanitize(event, data) {
-  const fields = event === 'page_view' ? PAGE_FIELDS : event === 'affiliate_click' ? CLICK_FIELDS : null;
+  const fields = event === 'page_view' ? PAGE_FIELDS : event === 'affiliate_click' ? CLICK_FIELDS : event === 'commercial_impression' ? IMPRESSION_FIELDS : null;
   if (!fields || !data || typeof data !== 'object' || Array.isArray(data)) return null;
   const out = {};
   for (const key of fields) {
@@ -19,6 +21,7 @@ function sanitize(event, data) {
   }
   if (event === 'page_view' && (!out.page || !out.page_type)) return null;
   if (event === 'affiliate_click' && (!out.product_id || !out.store || !out.page || !PLACEMENTS.has(out.placement))) return null;
+  if (event === 'commercial_impression' && (!out.product_id || out.product_id === 'unknown' || !out.store || !out.page || !out.page_type || !IMPRESSION_PLACEMENTS.has(out.placement))) return null;
   return out;
 }
 

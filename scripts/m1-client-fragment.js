@@ -5,9 +5,13 @@
   const ENDPOINT = '/__pnm/analytics';
   const TRAFFIC_KEY = 'pnm:m1:traffic';
   const PLACEMENTS = new Set(['card','primary','sidebar','sticky','related','search_result','saved','cart','comparison','project','studio','small_spaces','obra_base','dewalt_pending']);
+  const IMPRESSION_PLACEMENTS = new Set(['card','related']);
+  const IMPRESSION_RATIO = 0.5;
+  const IMPRESSION_DWELL_MS = 500;
   const EVENT_FIELDS = {
     page_view: new Set(['page','page_type','product_id','utm_source','utm_medium','utm_campaign','referrer_host']),
-    affiliate_click: new Set(['product_id','store','page','placement','utm_source','utm_medium','utm_campaign','referrer_host'])
+    affiliate_click: new Set(['product_id','store','page','placement','utm_source','utm_medium','utm_campaign','referrer_host']),
+    commercial_impression: new Set(['product_id','store','page','page_type','placement','utm_source','utm_medium','utm_campaign','referrer_host'])
   };
 
   const clean = (value, max = 120) => String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
@@ -74,6 +78,7 @@
     }
     if (eventName === 'page_view' && (!out.page || !out.page_type)) return null;
     if (eventName === 'affiliate_click' && (!out.product_id || !out.store || !out.page || !out.placement)) return null;
+    if (eventName === 'commercial_impression' && (!out.product_id || out.product_id === 'unknown' || !out.store || !out.page || !out.page_type || !IMPRESSION_PLACEMENTS.has(out.placement))) return null;
     return out;
   }
 
@@ -142,6 +147,82 @@
     const byPage = { busca: 'search_result', salvos: 'saved', carrinho: 'cart', comparacao: 'comparison', projeto: 'project', casa_studio: 'studio', pequenos_espacos: 'small_spaces', obra_base: 'obra_base' };
     return byPage[info.page] || 'card';
   }
+
+  function setupCommercialImpressions() {
+    if (typeof IntersectionObserver !== 'function' || window.__PNM_M31_IMPRESSIONS_BOUND__) return;
+    window.__PNM_M31_IMPRESSIONS_BOUND__ = true;
+
+    const observedTargets = new WeakSet();
+    const targetMeta = new WeakMap();
+    const visibility = new WeakMap();
+    const pending = new WeakMap();
+    const impressed = new Set();
+
+    function targetFor(anchor, placement) {
+      if (placement === 'related') return anchor.closest?.('.related-mini,.related-card,.product-card') || anchor;
+      return anchor.closest?.('article,td,.product-card,.pnm-product-card,.pnm-offer-card,.smart-ad-card') || anchor;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        const target = entry.target;
+        const meta = targetMeta.get(target);
+        if (!meta) continue;
+        const eligible = Boolean(entry.isIntersecting) && Number(entry.intersectionRatio || 0) >= IMPRESSION_RATIO;
+        visibility.set(target, eligible);
+        const timer = pending.get(target);
+        if (!eligible) {
+          if (timer) clearTimeout(timer);
+          pending.delete(target);
+          continue;
+        }
+        if (impressed.has(meta.key) || timer) continue;
+        pending.set(target, setTimeout(() => {
+          pending.delete(target);
+          if (target.isConnected === false || !visibility.get(target) || impressed.has(meta.key)) return;
+          impressed.add(meta.key);
+          api.track('commercial_impression', meta.data);
+          observer.unobserve?.(target);
+        }, IMPRESSION_DWELL_MS));
+      }
+    }, { threshold: [IMPRESSION_RATIO] });
+
+    function consider(anchor) {
+      if (!anchor) return;
+      const href = anchor.href || anchor.getAttribute?.('href') || '';
+      const store = storeFromHref(href);
+      if (!store) return;
+      const placement = placementFor(anchor);
+      if (!IMPRESSION_PLACEMENTS.has(placement)) return;
+      const productId = productIdFor(anchor);
+      if (!productId || productId === 'unknown') return;
+      const target = targetFor(anchor, placement);
+      if (!target || observedTargets.has(target)) return;
+      const key = `${info.page}|${productId}|${placement}`;
+      observedTargets.add(target);
+      targetMeta.set(target, {
+        key,
+        data: { product_id: productId, store, page: info.page, page_type: info.page_type, placement, ...traffic }
+      });
+      observer.observe(target);
+    }
+
+    function scan(root) {
+      if (!root) return;
+      if (root.matches?.('a[href]')) consider(root);
+      root.querySelectorAll?.('a[href]').forEach(consider);
+    }
+
+    scan(document);
+    if (typeof MutationObserver === 'function' && document.body) {
+      const mutations = new MutationObserver(records => {
+        for (const record of records) for (const node of record.addedNodes || []) scan(node);
+      });
+      mutations.observe(document.body, { childList: true, subtree: true });
+    }
+  }
+
+  setupCommercialImpressions();
 
   const handled = new WeakSet();
   if (!window.__PNM_M1_AFFILIATE_BOUND__) {
