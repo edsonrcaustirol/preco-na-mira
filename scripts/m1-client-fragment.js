@@ -78,7 +78,7 @@
     }
     if (eventName === 'page_view' && (!out.page || !out.page_type)) return null;
     if (eventName === 'affiliate_click' && (!out.product_id || !out.store || !out.page || !out.placement)) return null;
-    if (eventName === 'commercial_impression' && (!out.product_id || !out.store || !out.page || !out.page_type || !IMPRESSION_PLACEMENTS.has(out.placement))) return null;
+    if (eventName === 'commercial_impression' && (!out.product_id || out.product_id === 'unknown' || !out.store || !out.page || !out.page_type || !IMPRESSION_PLACEMENTS.has(out.placement))) return null;
     return out;
   }
 
@@ -179,7 +179,7 @@
         if (impressed.has(meta.key) || timer) continue;
         pending.set(target, setTimeout(() => {
           pending.delete(target);
-          if (!visibility.get(target) || impressed.has(meta.key)) return;
+          if (target.isConnected === false || !visibility.get(target) || impressed.has(meta.key)) return;
           impressed.add(meta.key);
           api.track('commercial_impression', meta.data);
           observer.unobserve?.(target);
@@ -195,6 +195,7 @@
       const placement = placementFor(anchor);
       if (!IMPRESSION_PLACEMENTS.has(placement)) return;
       const productId = productIdFor(anchor);
+      if (!productId || productId === 'unknown') return;
       const target = targetFor(anchor, placement);
       if (!target || observedTargets.has(target)) return;
       const key = `${info.page}|${productId}|${placement}`;
