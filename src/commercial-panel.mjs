@@ -103,6 +103,7 @@ function sanitizeDiagnosticDetail(value, { accountId = '', apiToken = '', panelP
     .replace(/\bAuthorization\b(?:\s*[:=]\s*|\s+)[^,;]+/gi, '[redacted]')
     .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]+/gi, '[redacted]')
     .replace(/\b(?:PNM_CF_ANALYTICS_TOKEN|PNM_PANEL_PASSWORD)\b/gi, '[redacted]')
+    .replace(/\b[^\s,;=]*secret[^\s,;=]*\b/gi, '[redacted]')
     .replace(/\b(?:token|password|senha)\s*[:=]\s*[^,;\s]+/gi, '[redacted]')
     .replace(/\b[a-f0-9]{32}\b/gi, '[redacted]')
     .replace(/\b(?:SELECT|SHOW|WITH|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER)\b[\s\S]*/i, '[redacted]')
