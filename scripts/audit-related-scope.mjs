@@ -30,14 +30,20 @@ function classTokens(raw) {
   return new Set((match[1] ?? match[2] ?? match[3] ?? '').split(/\s+/).filter(Boolean));
 }
 
-function scanTags(html) {
+function scanDocument(html) {
   const tokens = [];
+  const textSegments = [];
   const errors = [];
   let cursor = 0;
 
   while (cursor < html.length) {
     const start = html.indexOf('<', cursor);
-    if (start < 0) break;
+    if (start < 0) {
+      if (cursor < html.length) textSegments.push({ start: cursor, end: html.length, text: html.slice(cursor) });
+      break;
+    }
+
+    if (start > cursor) textSegments.push({ start: cursor, end: start, text: html.slice(cursor, start) });
 
     if (html.startsWith('<!--', start)) {
       const end = html.indexOf('-->', start + 4);
@@ -94,36 +100,55 @@ function scanTags(html) {
     }
   }
 
-  return { tokens, errors };
+  return { tokens, textSegments, errors };
+}
+
+function isRelevantOpen(token) {
+  return ACTION_TAGS.has(token.name) || token.classes.has(RELATED_CLASS);
 }
 
 function buildIntervals(tokens) {
-  const stacks = new Map();
+  const stack = [];
   const intervals = [];
   const errors = [];
 
   for (const token of tokens) {
     if (!token.closing && !token.selfClosing) {
-      if (!stacks.has(token.name)) stacks.set(token.name, []);
-      stacks.get(token.name).push(token);
+      if (ACTION_TAGS.has(token.name) && stack.some((open) => ACTION_TAGS.has(open.name))) {
+        errors.push(`<${token.name}> aninhado em outra ação em ${token.start}`);
+      }
+      stack.push(token);
       continue;
     }
     if (!token.closing) continue;
 
-    const stack = stacks.get(token.name) ?? [];
-    if (stack.length === 0) {
+    let matchIndex = -1;
+    for (let i = stack.length - 1; i >= 0; i -= 1) {
+      if (stack[i].name === token.name) {
+        matchIndex = i;
+        break;
+      }
+    }
+
+    if (matchIndex < 0) {
       if (ACTION_TAGS.has(token.name)) errors.push(`</${token.name}> sem abertura em ${token.start}`);
       continue;
     }
-    const open = stack.pop();
+
+    const open = stack[matchIndex];
+    const crossed = stack.slice(matchIndex + 1);
+    if (crossed.length > 0 && (isRelevantOpen(open) || crossed.some(isRelevantOpen))) {
+      const crossedNames = crossed.map((item) => `<${item.name}>`).join(', ');
+      errors.push(`nesting relevante cruzado: <${open.name}> em ${open.start} fecha sobre ${crossedNames} em ${token.start}`);
+    }
+
     intervals.push({ open, close: token });
+    stack.splice(matchIndex, 1);
   }
 
-  for (const [name, stack] of stacks) {
-    for (const open of stack) {
-      if (ACTION_TAGS.has(name) || open.classes.has(RELATED_CLASS)) {
-        errors.push(`<${name}> relevante sem fechamento em ${open.start}`);
-      }
+  for (const open of stack) {
+    if (isRelevantOpen(open)) {
+      errors.push(`<${open.name}> relevante sem fechamento em ${open.start}`);
     }
   }
 
@@ -139,13 +164,13 @@ function decodeEntities(text) {
     .replace(/&#x0*2197;/gi, '↗');
 }
 
-function actionLabel(html, interval) {
-  const inner = html.slice(interval.open.end, interval.close.start);
-  const noMarkup = inner.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<[^>]*>/g, ' ');
-  return {
-    inner,
-    label: decodeEntities(noMarkup).replace(/\s+/g, ' ').trim(),
-  };
+function textSegmentsInside(textSegments, interval) {
+  return textSegments.filter((segment) => interval.open.end <= segment.start && segment.end <= interval.close.start);
+}
+
+function actionLabel(textSegments, interval) {
+  const text = textSegmentsInside(textSegments, interval).map((segment) => segment.text).join(' ');
+  return decodeEntities(text).replace(/\s+/g, ' ').trim();
 }
 
 function inside(container, interval) {
@@ -153,14 +178,23 @@ function inside(container, interval) {
 }
 
 export function classifyHtml(html) {
-  const scanned = scanTags(html);
+  const scanned = scanDocument(html);
   const built = buildIntervals(scanned.tokens);
   const ambiguities = [...scanned.errors, ...built.errors];
   const relatedIntervals = built.intervals.filter((item) => item.open.classes.has(RELATED_CLASS));
   const actionIntervals = built.intervals.filter((item) => ACTION_TAGS.has(item.open.name));
 
+  const candidateStarts = new Set();
+  for (const action of actionIntervals) {
+    for (const segment of textSegmentsInside(scanned.textSegments, action)) {
+      for (let offset = segment.text.indexOf(EXACT_CTA); offset >= 0; offset = segment.text.indexOf(EXACT_CTA, offset + EXACT_CTA.length)) {
+        candidateStarts.add(segment.start + offset);
+      }
+    }
+  }
+
   const exactOccurrences = [];
-  for (let start = html.indexOf(EXACT_CTA); start >= 0; start = html.indexOf(EXACT_CTA, start + EXACT_CTA.length)) {
+  for (const start of [...candidateStarts].sort((a, b) => a - b)) {
     const actions = actionIntervals.filter((item) => item.open.end <= start && start < item.close.start);
     if (actions.length !== 1) {
       ambiguities.push(`"${EXACT_CTA}" em ${start} pertence a ${actions.length} ações estruturais`);
@@ -179,14 +213,14 @@ export function classifyHtml(html) {
 
   const variants = [];
   for (const action of actionIntervals) {
-    const { inner, label } = actionLabel(html, action);
+    const label = actionLabel(scanned.textSegments, action);
     if (!/^VER\b/i.test(label) || label.length > 100) continue;
     const related = relatedIntervals.filter((item) => inside(item, action));
     if (related.length > 1) {
       ambiguities.push(`ação "${label}" em ${action.open.start} pertence a múltiplos blocos ${RELATED_CLASS}`);
       continue;
     }
-    const isLiteralExact = label === EXACT_CTA && inner.includes(EXACT_CTA);
+    const isLiteralExact = exactOccurrences.some((item) => item.start >= action.open.end && item.start < action.close.start);
     if (!isLiteralExact) {
       variants.push({ label, related: related.length === 1, encodedExact: label === EXACT_CTA });
     }
@@ -198,6 +232,18 @@ export function classifyHtml(html) {
     ambiguities,
     relatedBlockCount: relatedIntervals.length,
   };
+}
+
+export function auditFailures({ fileCount, exactTotal, relatedTotal, outsideTotal, ambiguousFileCount }) {
+  const failures = [];
+  if (fileCount === 0) failures.push('nenhum produto-*.html versionado foi encontrado');
+  if (exactTotal === 0) failures.push(`nenhuma ocorrência literal comercial de "${EXACT_CTA}" foi encontrada`);
+  if (outsideTotal > 0) failures.push(`${outsideTotal} ocorrência(s) literal(is) comercial(is) fora de ${RELATED_CLASS}`);
+  if (ambiguousFileCount > 0) failures.push(`${ambiguousFileCount} arquivo(s) com classificação ambígua`);
+  if (exactTotal !== relatedTotal + outsideTotal) {
+    failures.push(`discrepância estrutural: ${exactTotal} literal(is) comercial(is) != ${relatedTotal + outsideTotal} classificada(s)`);
+  }
+  return failures;
 }
 
 function trackedProductFiles() {
@@ -260,13 +306,13 @@ function runAudit() {
 
   console.log('M3.2 RELATED SCOPE AUDIT');
   console.log(`TOTAL_PRODUTO_HTML=${files.length}`);
-  console.log(`VER_OFERTA_EXATAS=${exactTotal}`);
+  console.log(`VER_OFERTA_EXATAS_REAIS=${exactTotal}`);
   console.log(`RELATED_CONFIRMADAS=${relatedTotal}`);
   console.log(`FORA_DE_RELATED=${outsideTotal}`);
   console.log(`NAO_CLASSIFICADAS=${unresolvedTotal}`);
   console.log(`BLOCOS_RELATED_RECONHECIDOS=${relatedBlocks}`);
   console.log(`ARQUIVOS_AMBIGUOS=${ambiguousFiles.size}`);
-  console.log('ARQUIVOS_COM_VER_OFERTA_EXATA:');
+  console.log('ARQUIVOS_COM_VER_OFERTA_EXATA_REAL:');
   for (const item of exactFiles) {
     console.log(`- ${item.path}: exact=${item.exact} related=${item.related} outside=${item.outside} unresolved=${item.unresolved}`);
   }
@@ -283,21 +329,22 @@ function runAudit() {
     for (const error of errors) console.log(`  - ${error}`);
   }
 
-  const failures = [];
-  if (files.length === 0) failures.push('nenhum produto-*.html versionado foi encontrado');
-  if (exactTotal === 0) failures.push(`nenhuma ocorrência literal de "${EXACT_CTA}" foi encontrada`);
-  if (outsideTotal > 0) failures.push(`${outsideTotal} ocorrência(s) literal(is) fora de ${RELATED_CLASS}`);
-  if (ambiguousFiles.size > 0) failures.push(`${ambiguousFiles.size} arquivo(s) com classificação ambígua`);
-  if (exactTotal !== relatedTotal + outsideTotal) {
-    failures.push(`discrepância textual/estrutural: ${exactTotal} literal(is) != ${relatedTotal + outsideTotal} classificada(s)`);
-  }
+  const failures = auditFailures({
+    fileCount: files.length,
+    exactTotal,
+    relatedTotal,
+    outsideTotal,
+    ambiguousFileCount: ambiguousFiles.size,
+  });
 
   console.log('INVARIANTES:');
   console.log('- existe ao menos um produto-*.html versionado');
-  console.log(`- existe ao menos uma ocorrência literal de "${EXACT_CTA}"`);
-  console.log('- toda ocorrência literal é conteúdo de exatamente uma ação <a>/<button>');
-  console.log(`- toda ocorrência literal está em exatamente um contexto reconhecível e nenhuma fica fora de .${RELATED_CLASS}`);
-  console.log('- total textual = related confirmadas + fora de related');
+  console.log(`- existe ao menos uma ocorrência literal comercial real de "${EXACT_CTA}"`);
+  console.log('- comments e conteúdo raw-text (script/style/textarea/title) não entram na contagem comercial');
+  console.log('- toda ocorrência comercial real é conteúdo de exatamente uma ação <a>/<button>');
+  console.log(`- toda ocorrência comercial real está em exatamente um contexto reconhecível e nenhuma fica fora de .${RELATED_CLASS}`);
+  console.log('- nesting estrutural relevante cruzado/malformado torna o arquivo ambíguo');
+  console.log('- total comercial real = related confirmadas + fora de related');
 
   if (failures.length > 0) {
     console.error('AUDIT_RESULT=FAIL');
