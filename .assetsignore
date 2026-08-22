@@ -16,6 +16,8 @@
 /wrangler.jsonc
 /scripts
 /scripts/**
+/src
+/src/**
 /tools
 /tools/**
 
