@@ -15,7 +15,7 @@
     "build:site": "npm run build:mobile-data && npm run build:dewalt-queue && npm run build:seo && npm run refine:offers && npm run build:offers-data && npm run prepare:platform && npm run finalize:seo && npm run instrument:m1",
     "sync:compatibility": "node scripts/sincronizar-compatibilidade.mjs",
     "audit": "node scripts/auditar-site.mjs",
-    "audit:strict": "node scripts/auditar-site.mjs --strict",
+    "audit:strict": "node scripts/auditar-site.mjs --strict && node scripts/auditar-seo-p9.mjs",
     "preview": "node scripts/preview.mjs",
     "deploy": "wrangler deploy",
     "deploy:preview": "wrangler versions upload",
