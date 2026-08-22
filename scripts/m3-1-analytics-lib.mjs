@@ -9,7 +9,7 @@ const DATA = DATASET;
 const VERSION = SCHEMA_VERSION;
 const coveredPlacementSql = IMPRESSION_PLACEMENTS.map(value => `'${value}'`).join(', ');
 const eventSql = ACCEPTED_EVENTS.map(value => `'${value}'`).join(', ');
-const M31_START_TOKEN = '__M3_1_START_UTC__';
+const M31_START_PLACEHOLDER = '__M3_1_START_UTC__';
 
 function m31StartSql(value) {
   const raw = String(value || '').trim();
@@ -44,13 +44,13 @@ export const QUERY_DEFINITIONS = Object.freeze({
     group: 'metrics',
     requires_m31_start: true,
     description: 'CTR afiliado por produto somente para card/related e a partir do corte UTC explícito da M3.1; cliques históricos anteriores ficam fora.',
-    sql: `SELECT\n  blob5 AS product_id,\n  SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS commercial_impressions,\n  SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) AS affiliate_clicks,\n  100.0 * SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) / SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS affiliate_click_rate_pct\nFROM ${DATA}\nWHERE blob1 = '${VERSION}' AND timestamp >= ${M31_START_TOKEN} AND index1 IN ('commercial_impression', 'affiliate_click') AND blob7 IN (${coveredPlacementSql}) AND blob5 != 'unknown'\nGROUP BY product_id\nHAVING SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) > 0\nORDER BY affiliate_click_rate_pct DESC, product_id\nLIMIT 1000`,
+    sql: `SELECT\n  blob5 AS product_id,\n  SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS commercial_impressions,\n  SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) AS affiliate_clicks,\n  100.0 * SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) / SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS affiliate_click_rate_pct\nFROM ${DATA}\nWHERE blob1 = '${VERSION}' AND timestamp >= ${M31_START_PLACEHOLDER} AND index1 IN ('commercial_impression', 'affiliate_click') AND blob7 IN (${coveredPlacementSql}) AND blob5 != 'unknown'\nGROUP BY product_id\nHAVING SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) > 0\nORDER BY affiliate_click_rate_pct DESC, product_id\nLIMIT 1000`,
   },
   affiliate_click_rate_by_placement: {
     group: 'metrics',
     requires_m31_start: true,
     description: 'CTR afiliado por card/related a partir do corte UTC explícito da M3.1; cliques históricos anteriores ficam fora.',
-    sql: `SELECT\n  blob7 AS placement,\n  SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS commercial_impressions,\n  SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) AS affiliate_clicks,\n  100.0 * SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) / SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS affiliate_click_rate_pct\nFROM ${DATA}\nWHERE blob1 = '${VERSION}' AND timestamp >= ${M31_START_TOKEN} AND index1 IN ('commercial_impression', 'affiliate_click') AND blob7 IN (${coveredPlacementSql}) AND blob5 != 'unknown'\nGROUP BY placement\nHAVING SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) > 0\nORDER BY affiliate_click_rate_pct DESC, placement\nLIMIT 100`,
+    sql: `SELECT\n  blob7 AS placement,\n  SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS commercial_impressions,\n  SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) AS affiliate_clicks,\n  100.0 * SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) / SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS affiliate_click_rate_pct\nFROM ${DATA}\nWHERE blob1 = '${VERSION}' AND timestamp >= ${M31_START_PLACEHOLDER} AND index1 IN ('commercial_impression', 'affiliate_click') AND blob7 IN (${coveredPlacementSql}) AND blob5 != 'unknown'\nGROUP BY placement\nHAVING SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) > 0\nORDER BY affiliate_click_rate_pct DESC, placement\nLIMIT 100`,
   },
   missing_commercial_impression_fields: {
     group: 'quality',
@@ -89,7 +89,7 @@ export function getQuery(name, { m31StartUtc = '' } = {}) {
   const query = QUERY_DEFINITIONS[name];
   if (!query) throw new Error(`Consulta M3.1 desconhecida: ${name}`);
   if (!query.requires_m31_start) return query;
-  return { ...query, sql: query.sql.replaceAll(M31_START_TOKEN, m31StartSql(m31StartUtc)) };
+  return { ...query, sql: query.sql.replaceAll(M31_START_PLACEHOLDER, m31StartSql(m31StartUtc)) };
 }
 
 export async function executeQuery(name, { accountId, apiToken, m31StartUtc = '', fetchImpl = fetch } = {}) {
