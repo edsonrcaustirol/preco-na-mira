@@ -1,3 +1,5 @@
+import { handleCommercialPanel, PANEL_PATH } from './commercial-panel.mjs';
+
 const ENDPOINT = '/__pnm/analytics';
 const EVENTS = new Set(['page_view', 'affiliate_click', 'commercial_impression']);
 const PLACEMENTS = new Set(['card','primary','sidebar','sticky','related','search_result','saved','cart','comparison','project','studio','small_spaces','obra_base','dewalt_pending']);
@@ -39,6 +41,7 @@ function pointFor(event, data, host) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === PANEL_PATH) return handleCommercialPanel(request, env);
     if (url.pathname !== ENDPOINT) return env.ASSETS.fetch(request);
     if (request.method !== 'POST') return new Response('', { status: 405, headers: { allow: 'POST' } });
     const origin = request.headers.get('origin');
