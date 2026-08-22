@@ -9,6 +9,7 @@ const encoder = new TextEncoder();
 const numberFormat = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
 const percentFormat = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const runtimeFetch = (...args) => fetch(...args);
+const DIAGNOSTIC_DETAIL_LIMIT = 300;
 
 function secureHeaders(contentType) {
   return {
@@ -86,6 +87,32 @@ function classifyAnalyticsFailure(status, transportFailure) {
   return 'unexpected';
 }
 
+function sanitizeDiagnosticDetail(value, { accountId = '', apiToken = '', panelPassword = '' } = {}) {
+  let text = String(value ?? '')
+    .replace(/^Analytics Engine SQL API falhou \(\d+\):\s*/i, '')
+    .replace(/[\u0000-\u001f\u007f]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  for (const secret of [accountId, apiToken, panelPassword]) {
+    if (secret) text = text.replaceAll(String(secret), '[redacted]');
+  }
+
+  text = text
+    .replace(/https?:\/\/[^\s"'<>]+/gi, '[redacted]')
+    .replace(/\bAuthorization\b(?:\s*[:=]\s*|\s+)[^,;]+/gi, '[redacted]')
+    .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]+/gi, '[redacted]')
+    .replace(/\b(?:PNM_CF_ANALYTICS_TOKEN|PNM_PANEL_PASSWORD)\b/gi, '[redacted]')
+    .replace(/\b[^\s,;=]*secret[^\s,;=]*\b/gi, '[redacted]')
+    .replace(/\b(?:token|password|senha)\s*[:=]\s*[^,;\s]+/gi, '[redacted]')
+    .replace(/\b[a-f0-9]{32}\b/gi, '[redacted]')
+    .replace(/\b(?:SELECT|SHOW|WITH|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER)\b[\s\S]*/i, '[redacted]')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return text.slice(0, DIAGNOSTIC_DETAIL_LIMIT);
+}
+
 async function executeDashboardQuery({ source, name, execute, options }) {
   let observedStatus = null;
   let transportFailure = false;
@@ -102,13 +129,15 @@ async function executeDashboardQuery({ source, name, execute, options }) {
 
   try {
     return await execute(name, { ...options, fetchImpl: diagnosticFetch });
-  } catch {
+  } catch (error) {
+    const detail = observedStatus === 400 ? sanitizeDiagnosticDetail(error?.message, options) : '';
     throw {
       pnmSafeDiagnostic: true,
       source,
       query: name,
       status: observedStatus,
       category: classifyAnalyticsFailure(observedStatus, transportFailure),
+      ...(detail ? { detail } : {}),
     };
   }
 }
@@ -120,9 +149,10 @@ function normalizeDiagnostic(reason, fallback) {
       query: String(reason.query || fallback.name),
       status: Number.isInteger(reason.status) ? reason.status : null,
       category: String(reason.category || 'unexpected'),
+      detail: String(reason.detail || ''),
     };
   }
-  return { source: fallback.source, query: fallback.name, status: null, category: 'unexpected' };
+  return { source: fallback.source, query: fallback.name, status: null, category: 'unexpected', detail: '' };
 }
 
 export async function loadCommercialDashboard({ accountId, apiToken, fetchImpl = runtimeFetch } = {}) {
@@ -236,20 +266,25 @@ export function renderCommercialDashboard(data) {
   return html;
 }
 
-function safeDiagnosticsFromError(error) {
+function safeDiagnosticsFromError(error, secrets) {
   if (Array.isArray(error?.failures) && error.failures.length) {
-    return error.failures.map(failure => ({
-      source: String(failure.source || 'unknown'),
-      query: String(failure.query || 'unknown'),
-      status: Number.isInteger(failure.status) ? failure.status : null,
-      category: String(failure.category || 'unexpected'),
-    }));
+    return error.failures.map((failure, index) => {
+      const detail = index === 0 ? sanitizeDiagnosticDetail(failure.detail, secrets) : '';
+      return {
+        source: String(failure.source || 'unknown'),
+        query: String(failure.query || 'unknown'),
+        status: Number.isInteger(failure.status) ? failure.status : null,
+        category: String(failure.category || 'unexpected'),
+        ...(detail ? { detail } : {}),
+      };
+    });
   }
   return [{ source: 'panel', query: 'unknown', status: null, category: 'unexpected' }];
 }
 
 function formatPublicDiagnostic(failure) {
-  return `${failure.source}:${failure.query} — HTTP ${failure.status ?? 'n/a'} — ${failure.category}`;
+  const base = `${failure.source}:${failure.query} — HTTP ${failure.status ?? 'n/a'} — ${failure.category}`;
+  return failure.detail ? `${base} — detalhe: ${failure.detail}` : base;
 }
 
 export async function handleCommercialPanel(request, env, { fetchImpl = runtimeFetch } = {}) {
@@ -270,7 +305,7 @@ export async function handleCommercialPanel(request, env, { fetchImpl = runtimeF
     const data = await loadCommercialDashboard({ accountId, apiToken, fetchImpl });
     return new Response(renderCommercialDashboard(data), { status: 200, headers: htmlHeaders() });
   } catch (error) {
-    const failures = safeDiagnosticsFromError(error);
+    const failures = safeDiagnosticsFromError(error, { accountId, apiToken, panelPassword: password });
     console.error('PNM commercial panel diagnostics', JSON.stringify({ failures }));
     return plainResponse(`Não foi possível consultar as métricas comerciais. Diagnóstico: ${failures.map(formatPublicDiagnostic).join('; ')}`, 502);
   }

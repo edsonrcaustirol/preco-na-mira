@@ -120,14 +120,24 @@ const diagnosticEnvironment = {
   PNM_CF_ACCOUNT_ID: accountId,
   PNM_CF_ANALYTICS_TOKEN: diagnosticToken,
 };
+const unsafeDiagnosticBody = [
+  'cloudflare-raw-secret',
+  'Authorization: Bearer SECRET',
+  `token=${diagnosticToken}`,
+  `password=${diagnosticPanelPassword}`,
+  `PNM_CF_ANALYTICS_TOKEN=${diagnosticToken}`,
+  `PNM_PANEL_PASSWORD=${diagnosticPanelPassword}`,
+  `account=${accountId}`,
+  `https://api.cloudflare.com/client/v4/accounts/${accountId}/analytics_engine/sql`,
+  'SELECT * FROM pnm_commercial_m1',
+].join('; ');
 
-async function assertApiFailure({ status, category, failSql = null, expectedDiagnostic = '' }) {
-  const rawSecretBody = `cloudflare-raw-secret:${diagnosticToken}; panel=${diagnosticPanelPassword}; Authorization=Bearer ${diagnosticToken}`;
+async function assertApiFailure({ status, category, failSql = null, expectedDiagnostic = '', responseBody = unsafeDiagnosticBody, expectedDetail = '', expectedDetailCount = null }) {
   const diagnosticFetch = async (url, options) => {
     assert.equal(url, `https://api.cloudflare.com/client/v4/accounts/${accountId}/analytics_engine/sql`);
     assert.equal(options.method, 'POST');
     assert.equal(options.headers.Authorization, `Bearer ${diagnosticToken}`);
-    if (!failSql || options.body === failSql) return new Response(rawSecretBody, { status });
+    if (!failSql || options.body === failSql) return new Response(responseBody, { status });
     const payload = fixtures.get(options.body);
     assert.ok(payload, 'consulta não prevista no fixture de diagnóstico');
     return new Response(JSON.stringify(payload), { status: 200 });
@@ -150,10 +160,16 @@ async function assertApiFailure({ status, category, failSql = null, expectedDiag
   assert.match(body, new RegExp(`HTTP ${status}`));
   assert.match(body, new RegExp(category));
   if (expectedDiagnostic) assert.match(body, new RegExp(expectedDiagnostic.replaceAll('.', '\\.')));
+  if (expectedDetail) assert.match(body, new RegExp(expectedDetail.replaceAll('.', '\\.')));
+  if (expectedDetailCount !== null) assert.equal((body.match(/— detalhe:/g) || []).length, expectedDetailCount);
   assert.doesNotMatch(combined, new RegExp(diagnosticToken));
   assert.doesNotMatch(combined, new RegExp(diagnosticPanelPassword));
+  assert.doesNotMatch(combined, new RegExp(accountId));
   assert.doesNotMatch(combined, /cloudflare-raw-secret/);
-  assert.doesNotMatch(combined, /Bearer analytics-token-do-not-log/);
+  assert.doesNotMatch(combined, /Bearer SECRET/);
+  assert.doesNotMatch(combined, /PNM_CF_ANALYTICS_TOKEN|PNM_PANEL_PASSWORD/);
+  assert.doesNotMatch(combined, /https:\/\/api\.cloudflare\.com\/client\/v4\/accounts\//);
+  assert.doesNotMatch(combined, /SELECT\s+\*/i);
   assert.ok(logs.some(line => line.includes('PNM commercial panel diagnostics')));
 }
 
@@ -164,6 +180,15 @@ await assertApiFailure({
   category: 'query_rejected',
   failSql: getM3Query('affiliate_click_rate_by_placement', { m31StartUtc: M31_START_UTC }).sql,
   expectedDiagnostic: 'M3.1:affiliate_click_rate_by_placement',
+  expectedDetailCount: 1,
+});
+await assertApiFailure({
+  status: 400,
+  category: 'query_rejected',
+  responseBody: 'Table does not exist',
+  expectedDiagnostic: 'M2.1:total_page_views',
+  expectedDetail: 'Table does not exist',
+  expectedDetailCount: 1,
 });
 await assertApiFailure({ status: 503, category: 'cloudflare_5xx' });
 
