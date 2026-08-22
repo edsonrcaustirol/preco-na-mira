@@ -73,19 +73,80 @@ function firstValue(result, key) {
   return rows(result)[0]?.[key] ?? 0;
 }
 
+function classifyAnalyticsFailure(status, transportFailure) {
+  if (transportFailure) return 'transport';
+  if (status === 400) return 'query_rejected';
+  if (status === 401) return 'authentication';
+  if (status === 403) return 'authorization';
+  if (status === 404) return 'account_or_endpoint';
+  if (status === 429) return 'rate_limited';
+  if (Number.isInteger(status) && status >= 500) return 'cloudflare_5xx';
+  if (Number.isInteger(status) && status >= 400) return 'cloudflare_4xx';
+  return 'unexpected';
+}
+
+async function executeDashboardQuery({ source, name, execute, options }) {
+  let observedStatus = null;
+  let transportFailure = false;
+  const diagnosticFetch = async (...args) => {
+    try {
+      const response = await options.fetchImpl(...args);
+      observedStatus = Number.isInteger(response?.status) ? response.status : null;
+      return response;
+    } catch {
+      transportFailure = true;
+      throw new Error('Analytics Engine transport failure.');
+    }
+  };
+
+  try {
+    return await execute(name, { ...options, fetchImpl: diagnosticFetch });
+  } catch {
+    throw {
+      pnmSafeDiagnostic: true,
+      source,
+      query: name,
+      status: observedStatus,
+      category: classifyAnalyticsFailure(observedStatus, transportFailure),
+    };
+  }
+}
+
+function normalizeDiagnostic(reason, fallback) {
+  if (reason?.pnmSafeDiagnostic === true) {
+    return {
+      source: String(reason.source || fallback.source),
+      query: String(reason.query || fallback.name),
+      status: Number.isInteger(reason.status) ? reason.status : null,
+      category: String(reason.category || 'unexpected'),
+    };
+  }
+  return { source: fallback.source, query: fallback.name, status: null, category: 'unexpected' };
+}
+
 export async function loadCommercialDashboard({ accountId, apiToken, fetchImpl = fetch } = {}) {
   const m2 = { accountId, apiToken, fetchImpl };
   const m3 = { accountId, apiToken, fetchImpl, m31StartUtc: M31_START_UTC };
-  const [pageViews, affiliateClicks, commercialImpressions, clicksByPage, clicksByProduct, clicksByPlacement, impressionsByPlacement, ctrByPlacement] = await Promise.all([
-    executeM2Query('total_page_views', m2),
-    executeM2Query('total_affiliate_clicks', m2),
-    executeM3Query('total_commercial_impressions', m3),
-    executeM2Query('affiliate_clicks_by_page', m2),
-    executeM2Query('affiliate_clicks_by_product', m2),
-    executeM2Query('affiliate_clicks_by_placement', m2),
-    executeM3Query('impressions_by_placement', m3),
-    executeM3Query('affiliate_click_rate_by_placement', m3),
-  ]);
+  const querySpecs = [
+    { source: 'M2.1', name: 'total_page_views', execute: executeM2Query, options: m2 },
+    { source: 'M2.1', name: 'total_affiliate_clicks', execute: executeM2Query, options: m2 },
+    { source: 'M3.1', name: 'total_commercial_impressions', execute: executeM3Query, options: m3 },
+    { source: 'M2.1', name: 'affiliate_clicks_by_page', execute: executeM2Query, options: m2 },
+    { source: 'M2.1', name: 'affiliate_clicks_by_product', execute: executeM2Query, options: m2 },
+    { source: 'M2.1', name: 'affiliate_clicks_by_placement', execute: executeM2Query, options: m2 },
+    { source: 'M3.1', name: 'impressions_by_placement', execute: executeM3Query, options: m3 },
+    { source: 'M3.1', name: 'affiliate_click_rate_by_placement', execute: executeM3Query, options: m3 },
+  ];
+  const settled = await Promise.allSettled(querySpecs.map(spec => executeDashboardQuery(spec)));
+  const failures = settled.flatMap((result, index) => result.status === 'rejected' ? [normalizeDiagnostic(result.reason, querySpecs[index])] : []);
+  if (failures.length) {
+    const error = new Error('Falha em uma ou mais consultas do painel comercial.');
+    error.name = 'CommercialDashboardQueryError';
+    error.failures = failures;
+    throw error;
+  }
+
+  const [pageViews, affiliateClicks, commercialImpressions, clicksByPage, clicksByProduct, clicksByPlacement, impressionsByPlacement, ctrByPlacement] = settled.map(result => result.value);
 
   return {
     generatedAtUtc: new Date().toISOString(),
@@ -174,6 +235,22 @@ export function renderCommercialDashboard(data) {
   return html;
 }
 
+function safeDiagnosticsFromError(error) {
+  if (Array.isArray(error?.failures) && error.failures.length) {
+    return error.failures.map(failure => ({
+      source: String(failure.source || 'unknown'),
+      query: String(failure.query || 'unknown'),
+      status: Number.isInteger(failure.status) ? failure.status : null,
+      category: String(failure.category || 'unexpected'),
+    }));
+  }
+  return [{ source: 'panel', query: 'unknown', status: null, category: 'unexpected' }];
+}
+
+function formatPublicDiagnostic(failure) {
+  return `${failure.source}:${failure.query} — HTTP ${failure.status ?? 'n/a'} — ${failure.category}`;
+}
+
 export async function handleCommercialPanel(request, env, { fetchImpl = fetch } = {}) {
   const password = String(env?.PNM_PANEL_PASSWORD || '');
   if (!password) return plainResponse('Painel comercial não configurado.', 503);
@@ -191,7 +268,9 @@ export async function handleCommercialPanel(request, env, { fetchImpl = fetch } 
   try {
     const data = await loadCommercialDashboard({ accountId, apiToken, fetchImpl });
     return new Response(renderCommercialDashboard(data), { status: 200, headers: htmlHeaders() });
-  } catch {
-    return plainResponse('Não foi possível consultar as métricas comerciais.', 502);
+  } catch (error) {
+    const failures = safeDiagnosticsFromError(error);
+    console.error('PNM commercial panel diagnostics', JSON.stringify({ failures }));
+    return plainResponse(`Não foi possível consultar as métricas comerciais. Diagnóstico: ${failures.map(formatPublicDiagnostic).join('; ')}`, 502);
   }
 }
