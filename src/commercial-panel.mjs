@@ -8,6 +8,7 @@ export const M31_START_UTC = '2026-08-22T05:24:34Z';
 const encoder = new TextEncoder();
 const numberFormat = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
 const percentFormat = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const runtimeFetch = (...args) => fetch(...args);
 
 function secureHeaders(contentType) {
   return {
@@ -124,7 +125,7 @@ function normalizeDiagnostic(reason, fallback) {
   return { source: fallback.source, query: fallback.name, status: null, category: 'unexpected' };
 }
 
-export async function loadCommercialDashboard({ accountId, apiToken, fetchImpl = fetch } = {}) {
+export async function loadCommercialDashboard({ accountId, apiToken, fetchImpl = runtimeFetch } = {}) {
   const m2 = { accountId, apiToken, fetchImpl };
   const m3 = { accountId, apiToken, fetchImpl, m31StartUtc: M31_START_UTC };
   const querySpecs = [
@@ -251,7 +252,7 @@ function formatPublicDiagnostic(failure) {
   return `${failure.source}:${failure.query} — HTTP ${failure.status ?? 'n/a'} — ${failure.category}`;
 }
 
-export async function handleCommercialPanel(request, env, { fetchImpl = fetch } = {}) {
+export async function handleCommercialPanel(request, env, { fetchImpl = runtimeFetch } = {}) {
   const password = String(env?.PNM_PANEL_PASSWORD || '');
   if (!password) return plainResponse('Painel comercial não configurado.', 503);
 
