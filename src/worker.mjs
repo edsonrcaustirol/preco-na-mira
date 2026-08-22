@@ -1,6 +1,7 @@
 const ENDPOINT = '/__pnm/analytics';
 const EVENTS = new Set(['page_view', 'affiliate_click', 'commercial_impression']);
 const PLACEMENTS = new Set(['card','primary','sidebar','sticky','related','search_result','saved','cart','comparison','project','studio','small_spaces','obra_base','dewalt_pending']);
+const IMPRESSION_PLACEMENTS = new Set(['card','related']);
 const PAGE_FIELDS = new Set(['page','page_type','product_id','utm_source','utm_medium','utm_campaign','referrer_host']);
 const CLICK_FIELDS = new Set(['product_id','store','page','placement','utm_source','utm_medium','utm_campaign','referrer_host']);
 const IMPRESSION_FIELDS = new Set(['product_id','store','page','page_type','placement','utm_source','utm_medium','utm_campaign','referrer_host']);
@@ -20,7 +21,7 @@ function sanitize(event, data) {
   }
   if (event === 'page_view' && (!out.page || !out.page_type)) return null;
   if (event === 'affiliate_click' && (!out.product_id || !out.store || !out.page || !PLACEMENTS.has(out.placement))) return null;
-  if (event === 'commercial_impression' && (!out.product_id || !out.store || !out.page || !out.page_type || !PLACEMENTS.has(out.placement))) return null;
+  if (event === 'commercial_impression' && (!out.product_id || out.product_id === 'unknown' || !out.store || !out.page || !out.page_type || !IMPRESSION_PLACEMENTS.has(out.placement))) return null;
   return out;
 }
 
