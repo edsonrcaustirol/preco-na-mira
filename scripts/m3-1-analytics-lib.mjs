@@ -10,6 +10,7 @@ const VERSION = SCHEMA_VERSION;
 const coveredPlacementSql = IMPRESSION_PLACEMENTS.map(value => `'${value}'`).join(', ');
 const allPlacementSql = PLACEMENTS.map(value => `'${value}'`).join(', ');
 const eventSql = ACCEPTED_EVENTS.map(value => `'${value}'`).join(', ');
+const m31StartSql = `(SELECT min(timestamp) FROM ${DATA} WHERE blob1 = '${VERSION}' AND index1 = 'commercial_impression' AND blob2 = 'commercial_impression' AND blob7 IN (${coveredPlacementSql}))`;
 
 export const QUERY_DEFINITIONS = Object.freeze({
   total_commercial_impressions: {
@@ -34,13 +35,13 @@ export const QUERY_DEFINITIONS = Object.freeze({
   },
   affiliate_click_rate_by_product: {
     group: 'metrics',
-    description: 'CTR afiliado por produto somente na população compatível de placements com impressão M3.1 (card e related).',
-    sql: `SELECT\n  blob5 AS product_id,\n  SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS commercial_impressions,\n  SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) AS affiliate_clicks,\n  100.0 * SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) / SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS affiliate_click_rate_pct\nFROM ${DATA}\nWHERE blob1 = '${VERSION}' AND index1 IN ('commercial_impression', 'affiliate_click') AND blob7 IN (${coveredPlacementSql})\nGROUP BY product_id\nHAVING SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) > 0\nORDER BY affiliate_click_rate_pct DESC, product_id\nLIMIT 1000`,
+    description: 'CTR afiliado por produto somente para card/related e a partir da primeira commercial_impression M3.1 observada, evitando misturar cliques históricos pré-M3.1.',
+    sql: `SELECT\n  blob5 AS product_id,\n  SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS commercial_impressions,\n  SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) AS affiliate_clicks,\n  100.0 * SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) / SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS affiliate_click_rate_pct\nFROM ${DATA}\nWHERE blob1 = '${VERSION}' AND index1 IN ('commercial_impression', 'affiliate_click') AND blob7 IN (${coveredPlacementSql}) AND blob5 != 'unknown' AND timestamp >= ${m31StartSql}\nGROUP BY product_id\nHAVING SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) > 0\nORDER BY affiliate_click_rate_pct DESC, product_id\nLIMIT 1000`,
   },
   affiliate_click_rate_by_placement: {
     group: 'metrics',
-    description: 'CTR afiliado por placement somente para card e related, que possuem denominador de impressão compatível na M3.1.',
-    sql: `SELECT\n  blob7 AS placement,\n  SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS commercial_impressions,\n  SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) AS affiliate_clicks,\n  100.0 * SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) / SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS affiliate_click_rate_pct\nFROM ${DATA}\nWHERE blob1 = '${VERSION}' AND index1 IN ('commercial_impression', 'affiliate_click') AND blob7 IN (${coveredPlacementSql})\nGROUP BY placement\nHAVING SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) > 0\nORDER BY affiliate_click_rate_pct DESC, placement\nLIMIT 100`,
+    description: 'CTR afiliado por card/related a partir da primeira commercial_impression M3.1 observada, evitando misturar cliques históricos pré-M3.1.',
+    sql: `SELECT\n  blob7 AS placement,\n  SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS commercial_impressions,\n  SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) AS affiliate_clicks,\n  100.0 * SUM(_sample_interval * if(index1 = 'affiliate_click' AND blob2 = 'affiliate_click', 1, 0)) / SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) AS affiliate_click_rate_pct\nFROM ${DATA}\nWHERE blob1 = '${VERSION}' AND index1 IN ('commercial_impression', 'affiliate_click') AND blob7 IN (${coveredPlacementSql}) AND blob5 != 'unknown' AND timestamp >= ${m31StartSql}\nGROUP BY placement\nHAVING SUM(_sample_interval * if(index1 = 'commercial_impression' AND blob2 = 'commercial_impression', 1, 0)) > 0\nORDER BY affiliate_click_rate_pct DESC, placement\nLIMIT 100`,
   },
   missing_commercial_impression_fields: {
     group: 'quality',
@@ -60,7 +61,7 @@ export const QUERY_DEFINITIONS = Object.freeze({
   schema_incompatibilities_m3_1: {
     group: 'quality',
     description: 'Linhas incompatíveis com m1-v1 para page_view, affiliate_click ou commercial_impression.',
-    sql: `SELECT blob1 AS schema_version, index1 AS event_index, blob2 AS event_blob, blob3 AS page, blob4 AS page_type, blob5 AS product_id, blob6 AS store, blob7 AS placement, double1 AS weight, SUM(_sample_interval) AS rows\nFROM ${DATA}\nWHERE blob1 != '${VERSION}' OR double1 != 1 OR index1 != blob2\n  OR (index1 = 'page_view' AND (blob3 = '' OR blob4 = '' OR blob6 != '' OR blob7 != ''))\n  OR (index1 = 'affiliate_click' AND (blob3 = '' OR blob5 = '' OR blob6 = '' OR blob7 = '' OR blob4 != ''))\n  OR (index1 = 'commercial_impression' AND (blob3 = '' OR blob4 = '' OR blob5 = '' OR blob6 = '' OR blob7 = '' OR blob7 NOT IN (${allPlacementSql})))\nGROUP BY schema_version, event_index, event_blob, page, page_type, product_id, store, placement, weight\nORDER BY rows DESC\nLIMIT 500`,
+    sql: `SELECT blob1 AS schema_version, index1 AS event_index, blob2 AS event_blob, blob3 AS page, blob4 AS page_type, blob5 AS product_id, blob6 AS store, blob7 AS placement, double1 AS weight, SUM(_sample_interval) AS rows\nFROM ${DATA}\nWHERE blob1 != '${VERSION}' OR double1 != 1 OR index1 != blob2\n  OR (index1 = 'page_view' AND (blob3 = '' OR blob4 = '' OR blob6 != '' OR blob7 != ''))\n  OR (index1 = 'affiliate_click' AND (blob3 = '' OR blob5 = '' OR blob6 = '' OR blob7 = '' OR blob4 != ''))\n  OR (index1 = 'commercial_impression' AND (blob3 = '' OR blob4 = '' OR blob5 = '' OR blob5 = 'unknown' OR blob6 = '' OR blob7 = '' OR blob7 NOT IN (${coveredPlacementSql})))\nGROUP BY schema_version, event_index, event_blob, page, page_type, product_id, store, placement, weight\nORDER BY rows DESC\nLIMIT 500`,
   },
   possible_impression_inflation: {
     group: 'quality',
