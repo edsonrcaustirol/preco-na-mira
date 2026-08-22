@@ -7,6 +7,9 @@
   "build": {
     "command": "npm run build:site"
   },
+  "vars": {
+    "PNM_CF_ACCOUNT_ID": "84d8de00cbfabe263c406d9a9dfca92c"
+  },
   "routes": [
     {
       "pattern": "preconamira.com.br",
