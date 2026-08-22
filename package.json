@@ -10,14 +10,16 @@
     "refine:offers": "node scripts/refinar-ofertas-curadas.mjs",
     "build:offers-data": "node scripts/gerar-payload-ofertas.mjs",
     "finalize:seo": "node scripts/finalizar-seo.mjs",
-    "build:site": "npm run build:mobile-data && npm run build:dewalt-queue && npm run build:seo && npm run refine:offers && npm run build:offers-data && npm run prepare:platform && npm run finalize:seo",
+    "instrument:m1": "node scripts/injetar-analytics-m1.mjs",
+    "test:m1": "node scripts/test-m1-analytics.mjs",
+    "build:site": "npm run build:mobile-data && npm run build:dewalt-queue && npm run build:seo && npm run refine:offers && npm run build:offers-data && npm run prepare:platform && npm run finalize:seo && npm run instrument:m1",
     "sync:compatibility": "node scripts/sincronizar-compatibilidade.mjs",
     "audit": "node scripts/auditar-site.mjs",
     "audit:strict": "node scripts/auditar-site.mjs --strict",
     "preview": "node scripts/preview.mjs",
     "deploy": "wrangler deploy",
     "deploy:preview": "wrangler versions upload",
-    "check": "npm run build:site && npm run audit:strict && wrangler deploy --dry-run"
+    "check": "npm run build:site && npm run test:m1 && npm run audit:strict && wrangler deploy --dry-run"
   },
   "devDependencies": {
     "wrangler": "4.123.0"
