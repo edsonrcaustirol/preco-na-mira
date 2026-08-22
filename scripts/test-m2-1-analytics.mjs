@@ -47,12 +47,12 @@ const fakeFetch = async (url, options) => {
 };
 const result = await executeQuery('total_page_views', {
   accountId: '0123456789abcdef0123456789abcdef',
-  apiToken: 'test-secret-token',
+  apiToken: 'x',
   fetchImpl: fakeFetch,
 });
 assert.equal(captured.url, 'https://api.cloudflare.com/client/v4/accounts/0123456789abcdef0123456789abcdef/analytics_engine/sql');
 assert.equal(captured.options.method, 'POST');
-assert.equal(captured.options.headers.Authorization, 'Bearer test-secret-token');
+assert.equal(captured.options.headers.Authorization, 'Bearer x');
 assert.equal(captured.options.body, getQuery('total_page_views').sql);
 assert.deepEqual(result, { data: [{ page_views: 3 }] });
 await assert.rejects(() => executeQuery('total_page_views', { apiToken: 'x', fetchImpl: fakeFetch }), /PNM_CF_ACCOUNT_ID/);
