@@ -76,7 +76,9 @@ for (const file of TARGET_FILES) {
 for (const file of productFiles) {
   const html = pages.get(file);
   if (canonical(html) !== expectedCanonical(file)) errors.push(`canonical de produto inesperado: ${file}`);
-  if (!/class="pnm-product-breadcrumb"/i.test(html) || !/aria-label="Breadcrumb"/i.test(html)) errors.push(`breadcrumb visual ausente: ${file}`);
+  if (!/class=(?:"[^"]*\bpnm-product-breadcrumb\b[^"]*"|'[^']*\bpnm-product-breadcrumb\b[^']*')/i.test(html) || !/aria-label=(?:"Breadcrumb"|'Breadcrumb')/i.test(html)) {
+    errors.push(`breadcrumb visual ausente: ${file}`);
+  }
   if (!/"@type":"BreadcrumbList"/.test(html) || !/"name":"Catálogo","item":"https:\/\/preconamira\.com\.br\/catalogo"/.test(html)) {
     errors.push(`BreadcrumbList não corresponde ao breadcrumb visual: ${file}`);
   }
@@ -99,10 +101,18 @@ const sitemap = read('sitemap.xml');
 const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
 const duplicateUrls = [...new Set(sitemapUrls.filter((url, index) => sitemapUrls.indexOf(url) !== index))];
 if (duplicateUrls.length) errors.push(`URLs duplicadas no sitemap: ${duplicateUrls.join(', ')}`);
+const indexableCanonicals = new Set(
+  [...pages.values()]
+    .filter(html => !isNoindex(html))
+    .map(html => canonical(html))
+    .filter(Boolean),
+);
 for (const [file, html] of pages) {
   if (file === 'automacao.html' || file === 'gerenciador.html') continue;
   const url = canonical(html) || expectedCanonical(file);
-  if (isNoindex(html) && sitemapUrls.includes(url)) errors.push(`noindex listado no sitemap: ${file}`);
+  if (isNoindex(html) && sitemapUrls.includes(url) && !indexableCanonicals.has(url)) {
+    errors.push(`noindex listado no sitemap: ${file}`);
+  }
 }
 const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map(match => match[1]);
 const invalidLastmods = lastmods.filter(value => !/^\d{4}-\d{2}-\d{2}$/.test(value));
