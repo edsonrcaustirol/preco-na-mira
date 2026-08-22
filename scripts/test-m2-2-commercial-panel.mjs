@@ -91,6 +91,27 @@ const fakeFetch = async (url, options) => {
   assert.equal(capturedSql.length, 8);
 }
 
+{
+  const originalFetch = globalThis.fetch;
+  let runtimeFetchCalls = 0;
+  globalThis.fetch = async function receiverSensitiveFetch(url, options) {
+    assert.equal(this, undefined, 'fetch runtime não deve receber options como receiver');
+    runtimeFetchCalls += 1;
+    assert.equal(url, `https://api.cloudflare.com/client/v4/accounts/${accountId}/analytics_engine/sql`);
+    const payload = fixtures.get(options.body);
+    assert.ok(payload, 'consulta não prevista no fixture de receiver');
+    return new Response(JSON.stringify(payload), { status: 200 });
+  };
+  try {
+    const request = new Request(`https://preconamira.com.br${PANEL_PATH}`, { headers: { authorization: auth } });
+    const response = await handleCommercialPanel(request, environment);
+    assert.equal(response.status, 200);
+    assert.equal(runtimeFetchCalls, 8);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+}
+
 const diagnosticPanelPassword = ['panel', 'password', 'do-not-log'].join('-');
 const diagnosticToken = ['analytics', 'token', 'do-not-log'].join('-');
 const diagnosticAuth = `Basic ${Buffer.from(`pnm:${diagnosticPanelPassword}`).toString('base64')}`;
