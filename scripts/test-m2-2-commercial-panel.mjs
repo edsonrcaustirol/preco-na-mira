@@ -91,6 +91,61 @@ const fakeFetch = async (url, options) => {
   assert.equal(capturedSql.length, 8);
 }
 
+const diagnosticPanelPassword = ['panel', 'password', 'do-not-log'].join('-');
+const diagnosticToken = ['analytics', 'token', 'do-not-log'].join('-');
+const diagnosticAuth = `Basic ${Buffer.from(`pnm:${diagnosticPanelPassword}`).toString('base64')}`;
+const diagnosticEnvironment = {
+  PNM_PANEL_PASSWORD: diagnosticPanelPassword,
+  PNM_CF_ACCOUNT_ID: accountId,
+  PNM_CF_ANALYTICS_TOKEN: diagnosticToken,
+};
+
+async function assertApiFailure({ status, category, failSql = null, expectedDiagnostic = '' }) {
+  const rawSecretBody = `cloudflare-raw-secret:${diagnosticToken}; panel=${diagnosticPanelPassword}; Authorization=Bearer ${diagnosticToken}`;
+  const diagnosticFetch = async (url, options) => {
+    assert.equal(url, `https://api.cloudflare.com/client/v4/accounts/${accountId}/analytics_engine/sql`);
+    assert.equal(options.method, 'POST');
+    assert.equal(options.headers.Authorization, `Bearer ${diagnosticToken}`);
+    if (!failSql || options.body === failSql) return new Response(rawSecretBody, { status });
+    const payload = fixtures.get(options.body);
+    assert.ok(payload, 'consulta não prevista no fixture de diagnóstico');
+    return new Response(JSON.stringify(payload), { status: 200 });
+  };
+
+  const logs = [];
+  const originalConsoleError = console.error;
+  console.error = (...args) => logs.push(args.map(value => typeof value === 'string' ? value : JSON.stringify(value)).join(' '));
+  let response;
+  try {
+    const request = new Request(`https://preconamira.com.br${PANEL_PATH}`, { headers: { authorization: diagnosticAuth } });
+    response = await handleCommercialPanel(request, diagnosticEnvironment, { fetchImpl: diagnosticFetch });
+  } finally {
+    console.error = originalConsoleError;
+  }
+
+  assert.equal(response.status, 502);
+  const body = await response.text();
+  const combined = `${body}\n${logs.join('\n')}`;
+  assert.match(body, new RegExp(`HTTP ${status}`));
+  assert.match(body, new RegExp(category));
+  if (expectedDiagnostic) assert.match(body, new RegExp(expectedDiagnostic.replaceAll('.', '\\.')));
+  assert.doesNotMatch(combined, new RegExp(diagnosticToken));
+  assert.doesNotMatch(combined, new RegExp(diagnosticPanelPassword));
+  assert.doesNotMatch(combined, /cloudflare-raw-secret/);
+  assert.doesNotMatch(combined, /Bearer analytics-token-do-not-log/);
+  assert.ok(logs.some(line => line.includes('PNM commercial panel diagnostics')));
+}
+
+await assertApiFailure({ status: 401, category: 'authentication' });
+await assertApiFailure({ status: 403, category: 'authorization' });
+await assertApiFailure({
+  status: 400,
+  category: 'query_rejected',
+  failSql: getM3Query('affiliate_click_rate_by_placement', { m31StartUtc: M31_START_UTC }).sql,
+  expectedDiagnostic: 'M3.1:affiliate_click_rate_by_placement',
+});
+await assertApiFailure({ status: 503, category: 'cloudflare_5xx' });
+
 {
   const request = new Request(`https://preconamira.com.br${PANEL_PATH}`, { method: 'POST', headers: { authorization: auth } });
   const response = await handleCommercialPanel(request, environment, { fetchImpl: fakeFetch });
