@@ -11,6 +11,12 @@
     'catalogo': 'Busque todos os produtos por marca, categoria ou nome.',
   };
 
+  const e1Stylesheet = document.createElement('link');
+  e1Stylesheet.rel = 'stylesheet';
+  e1Stylesheet.href = 'assets/pnm-e1-mobile-critical.css';
+  e1Stylesheet.dataset.pnmE1MobileCritical = '1';
+  if (!document.querySelector('link[data-pnm-e1-mobile-critical]')) document.head.append(e1Stylesheet);
+
   const area = /(?:gamer|montar-pc|pecas-pc|produto-(?:amd|intel|asus|asrock|gigabyte|msi|corsair|cooler|montech|be-quiet|redragon|hyperx|logitech|kingston))/.test(path)
     ? 'gamer'
     : /(?:casa|cozinha|lavanderia|obra|acabamento|instalacao|compact|dewalt|banheiro|ambiente-casa)/.test(path)
@@ -46,6 +52,16 @@
     }
   }
 
+  function resetMobileNavState() {
+    const nav = document.getElementById('nav');
+    const menu = document.getElementById('menu');
+    if (!nav || !menu) return;
+    if (window.matchMedia && !window.matchMedia('(max-width: 850px)').matches) return;
+    nav.classList.remove('open');
+    menu.setAttribute('aria-expanded', 'false');
+    menu.setAttribute('aria-label', 'Abrir menu');
+  }
+
   function normalizeAffiliate(link) {
     if (!(link instanceof HTMLAnchorElement) || !/meli\.la|mercadolivre/i.test(link.href)) return;
     const rel = new Set((link.rel || '').split(/\s+/).filter(Boolean));
@@ -61,6 +77,8 @@
   }
 
   function onReady() {
+    resetMobileNavState();
+
     const main = document.querySelector('main');
     if (main && !main.id) main.id = 'conteudo-principal';
     if (main && !document.querySelector('.pnm-skip-link')) {
@@ -172,4 +190,7 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', onReady, { once: true });
   else onReady();
+
+  addEventListener('pageshow', resetMobileNavState);
+  addEventListener('pagehide', resetMobileNavState);
 })();

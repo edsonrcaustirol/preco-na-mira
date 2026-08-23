@@ -1,0 +1,30 @@
+/* E1 — hotfix da jornada mobile crítica.
+   O estado visual da navegação mobile segue exclusivamente a classe .open. */
+
+@media (max-width: 850px) {
+  .site-header .nav-links {
+    display: none !important;
+  }
+
+  .site-header .nav-links.open {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .related-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .related-actions a,
+  .related-actions button {
+    width: 100%;
+    min-height: 46px;
+    padding: 8px 7px;
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
