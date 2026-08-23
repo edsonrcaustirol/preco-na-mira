@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import test from 'node:test';
-import { auditFailures, classifyHtml, EXACT_CTA } from './audit-related-scope.mjs';
+import { auditFailures, classifyHtml, CURRENT_CTA, EXACT_CTA, postAuditFailures } from './audit-related-scope.mjs';
 
-const FUTURE_CTA = 'VER NO MERCADO LIVRE ↗';
+const FUTURE_CTA = CURRENT_CTA;
 
 function transformRelatedInMemory(html) {
   const result = classifyHtml(html);
@@ -98,4 +99,66 @@ test('transformação futura só toca related real e ignora comment/script/style
   assert.ok(after.includes(`const texto = '${EXACT_CTA}';`));
   assert.ok(after.includes(`/* ${EXACT_CTA} */`));
   assert.match(after, /class="related-actions"[\s\S]*?VER NO MERCADO LIVRE ↗/);
+});
+
+test('CTA pós-M3.2 é classificado estruturalmente em related', () => {
+  const result = classifyHtml(`<div class="related-actions"><a>${CURRENT_CTA}</a></div>`, CURRENT_CTA);
+  assert.equal(result.ambiguities.length, 0);
+  assert.deepEqual(counts(result), { exactTotal: 1, relatedTotal: 1, outsideTotal: 0 });
+
+  const css = fs.readFileSync('assets/pnm-e1-mobile-critical.css', 'utf8');
+  assert.match(
+    css,
+    /body\[data-product-id\] \.related-actions > a:not\(\.primary-mini\),\s*body\[data-product-id\] \.related-actions > button:not\(\.primary-mini\)\s*\{\s*color:\s*#111114;\s*\}/m,
+    'M3.2: CTA secundário de Related perdeu o contrato explícito de contraste.',
+  );
+});
+
+test('CTA pós-M3.2 fora de related é currentOutside e reprova invariantes', () => {
+  const result = classifyHtml(`<div class="card"><a>${CURRENT_CTA}</a></div>`, CURRENT_CTA);
+  assert.equal(result.ambiguities.length, 0);
+  const summary = counts(result);
+  assert.deepEqual(summary, { exactTotal: 1, relatedTotal: 0, outsideTotal: 1 });
+
+  const failures = postAuditFailures({
+    fileCount: 556,
+    legacyTotal: 0,
+    legacyRelated: 0,
+    legacyOutside: 0,
+    legacyUnresolved: 0,
+    currentRelated: 2457,
+    currentOutside: summary.outsideTotal,
+    currentUnresolved: 0,
+    ambiguousFileCount: 0,
+  });
+  assert.ok(failures.some((failure) => failure.includes('fora de related-actions')));
+});
+
+test('invariantes pós-M3.2 exigem zero legado e exatamente 2457 novos related', () => {
+  const valid = postAuditFailures({
+    fileCount: 556,
+    legacyTotal: 0,
+    legacyRelated: 0,
+    legacyOutside: 0,
+    legacyUnresolved: 0,
+    currentRelated: 2457,
+    currentOutside: 0,
+    currentUnresolved: 0,
+    ambiguousFileCount: 0,
+  });
+  assert.deepEqual(valid, []);
+
+  const invalid = postAuditFailures({
+    fileCount: 556,
+    legacyTotal: 1,
+    legacyRelated: 1,
+    legacyOutside: 0,
+    legacyUnresolved: 0,
+    currentRelated: 2456,
+    currentOutside: 0,
+    currentUnresolved: 0,
+    ambiguousFileCount: 0,
+  });
+  assert.ok(invalid.some((failure) => failure.includes('legado')));
+  assert.ok(invalid.some((failure) => failure.includes('2456 != 2457')));
 });
