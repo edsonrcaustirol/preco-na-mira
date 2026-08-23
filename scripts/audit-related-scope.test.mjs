@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import test from 'node:test';
 import { auditFailures, classifyHtml, CURRENT_CTA, EXACT_CTA, postAuditFailures } from './audit-related-scope.mjs';
 
@@ -104,6 +105,13 @@ test('CTA pós-M3.2 é classificado estruturalmente em related', () => {
   const result = classifyHtml(`<div class="related-actions"><a>${CURRENT_CTA}</a></div>`, CURRENT_CTA);
   assert.equal(result.ambiguities.length, 0);
   assert.deepEqual(counts(result), { exactTotal: 1, relatedTotal: 1, outsideTotal: 0 });
+
+  const css = fs.readFileSync('assets/pnm-e1-mobile-critical.css', 'utf8');
+  assert.match(
+    css,
+    /body\[data-product-id\] \.related-actions > a:not\(\.primary-mini\),\s*body\[data-product-id\] \.related-actions > button:not\(\.primary-mini\)\s*\{\s*color:\s*#111114;\s*\}/m,
+    'M3.2: CTA secundário de Related perdeu o contrato explícito de contraste.',
+  );
 });
 
 test('CTA pós-M3.2 fora de related é currentOutside e reprova invariantes', () => {

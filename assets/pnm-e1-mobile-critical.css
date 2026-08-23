@@ -39,3 +39,10 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* M3.2 — o CTA secundário de Related precisa manter contraste sobre o fundo claro
+   herdado do componente base mesmo quando a superfície V18 usa texto claro. */
+body[data-product-id] .related-actions > a:not(.primary-mini),
+body[data-product-id] .related-actions > button:not(.primary-mini) {
+  color: #111114;
+}
