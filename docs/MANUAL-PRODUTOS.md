@@ -157,6 +157,28 @@ Ao editar a página:
 - preserve o conteúdo editorial que não faz parte da alteração;
 - não faça replace em massa nas 556 páginas para resolver uma mudança pontual.
 
+### 4.4 Campo `oferta`: três estados operacionais
+
+O campo `oferta` é opcional e tem três estados distintos em `data/produtos-index.js`:
+
+- `oferta: true` → força o produto a entrar em Ofertas, respeitando as validações fail-closed da E2;
+- `oferta: false` → impede o produto de aparecer em Ofertas;
+- campo `oferta` ausente → devolve o produto à curadoria automática existente.
+
+**ATENÇÃO:** não use `oferta: false` para simplesmente “voltar ao automático”. Para voltar à curadoria automática, remova a propriedade `oferta` do registro.
+
+Exemplos fictícios — os demais campos obrigatórios foram omitidos somente para destacar o estado:
+
+```js
+{ id: "produto-ficticio-forcado", nome: "Produto Fictício Forçado", oferta: true }
+{ id: "produto-ficticio-bloqueado", nome: "Produto Fictício Bloqueado", oferta: false }
+{ id: "produto-ficticio-automatico", nome: "Produto Fictício Automático" } // campo oferta ausente
+```
+
+Ofertas continuam limitadas a **30 produtos**. Se houver mais de 30 inclusões obrigatórias com `oferta: true`, a curadoria deve falhar em vez de cortar itens silenciosamente.
+
+Depois de criar ou editar esse campo, `npm run check` é obrigatório.
+
 ## 5. Remover produto
 
 Remover produto é um ciclo completo. **Não basta apagar um HTML.**

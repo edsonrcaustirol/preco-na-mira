@@ -255,7 +255,16 @@ O conteúdo Related continua embutido nas páginas individuais e tem manutençã
 
 ## 6. Métricas comerciais
 
-A instrumentação atual usa três eventos principais:
+A instrumentação atual usa três eventos principais: `page_view`, `affiliate_click` e `commercial_impression`.
+
+### Camadas de medição e leitura
+
+- **M1** → camada base de medição e dos eventos comerciais; o cliente instrumentado envia os eventos aceitos ao endpoint de analytics e o Worker os registra na Analytics Engine.
+- **M2.1** → camada de consultas/inteligência comercial sobre os dados disponíveis na Analytics Engine; ela lê e agrega métricas, sem transformar clique em venda.
+- **M3.1** → camada de medição de `commercial_impression` e das métricas associadas, preservando a regra existente: placements `card` e `related`, produto identificado e pelo menos 50% visível por 500 ms contínuos.
+- **M2.2** → Painel Comercial que consulta e apresenta resultados produzidos pelas camadas anteriores, usando consultas M2.1 e M3.1; não cria evento de venda nem receita inexistente.
+
+`page_view` ≠ `affiliate_click` ≠ `commercial_impression`.
 
 ### `page_view`
 
@@ -271,7 +280,7 @@ Registra um clique em link afiliado reconhecido, associado ao produto, página, 
 
 Registra exposição comercial para os placements instrumentados atualmente (`card` e `related`). O alvo precisa ficar pelo menos 50% visível por 500 ms contínuos antes de a impressão ser registrada, com produto identificado.
 
-**Importante:** impressão **não significa clique**. Ela mede exposição elegível, não interação.
+**Importante:** impressão **não significa clique nem venda**. Ela mede exposição elegível, não interação, compra, pagamento ou comissão.
 
 > **NÃO FAÇA:** não altere Analytics Engine, Worker, eventos, thresholds ou instrumentação para executar uma operação de catálogo/Ofertas. Métrica e manutenção comercial são responsabilidades separadas.
 
