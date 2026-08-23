@@ -118,6 +118,7 @@ async function main() {
   });
   const finishedAt = new Date().toISOString();
   const previousForComparison = args.compareTo ? JSON.parse(await fs.readFile(args.compareTo, 'utf8')) : null;
+  const comparisonScope = (args.input || args.ids.length || args.changedFrom) ? 'incremental' : 'full';
 
   const report = {
     contract: CONTRACT,
@@ -130,7 +131,10 @@ async function main() {
       networkPolicy: { concurrency: args.concurrency, throttleMs: args.throttleMs, timeoutMs: args.timeoutMs, retries: args.retries, maxRedirects: args.maxRedirects },
     },
     summary: summarize(results),
-    delta: previousForComparison ? compareResults(previousForComparison.results || [], results) : null,
+    delta: previousForComparison ? compareResults(previousForComparison.results || [], results, {
+      scope: comparisonScope,
+      selectedProductIds: products.map(product => product.id),
+    }) : null,
     results,
   };
 

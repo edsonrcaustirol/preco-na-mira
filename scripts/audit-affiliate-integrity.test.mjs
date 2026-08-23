@@ -86,7 +86,6 @@ test('mesma marca e HTTP 200 isoladamente não viram CORRETO', () => {
   assert.equal(result.classification, CLASSIFICATIONS.NAO_COMPROVAVEL);
 });
 
-
 test('404 no encurtador é problema de link, não anúncio indisponível', () => {
   const result = classifyProduct(product(), resolution({ finalUrl: 'https://meli.la/inexistente', status: 404, title: '' }));
   assert.equal(result.classification, CLASSIFICATIONS.PROBLEMA_DE_LINK);
@@ -109,7 +108,6 @@ test('resumo operacional e delta são consumíveis por monitor/Central', () => {
   assert.equal(delta.resolvedExceptions.length, 1);
 });
 
-
 test('potência decimal com vírgula é preservada corretamente', () => {
   const p = product({ nome: 'Acme Caixa Mini AB12', resumo: 'Potência de 2,5 W RMS.', chips: ['2,5 W RMS'] });
   const result = classifyProduct(p, resolution({ title: 'Acme Caixa Mini AB12 2,5 W RMS', description: 'Potência 2,5 W RMS' }));
@@ -117,9 +115,51 @@ test('potência decimal com vírgula é preservada corretamente', () => {
   assert.deepEqual(result.evidence.expected.attributes.power, ['2.5w']);
 });
 
-
 test('código técnico não relacionado não cria falsa divergência de modelo', () => {
   const result = classifyProduct(product(), resolution({ title: 'Acme Furadeira 127V 600W IPX7', description: 'Ferramenta Acme com proteção IPX7' }));
   assert.equal(result.classification, CLASSIFICATIONS.NAO_COMPROVAVEL);
   assert.ok(!result.evidence.conflicts.some(c => c.type === 'model'));
+});
+
+test('HTTP 408 final após retentativas => NÃO_COMPROVÁVEL', () => {
+  const result = classifyProduct(product(), resolution({ status: 408, title: '', description: '' }));
+  assert.equal(result.classification, CLASSIFICATIONS.NAO_COMPROVAVEL);
+  assert.match(result.reason, /Falha transitória/);
+});
+
+test('HTTP 425 final após retentativas => NÃO_COMPROVÁVEL', () => {
+  const result = classifyProduct(product(), resolution({ status: 425, title: '', description: '' }));
+  assert.equal(result.classification, CLASSIFICATIONS.NAO_COMPROVAVEL);
+  assert.match(result.reason, /Falha transitória/);
+});
+
+test('REDIRECT_LIMIT => NÃO_COMPROVÁVEL com motivo do limite local', () => {
+  const result = classifyProduct(product(), {
+    finalUrl: 'https://meli.la/teste',
+    redirectChain: [],
+    status: 302,
+    error: { kind: 'REDIRECT_LIMIT', message: 'Limite de 6 redirects excedido.' },
+  });
+  assert.equal(result.classification, CLASSIFICATIONS.NAO_COMPROVAVEL);
+  assert.match(result.reason, /Limite de redirects do auditor atingido/);
+});
+
+test('delta incremental de 1 produto contra relatório completo não cria missingProducts falsos', () => {
+  const previous = Array.from({ length: 556 }, (_, index) => ({
+    product_id: `p-${index}`,
+    classification: CLASSIFICATIONS.CORRETO,
+  }));
+  const current = [{ product_id: 'p-0', classification: CLASSIFICATIONS.CORRETO }];
+  const delta = compareResults(previous, current, { scope: 'incremental', selectedProductIds: ['p-0'] });
+  assert.equal(delta.missingProducts.length, 0);
+});
+
+test('delta de auditoria completa ainda detecta produto realmente ausente', () => {
+  const previous = [
+    { product_id: 'a', classification: CLASSIFICATIONS.CORRETO },
+    { product_id: 'b', classification: CLASSIFICATIONS.CORRETO },
+  ];
+  const current = [{ product_id: 'a', classification: CLASSIFICATIONS.CORRETO }];
+  const delta = compareResults(previous, current, { scope: 'full' });
+  assert.deepEqual(delta.missingProducts, ['b']);
 });

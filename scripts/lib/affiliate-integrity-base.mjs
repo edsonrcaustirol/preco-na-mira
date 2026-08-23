@@ -181,7 +181,14 @@ export function classifyProduct(product, resolution) {
   };
 
   if (resolution.error) {
-    const hardLinkErrors = new Set(['INVALID_URL', 'REDIRECT_LOOP', 'REDIRECT_LIMIT', 'INVALID_REDIRECT']);
+    if (resolution.error.kind === 'REDIRECT_LIMIT') {
+      return {
+        ...base,
+        classification: CLASSIFICATIONS.NAO_COMPROVAVEL,
+        reason: `Limite de redirects do auditor atingido; destino final não pôde ser comprovado. ${resolution.error.message || ''}`.trim(),
+      };
+    }
+    const hardLinkErrors = new Set(['INVALID_URL', 'REDIRECT_LOOP', 'INVALID_REDIRECT']);
     if (hardLinkErrors.has(resolution.error.kind)) {
       return { ...base, classification: CLASSIFICATIONS.PROBLEMA_DE_LINK, reason: resolution.error.message || resolution.error.kind };
     }
@@ -197,7 +204,7 @@ export function classifyProduct(product, resolution) {
   if (UNAVAILABLE_STATUSES.has(resolution.status)) {
     return { ...base, classification: CLASSIFICATIONS.PROBLEMA_DE_LINK, reason: `Destino não encontrado (HTTP ${resolution.status}) antes de um anúncio identificável.` };
   }
-  if (resolution.status >= 500) {
+  if (TRANSIENT_STATUSES.has(resolution.status)) {
     return { ...base, classification: CLASSIFICATIONS.NAO_COMPROVAVEL, reason: `Falha transitória do destino (HTTP ${resolution.status}).` };
   }
   if (resolution.status >= 400) {
@@ -415,13 +422,15 @@ export async function auditProducts(products, options = {}) {
   return results;
 }
 
-export function compareResults(previousResults = [], currentResults = []) {
+export function compareResults(previousResults = [], currentResults = [], options = {}) {
   const previous = new Map(previousResults.map(item => [item.product_id, item]));
   const current = new Map(currentResults.map(item => [item.product_id, item]));
   const healthy = new Set([CLASSIFICATIONS.CORRETO, CLASSIFICATIONS.PROVAVEL]);
   const classificationChanges = [];
   const newExceptions = [];
   const resolvedExceptions = [];
+  const scope = options.scope === 'incremental' ? 'incremental' : 'full';
+  const selectedProductIds = new Set(options.selectedProductIds || current.keys());
 
   for (const [id, item] of current) {
     const before = previous.get(id);
@@ -438,7 +447,9 @@ export function compareResults(previousResults = [], currentResults = []) {
 
   return {
     newProducts: [...current.keys()].filter(id => !previous.has(id)),
-    missingProducts: [...previous.keys()].filter(id => !current.has(id)),
+    missingProducts: scope === 'incremental'
+      ? [...previous.keys()].filter(id => selectedProductIds.has(id) && !current.has(id))
+      : [...previous.keys()].filter(id => !current.has(id)),
     classificationChanges,
     newExceptions,
     resolvedExceptions,
