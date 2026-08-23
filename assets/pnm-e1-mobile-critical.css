@@ -1,5 +1,15 @@
 /* E1 — hotfix da jornada mobile crítica.
-   Escopo visual: somente CTAs de produtos relacionados em telas estreitas. */
+   O estado visual da navegação mobile segue exclusivamente a classe .open. */
+
+@media (max-width: 850px) {
+  .site-header .nav-links {
+    display: none !important;
+  }
+
+  .site-header .nav-links.open {
+    display: flex !important;
+  }
+}
 
 @media (max-width: 600px) {
   .related-actions {
