@@ -11,6 +11,17 @@
   }
 }
 
+/* E1.1 — listagens críticas não podem depender do reveal para existir no mobile.
+   O runtime ainda pode observar as seções, mas Ofertas e Catálogo permanecem visíveis
+   mesmo se o IntersectionObserver não promover .is-visible no Safari. */
+@media (max-width: 620px) {
+  body.v15-offers main > section.pnm-reveal,
+  body.v15-catalog main > section.pnm-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 @media (max-width: 600px) {
   .related-actions {
     flex-direction: column;
