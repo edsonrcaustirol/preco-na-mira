@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { auditFailures, classifyHtml, EXACT_CTA } from './audit-related-scope.mjs';
+import { auditFailures, classifyHtml, CURRENT_CTA, EXACT_CTA, postAuditFailures } from './audit-related-scope.mjs';
 
-const FUTURE_CTA = 'VER NO MERCADO LIVRE ↗';
+const FUTURE_CTA = CURRENT_CTA;
 
 function transformRelatedInMemory(html) {
   const result = classifyHtml(html);
@@ -98,4 +98,38 @@ test('transformação futura só toca related real e ignora comment/script/style
   assert.ok(after.includes(`const texto = '${EXACT_CTA}';`));
   assert.ok(after.includes(`/* ${EXACT_CTA} */`));
   assert.match(after, /class="related-actions"[\s\S]*?VER NO MERCADO LIVRE ↗/);
+});
+
+
+test('CTA pós-M3.2 é classificado estruturalmente em related', () => {
+  const result = classifyHtml(`<div class="related-actions"><a>${CURRENT_CTA}</a></div>`, CURRENT_CTA);
+  assert.equal(result.ambiguities.length, 0);
+  assert.deepEqual(counts(result), { exactTotal: 1, relatedTotal: 1, outsideTotal: 0 });
+});
+
+test('invariantes pós-M3.2 exigem zero legado e exatamente 2457 novos related', () => {
+  const valid = postAuditFailures({
+    fileCount: 556,
+    legacyTotal: 0,
+    legacyRelated: 0,
+    legacyOutside: 0,
+    legacyUnresolved: 0,
+    currentRelated: 2457,
+    currentUnresolved: 0,
+    ambiguousFileCount: 0,
+  });
+  assert.deepEqual(valid, []);
+
+  const invalid = postAuditFailures({
+    fileCount: 556,
+    legacyTotal: 1,
+    legacyRelated: 1,
+    legacyOutside: 0,
+    legacyUnresolved: 0,
+    currentRelated: 2456,
+    currentUnresolved: 0,
+    ambiguousFileCount: 0,
+  });
+  assert.ok(invalid.some((failure) => failure.includes('legado')));
+  assert.ok(invalid.some((failure) => failure.includes('2456 != 2457')));
 });

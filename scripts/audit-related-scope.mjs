@@ -3,7 +3,11 @@ import { readFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const EXACT_CTA = 'VER OFERTA ↗';
+export const LEGACY_CTA = 'VER OFERTA ↗';
+export const CURRENT_CTA = 'VER NO MERCADO LIVRE ↗';
+export const EXACT_CTA = LEGACY_CTA;
+export const EXPECTED_PRODUCT_FILE_COUNT = 556;
+export const EXPECTED_RELATED_CTA_COUNT = 2457;
 const RELATED_CLASS = 'related-actions';
 const ACTION_TAGS = new Set(['a', 'button']);
 const RAW_TEXT_TAGS = new Set(['script', 'style', 'textarea', 'title']);
@@ -177,7 +181,7 @@ function inside(container, interval) {
   return container.open.end <= interval.open.start && interval.close.end <= container.close.end;
 }
 
-export function classifyHtml(html) {
+export function classifyHtml(html, exactCta = EXACT_CTA) {
   const scanned = scanDocument(html);
   const built = buildIntervals(scanned.tokens);
   const ambiguities = [...scanned.errors, ...built.errors];
@@ -187,7 +191,7 @@ export function classifyHtml(html) {
   const candidateStarts = new Set();
   for (const action of actionIntervals) {
     for (const segment of textSegmentsInside(scanned.textSegments, action)) {
-      for (let offset = segment.text.indexOf(EXACT_CTA); offset >= 0; offset = segment.text.indexOf(EXACT_CTA, offset + EXACT_CTA.length)) {
+      for (let offset = segment.text.indexOf(exactCta); offset >= 0; offset = segment.text.indexOf(exactCta, offset + exactCta.length)) {
         candidateStarts.add(segment.start + offset);
       }
     }
@@ -197,14 +201,14 @@ export function classifyHtml(html) {
   for (const start of [...candidateStarts].sort((a, b) => a - b)) {
     const actions = actionIntervals.filter((item) => item.open.end <= start && start < item.close.start);
     if (actions.length !== 1) {
-      ambiguities.push(`"${EXACT_CTA}" em ${start} pertence a ${actions.length} ações estruturais`);
+      ambiguities.push(`"${exactCta}" em ${start} pertence a ${actions.length} ações estruturais`);
       exactOccurrences.push({ start, related: null });
       continue;
     }
 
     const related = relatedIntervals.filter((item) => inside(item, actions[0]));
     if (related.length > 1) {
-      ambiguities.push(`"${EXACT_CTA}" em ${start} pertence a ${related.length} blocos ${RELATED_CLASS}`);
+      ambiguities.push(`"${exactCta}" em ${start} pertence a ${related.length} blocos ${RELATED_CLASS}`);
       exactOccurrences.push({ start, related: null });
       continue;
     }
@@ -222,7 +226,7 @@ export function classifyHtml(html) {
     }
     const isLiteralExact = exactOccurrences.some((item) => item.start >= action.open.end && item.start < action.close.start);
     if (!isLiteralExact) {
-      variants.push({ label, related: related.length === 1, encodedExact: label === EXACT_CTA });
+      variants.push({ label, related: related.length === 1, encodedExact: label === exactCta });
     }
   }
 
@@ -246,6 +250,32 @@ export function auditFailures({ fileCount, exactTotal, relatedTotal, outsideTota
   return failures;
 }
 
+export function postAuditFailures({
+  fileCount,
+  legacyTotal,
+  legacyRelated,
+  legacyOutside,
+  legacyUnresolved,
+  currentRelated,
+  currentUnresolved,
+  ambiguousFileCount,
+}) {
+  const failures = [];
+  if (fileCount !== EXPECTED_PRODUCT_FILE_COUNT) {
+    failures.push(`produto-*.html divergente: ${fileCount} != ${EXPECTED_PRODUCT_FILE_COUNT}`);
+  }
+  if (legacyTotal !== 0) failures.push(`restaram ${legacyTotal} CTA(s) comercial(is) legado(s) "${LEGACY_CTA}"`);
+  if (legacyRelated !== 0) failures.push(`restaram ${legacyRelated} CTA(s) legado(s) em .${RELATED_CLASS}`);
+  if (legacyOutside !== 0) failures.push(`restaram ${legacyOutside} CTA(s) legado(s) fora de .${RELATED_CLASS}`);
+  if (legacyUnresolved !== 0) failures.push(`restaram ${legacyUnresolved} CTA(s) legado(s) não classificado(s)`);
+  if (currentRelated !== EXPECTED_RELATED_CTA_COUNT) {
+    failures.push(`CTA novo em related divergente: ${currentRelated} != ${EXPECTED_RELATED_CTA_COUNT}`);
+  }
+  if (currentUnresolved !== 0) failures.push(`CTA novo possui ${currentUnresolved} ocorrência(s) não classificada(s)`);
+  if (ambiguousFileCount !== 0) failures.push(`${ambiguousFileCount} arquivo(s) com classificação ambígua`);
+  return failures;
+}
+
 function trackedProductFiles() {
   const output = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   return output
@@ -258,12 +288,14 @@ function trackedProductFiles() {
 function runAudit() {
   const files = trackedProductFiles();
   const ambiguousFiles = new Map();
-  const exactFiles = [];
-  const variantMap = new Map();
-  let exactTotal = 0;
-  let relatedTotal = 0;
-  let outsideTotal = 0;
-  let unresolvedTotal = 0;
+  const currentFiles = [];
+  let legacyTotal = 0;
+  let legacyRelated = 0;
+  let legacyOutside = 0;
+  let legacyUnresolved = 0;
+  let currentRelated = 0;
+  let currentOutside = 0;
+  let currentUnresolved = 0;
   let relatedBlocks = 0;
 
   for (const path of files) {
@@ -275,52 +307,47 @@ function runAudit() {
       continue;
     }
 
-    const result = classifyHtml(html);
-    relatedBlocks += result.relatedBlockCount;
-    const related = result.exactOccurrences.filter((item) => item.related === true).length;
-    const outside = result.exactOccurrences.filter((item) => item.related === false).length;
-    const unresolved = result.exactOccurrences.filter((item) => item.related === null).length;
+    const legacy = classifyHtml(html, LEGACY_CTA);
+    const current = classifyHtml(html, CURRENT_CTA);
+    const ambiguities = [...new Set([...legacy.ambiguities, ...current.ambiguities])];
+    if (ambiguities.length > 0) ambiguousFiles.set(path, ambiguities);
 
-    exactTotal += result.exactOccurrences.length;
-    relatedTotal += related;
-    outsideTotal += outside;
-    unresolvedTotal += unresolved;
+    relatedBlocks += current.relatedBlockCount;
 
-    if (result.exactOccurrences.length > 0) {
-      exactFiles.push({ path, exact: result.exactOccurrences.length, related, outside, unresolved });
-    }
-    if (result.ambiguities.length > 0) ambiguousFiles.set(path, result.ambiguities);
+    const legacyRelatedHere = legacy.exactOccurrences.filter((item) => item.related === true).length;
+    const legacyOutsideHere = legacy.exactOccurrences.filter((item) => item.related === false).length;
+    const legacyUnresolvedHere = legacy.exactOccurrences.filter((item) => item.related === null).length;
+    legacyTotal += legacy.exactOccurrences.length;
+    legacyRelated += legacyRelatedHere;
+    legacyOutside += legacyOutsideHere;
+    legacyUnresolved += legacyUnresolvedHere;
 
-    for (const variant of result.variants) {
-      const key = `${variant.label}\u0000${variant.encodedExact ? 'encoded' : 'label'}`;
-      if (!variantMap.has(key)) {
-        variantMap.set(key, { label: variant.label, encodedExact: variant.encodedExact, total: 0, related: 0, outside: 0, files: new Set() });
-      }
-      const item = variantMap.get(key);
-      item.total += 1;
-      if (variant.related) item.related += 1;
-      else item.outside += 1;
-      item.files.add(path);
+    const currentRelatedHere = current.exactOccurrences.filter((item) => item.related === true).length;
+    const currentOutsideHere = current.exactOccurrences.filter((item) => item.related === false).length;
+    const currentUnresolvedHere = current.exactOccurrences.filter((item) => item.related === null).length;
+    currentRelated += currentRelatedHere;
+    currentOutside += currentOutsideHere;
+    currentUnresolved += currentUnresolvedHere;
+
+    if (currentRelatedHere > 0) {
+      currentFiles.push({ path, related: currentRelatedHere, outside: currentOutsideHere, unresolved: currentUnresolvedHere });
     }
   }
 
-  console.log('M3.2 RELATED SCOPE AUDIT');
+  console.log('M3.2 RELATED SCOPE AUDIT — POST TRANSFORMATION');
   console.log(`TOTAL_PRODUTO_HTML=${files.length}`);
-  console.log(`VER_OFERTA_EXATAS_REAIS=${exactTotal}`);
-  console.log(`RELATED_CONFIRMADAS=${relatedTotal}`);
-  console.log(`FORA_DE_RELATED=${outsideTotal}`);
-  console.log(`NAO_CLASSIFICADAS=${unresolvedTotal}`);
+  console.log(`VER_OFERTA_RESTANTES_REAIS=${legacyTotal}`);
+  console.log(`VER_OFERTA_RELATED_RESTANTES=${legacyRelated}`);
+  console.log(`VER_OFERTA_FORA_RELATED=${legacyOutside}`);
+  console.log(`VER_OFERTA_NAO_CLASSIFICADAS=${legacyUnresolved}`);
+  console.log(`VER_NO_MERCADO_LIVRE_RELATED=${currentRelated}`);
+  console.log(`VER_NO_MERCADO_LIVRE_FORA_RELATED=${currentOutside}`);
+  console.log(`VER_NO_MERCADO_LIVRE_NAO_CLASSIFICADAS=${currentUnresolved}`);
   console.log(`BLOCOS_RELATED_RECONHECIDOS=${relatedBlocks}`);
   console.log(`ARQUIVOS_AMBIGUOS=${ambiguousFiles.size}`);
-  console.log('ARQUIVOS_COM_VER_OFERTA_EXATA_REAL:');
-  for (const item of exactFiles) {
-    console.log(`- ${item.path}: exact=${item.exact} related=${item.related} outside=${item.outside} unresolved=${item.unresolved}`);
-  }
-  console.log('VARIANTES:');
-  if (variantMap.size === 0) console.log('- nenhuma');
-  for (const item of [...variantMap.values()].sort((a, b) => a.label.localeCompare(b.label))) {
-    const suffix = item.encodedExact ? ' [forma HTML não literal]' : '';
-    console.log(`- ${JSON.stringify(item.label)}${suffix}: total=${item.total} related=${item.related} outside=${item.outside} files=${[...item.files].sort().join(',')}`);
+  console.log('ARQUIVOS_COM_CTA_NOVO_RELATED:');
+  for (const item of currentFiles) {
+    console.log(`- ${item.path}: related=${item.related} outside=${item.outside} unresolved=${item.unresolved}`);
   }
   console.log('ARQUIVOS_AMBIGUOS_DETALHE:');
   if (ambiguousFiles.size === 0) console.log('- nenhum');
@@ -329,22 +356,25 @@ function runAudit() {
     for (const error of errors) console.log(`  - ${error}`);
   }
 
-  const failures = auditFailures({
+  const failures = postAuditFailures({
     fileCount: files.length,
-    exactTotal,
-    relatedTotal,
-    outsideTotal,
+    legacyTotal,
+    legacyRelated,
+    legacyOutside,
+    legacyUnresolved,
+    currentRelated,
+    currentUnresolved,
     ambiguousFileCount: ambiguousFiles.size,
   });
 
-  console.log('INVARIANTES:');
-  console.log('- existe ao menos um produto-*.html versionado');
-  console.log(`- existe ao menos uma ocorrência literal comercial real de "${EXACT_CTA}"`);
-  console.log('- comments e conteúdo raw-text (script/style/textarea/title) não entram na contagem comercial');
-  console.log('- toda ocorrência comercial real é conteúdo de exatamente uma ação <a>/<button>');
-  console.log(`- toda ocorrência comercial real está em exatamente um contexto reconhecível e nenhuma fica fora de .${RELATED_CLASS}`);
+  console.log('INVARIANTES_POS_M3_2:');
+  console.log(`- produto-*.html = ${EXPECTED_PRODUCT_FILE_COUNT}`);
+  console.log(`- zero CTA comercial legado "${LEGACY_CTA}" permanece`);
+  console.log(`- CTA novo "${CURRENT_CTA}" é contado estruturalmente apenas em .${RELATED_CLASS}`);
+  console.log(`- related com CTA novo = ${EXPECTED_RELATED_CTA_COUNT}`);
+  console.log('- ocorrências fora de related da copy nova são apenas informativas e não entram na prova da transformação');
+  console.log('- nenhuma ocorrência antiga fica fora de related ou sem classificação');
   console.log('- nesting estrutural relevante cruzado/malformado torna o arquivo ambíguo');
-  console.log('- total comercial real = related confirmadas + fora de related');
 
   if (failures.length > 0) {
     console.error('AUDIT_RESULT=FAIL');
