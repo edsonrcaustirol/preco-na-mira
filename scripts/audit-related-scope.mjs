@@ -257,6 +257,7 @@ export function postAuditFailures({
   legacyOutside,
   legacyUnresolved,
   currentRelated,
+  currentOutside,
   currentUnresolved,
   ambiguousFileCount,
 }) {
@@ -271,6 +272,7 @@ export function postAuditFailures({
   if (currentRelated !== EXPECTED_RELATED_CTA_COUNT) {
     failures.push(`CTA novo em related divergente: ${currentRelated} != ${EXPECTED_RELATED_CTA_COUNT}`);
   }
+  if (currentOutside > 0) failures.push(`${currentOutside} CTA(s) novo(s) fora de ${RELATED_CLASS}`);
   if (currentUnresolved !== 0) failures.push(`CTA novo possui ${currentUnresolved} ocorrência(s) não classificada(s)`);
   if (ambiguousFileCount !== 0) failures.push(`${ambiguousFileCount} arquivo(s) com classificação ambígua`);
   return failures;
@@ -363,6 +365,7 @@ function runAudit() {
     legacyOutside,
     legacyUnresolved,
     currentRelated,
+    currentOutside,
     currentUnresolved,
     ambiguousFileCount: ambiguousFiles.size,
   });
@@ -372,7 +375,7 @@ function runAudit() {
   console.log(`- zero CTA comercial legado "${LEGACY_CTA}" permanece`);
   console.log(`- CTA novo "${CURRENT_CTA}" é contado estruturalmente apenas em .${RELATED_CLASS}`);
   console.log(`- related com CTA novo = ${EXPECTED_RELATED_CTA_COUNT}`);
-  console.log('- ocorrências fora de related da copy nova são apenas informativas e não entram na prova da transformação');
+  console.log(`- zero CTA novo "${CURRENT_CTA}" pode existir fora de .${RELATED_CLASS}`);
   console.log('- nenhuma ocorrência antiga fica fora de related ou sem classificação');
   console.log('- nesting estrutural relevante cruzado/malformado torna o arquivo ambíguo');
 

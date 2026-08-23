@@ -100,11 +100,30 @@ test('transformação futura só toca related real e ignora comment/script/style
   assert.match(after, /class="related-actions"[\s\S]*?VER NO MERCADO LIVRE ↗/);
 });
 
-
 test('CTA pós-M3.2 é classificado estruturalmente em related', () => {
   const result = classifyHtml(`<div class="related-actions"><a>${CURRENT_CTA}</a></div>`, CURRENT_CTA);
   assert.equal(result.ambiguities.length, 0);
   assert.deepEqual(counts(result), { exactTotal: 1, relatedTotal: 1, outsideTotal: 0 });
+});
+
+test('CTA pós-M3.2 fora de related é currentOutside e reprova invariantes', () => {
+  const result = classifyHtml(`<div class="card"><a>${CURRENT_CTA}</a></div>`, CURRENT_CTA);
+  assert.equal(result.ambiguities.length, 0);
+  const summary = counts(result);
+  assert.deepEqual(summary, { exactTotal: 1, relatedTotal: 0, outsideTotal: 1 });
+
+  const failures = postAuditFailures({
+    fileCount: 556,
+    legacyTotal: 0,
+    legacyRelated: 0,
+    legacyOutside: 0,
+    legacyUnresolved: 0,
+    currentRelated: 2457,
+    currentOutside: summary.outsideTotal,
+    currentUnresolved: 0,
+    ambiguousFileCount: 0,
+  });
+  assert.ok(failures.some((failure) => failure.includes('fora de related-actions')));
 });
 
 test('invariantes pós-M3.2 exigem zero legado e exatamente 2457 novos related', () => {
@@ -115,6 +134,7 @@ test('invariantes pós-M3.2 exigem zero legado e exatamente 2457 novos related',
     legacyOutside: 0,
     legacyUnresolved: 0,
     currentRelated: 2457,
+    currentOutside: 0,
     currentUnresolved: 0,
     ambiguousFileCount: 0,
   });
@@ -127,6 +147,7 @@ test('invariantes pós-M3.2 exigem zero legado e exatamente 2457 novos related',
     legacyOutside: 0,
     legacyUnresolved: 0,
     currentRelated: 2456,
+    currentOutside: 0,
     currentUnresolved: 0,
     ambiguousFileCount: 0,
   });
