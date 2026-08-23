@@ -76,15 +76,30 @@ function takeBalanced(candidates,limit,selected,brandCounts){
 }
 function curate(products){
   const previousHighlights=products.filter(product=>product?.linkAfiliado&&product.destaque===true).length;
+  const invalidOverrides=products.filter(product=>product?.oferta!==undefined&&typeof product.oferta!=='boolean');
+  if(invalidOverrides.length)throw new Error(`Override de oferta inválido (use true/false): ${invalidOverrides.map(product=>product.id||'(sem id)').join(', ')}.`);
+
+  const forcedIn=products.filter(product=>product?.oferta===true);
+  const forcedOut=products.filter(product=>product?.oferta===false);
+  const invalidForcedIn=forcedIn.filter(product=>!product?.linkAfiliado||!reasonText(product));
+  if(invalidForcedIn.length)throw new Error(`Oferta forçada sem link afiliado ou justificativa: ${invalidForcedIn.map(product=>product.id||'(sem id)').join(', ')}.`);
+  if(forcedIn.length>CURATION_TARGET)throw new Error(`Ofertas forçadas excedem a meta ${CURATION_TARGET}: ${forcedIn.length}.`);
+
   const candidates=products
-    .filter(product=>product?.linkAfiliado&&reasonText(product))
+    .filter(product=>product?.oferta!==false&&product?.linkAfiliado&&reasonText(product))
     .sort(compareCandidates);
   if(candidates.length<CURATION_TARGET)throw new Error(`Curadoria insuficiente: ${candidates.length} produtos elegíveis para meta ${CURATION_TARGET}.`);
 
-  const selected=[];
+  const selected=[...forcedIn].sort(compareCandidates);
   const brandCounts=new Map();
+  for(const product of selected){
+    const brand=norm(product.marca||'sem-marca');
+    brandCounts.set(brand,(brandCounts.get(brand)||0)+1);
+  }
+
   for(const [group,quota] of Object.entries(BUCKET_QUOTAS)){
-    takeBalanced(candidates.filter(product=>bucket(product)===group),quota,selected,brandCounts);
+    const already=selected.filter(product=>bucket(product)===group).length;
+    takeBalanced(candidates.filter(product=>bucket(product)===group),Math.max(0,quota-already),selected,brandCounts);
   }
   if(selected.length<CURATION_TARGET)takeBalanced(candidates,CURATION_TARGET-selected.length,selected,brandCounts);
   if(selected.length<CURATION_TARGET){
@@ -93,9 +108,16 @@ function curate(products){
       if(!selected.some(item=>item.id===product.id))selected.push(product);
     }
   }
+
   const curated=selected.slice(0,CURATION_TARGET).sort(compareCandidates);
   if(curated.length!==CURATION_TARGET)throw new Error(`Curadoria final inválida: ${curated.length}.`);
-  return{previousHighlights,candidates,curated};
+  for(const product of forcedIn){
+    if(!curated.some(item=>item.id===product.id))throw new Error(`Oferta forçada não entrou na curadoria: ${product.id}.`);
+  }
+  for(const product of forcedOut){
+    if(curated.some(item=>item.id===product.id))throw new Error(`Oferta bloqueada entrou na curadoria: ${product.id}.`);
+  }
+  return{previousHighlights,candidates,curated,forcedIn,forcedOut};
 }
 function card(product,index){
   const meta=criterion(product);
@@ -132,7 +154,7 @@ function updateMeta(html,page){
 }
 
 const products=readProducts();
-const {previousHighlights,candidates,curated}=curate(products);
+const {previousHighlights,candidates,curated,forcedIn,forcedOut}=curate(products);
 let base=fs.readFileSync(TEMPLATE,'utf8');
 for(const old of fs.readdirSync(ROOT).filter(name=>/^ofertas-pagina-\d+\.html$/.test(name)))fs.unlinkSync(path.join(ROOT,old));
 const totalPages=Math.ceil(curated.length/PAGE_SIZE);
@@ -151,4 +173,4 @@ const firstCards=(first.match(/data-pnm-product-id=/g)||[]).length;
 if(firstCards!==curated.length)throw new Error(`Ofertas prerenderizadas inválidas: ${firstCards}/${curated.length}.`);
 const byBucket=Object.fromEntries(Object.keys(BUCKET_QUOTAS).map(group=>[group,curated.filter(product=>bucket(product)===group).length]));
 const byCriterion=curated.reduce((acc,product)=>{const label=criterion(product).label;acc[label]=(acc[label]||0)+1;return acc;},{});
-console.log(JSON.stringify({previousHighlights,candidatePool:candidates.length,curatedOffers:curated.length,offerPages:totalPages,firstPageCards:firstCards,byBucket,byCriterion,criterion:'prioriza destaques e critérios editoriais existentes; completa variedade por área e marca sem inventar dados'},null,2));
+console.log(JSON.stringify({previousHighlights,candidatePool:candidates.length,curatedOffers:curated.length,offerPages:totalPages,firstPageCards:firstCards,forcedIn:forcedIn.map(product=>product.id),forcedOut:forcedOut.map(product=>product.id),byBucket,byCriterion,criterion:'prioriza overrides explícitos e, na ausência deles, os critérios editoriais existentes; completa variedade por área e marca sem inventar dados'},null,2));
