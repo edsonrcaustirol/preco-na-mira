@@ -21,6 +21,7 @@
     "test:m3-2-related-scope": "node --test scripts/audit-related-scope.test.mjs",
     "audit:affiliate-integrity": "node scripts/audit-affiliate-integrity.mjs",
     "test:affiliate-integrity": "node --test scripts/audit-affiliate-integrity.test.mjs",
+    "test:l2-2-central-foundation": "node scripts/test-l2-2-central-foundation.mjs",
     "test:e1-1-mobile-listings": "node scripts/test-e1-1-mobile-listings.mjs",
     "test:e2-catalog-operations": "node scripts/test-e2-catalog-operations.mjs",
     "validate:e2-catalog": "node scripts/validar-catalogo-operacional.mjs",
@@ -31,7 +32,7 @@
     "preview": "node scripts/preview.mjs",
     "deploy": "wrangler deploy",
     "deploy:preview": "wrangler versions upload",
-    "check": "npm run test:affiliate-integrity && npm run test:m3-2-related-scope && npm run audit:m3-2-related-scope && npm run build:site && npm run test:e2-catalog-operations && npm run validate:e2-catalog && npm run test:e1-1-mobile-listings && npm run test:m1 && npm run test:m2-1 && npm run test:m3-1 && npm run test:m2-2 && npm run audit:strict && wrangler deploy --dry-run"
+    "check": "npm run test:l2-2-central-foundation && npm run test:affiliate-integrity && npm run test:m3-2-related-scope && npm run audit:m3-2-related-scope && npm run build:site && npm run test:e2-catalog-operations && npm run validate:e2-catalog && npm run test:e1-1-mobile-listings && npm run test:m1 && npm run test:m2-1 && npm run test:m3-1 && npm run test:m2-2 && npm run audit:strict && wrangler deploy --dry-run"
   },
   "devDependencies": {
     "wrangler": "4.123.0"

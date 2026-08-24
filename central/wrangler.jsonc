@@ -1,0 +1,12 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "preco-na-mira-central",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-08-23",
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "PNM_CENTRAL_ACCESS_MODE": "cloudflare-access",
+    "PNM_CENTRAL_EXPECTED_HOST": "central.preconamira.com.br"
+  }
+}
