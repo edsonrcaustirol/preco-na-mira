@@ -12,10 +12,17 @@ export const CENTRAL_CONTRACTS = Object.freeze({
   version: CENTRAL_CONTRACT_VERSION,
   authentication: Object.freeze({
     provider: 'cloudflare-access',
-    enforcement: 'external-security-boundary',
+    enforcement: 'external-boundary-plus-worker-jwt-verification',
     localPassword: false,
-    requiredRuntime: Object.freeze(['PNM_CENTRAL_ACCESS_AUD', 'PNM_CENTRAL_EXPECTED_HOST']),
+    workerJwtVerification: true,
+    requiredRuntime: Object.freeze([
+      'PNM_CENTRAL_ACCESS_AUD',
+      'PNM_CENTRAL_ACCESS_ISSUER',
+      'PNM_CENTRAL_EXPECTED_HOST',
+    ]),
     accessAssertionHeader: 'cf-access-jwt-assertion',
+    algorithm: 'RS256',
+    jwksPath: '/cdn-cgi/access/certs',
   }),
   catalog: Object.freeze({
     owner: 'data/produtos-index.js',

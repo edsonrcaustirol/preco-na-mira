@@ -37,12 +37,46 @@ Antes de adicionar a rota `central.preconamira.com.br` ao Worker administrativo:
 1. criar no Cloudflare Zero Trust uma aplicação Access do tipo **Self-hosted** para `central.preconamira.com.br`;
 2. criar política `Allow` apenas para o proprietário/grupo administrativo autorizado;
 3. não criar política pública, bypass ou regra que permita acesso anônimo;
-4. copiar o **Application Audience (AUD) tag** da aplicação Access para a variável de runtime `PNM_CENTRAL_ACCESS_AUD` do Worker administrativo;
-5. confirmar que `PNM_CENTRAL_EXPECTED_HOST=central.preconamira.com.br`;
-6. somente depois adicionar a rota/custom domain `central.preconamira.com.br` ao Worker `preco-na-mira-central`;
-7. manter `workers_dev=false` e `preview_urls=false` enquanto a superfície administrativa depender exclusivamente do domínio protegido.
+4. copiar o **Application Audience (AUD) tag** da aplicação Access para `PNM_CENTRAL_ACCESS_AUD`;
+5. configurar `PNM_CENTRAL_ACCESS_ISSUER` com o team domain oficial do Access no formato `https://<team-name>.cloudflareaccess.com`;
+6. confirmar que `PNM_CENTRAL_EXPECTED_HOST=central.preconamira.com.br`;
+7. somente depois adicionar a rota/custom domain `central.preconamira.com.br` ao Worker `preco-na-mira-central`;
+8. manter `workers_dev=false` e `preview_urls=false` enquanto a superfície administrativa depender exclusivamente do domínio protegido.
 
-O Worker falha com `503 CENTRAL_CONFIG_INCOMPLETE` quando a configuração administrativa obrigatória estiver ausente e com `403 CLOUDFLARE_ACCESS_REQUIRED` quando o request não trouxer o assertion header injetado pelo Cloudflare Access.
+Variáveis obrigatórias de runtime:
+
+- `PNM_CENTRAL_ACCESS_AUD`: Application Audience (AUD) tag da aplicação Access;
+- `PNM_CENTRAL_ACCESS_ISSUER`: team domain/issuer oficial do Access, exclusivamente em `https://<team-name>.cloudflareaccess.com`;
+- `PNM_CENTRAL_EXPECTED_HOST`: host administrativo esperado, `central.preconamira.com.br`.
+
+Nenhum desses valores é enviado ao navegador como credencial. O AUD e o issuer identificam a aplicação/tenant; chaves privadas, tokens e secrets não são armazenados no código.
+
+## Validação criptográfica do assertion
+
+A presença do header `Cf-Access-Jwt-Assertion` **não é suficiente** para autenticar.
+
+Antes de servir qualquer área administrativa, o Worker:
+
+1. exige a configuração obrigatória;
+2. exige o host administrativo esperado;
+3. exige um JWT estruturalmente válido no header `Cf-Access-Jwt-Assertion`;
+4. aceita somente `RS256`;
+5. busca o JWKS público oficial em `PNM_CENTRAL_ACCESS_ISSUER + /cdn-cgi/access/certs`;
+6. seleciona a chave pública pelo `kid` e valida criptograficamente a assinatura;
+7. exige `iss` exatamente igual ao issuer configurado;
+8. exige que `aud` contenha exatamente o Application AUD configurado em `PNM_CENTRAL_ACCESS_AUD`;
+9. exige `exp` válido e não expirado;
+10. valida `nbf` e `iat` quando presentes.
+
+A consulta ao JWKS usa somente o team domain configurado e aceito sob `*.cloudflareaccess.com`; não há domínio de conta hardcoded.
+
+Falhas fechadas:
+
+- configuração obrigatória ausente ou inválida: `503 CENTRAL_CONFIG_INCOMPLETE`;
+- assertion ausente: `403 CLOUDFLARE_ACCESS_REQUIRED`;
+- JWT malformado, assinatura inválida, chave desconhecida, algoritmo incorreto, issuer incorreto, AUD incorreto ou token temporalmente inválido: `403 CLOUDFLARE_ACCESS_INVALID`.
+
+A resposta HTTP não expõe o motivo criptográfico interno da rejeição.
 
 O Worker **não implementa usuário/senha próprio** e não armazena senha no repositório.
 
