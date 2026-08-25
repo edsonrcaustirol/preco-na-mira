@@ -208,7 +208,7 @@ function assertSecurityAndOwnership() {
   assert.equal('route' in config, false, 'rota administrativa singular continua ausente');
   assert.equal('d1_databases' in config, false, 'D1 continua ausente');
   assert.equal('triggers' in config, false, 'scheduler continua ausente');
-  assert.deepEqual(config.build, { command: 'node scripts/build-central-products.mjs', cwd: '..' });
+  assert.deepEqual(config.build, { command: 'node scripts/build-central-products.mjs' });
 
   assert.equal(CENTRAL_CONTRACTS.catalog.owner, 'data/produtos-index.js');
   assert.equal(CENTRAL_CONTRACTS.catalog.centralDatabaseOwner, false);
