@@ -96,9 +96,13 @@ async function first(db, sql, binds = []) {
   return response?.results?.[0] ?? null;
 }
 
+function boundedLimit(value, fallback, maximum) {
+  return Math.min(maximum, Math.max(1, Number(value) || fallback));
+}
+
 export async function readOperationalHistory(db, { productId = null, currentLinkFingerprint = null, runLimit = 20 } = {}) {
   requireDb(db);
-  const limit = Math.min(100, Math.max(1, Number(runLimit) || 20));
+  const limit = boundedLimit(runLimit, 20, 100);
   const recentRunsResponse = await db.prepare(`SELECT run_id, trigger, scope, source_sha, started_at, finished_at, status, totals_json, metadata_json
       FROM audit_runs ORDER BY COALESCE(finished_at, started_at) DESC LIMIT ?`).bind(limit).all();
   const latestHealthyFull = await first(db, `SELECT run_id, trigger, scope, source_sha, started_at, finished_at, status, totals_json, metadata_json
@@ -127,5 +131,30 @@ export async function readOperationalHistory(db, { productId = null, currentLink
     latestProductAny: latestProductAny || null,
     currentProductResult: currentProductResult || null,
     currentResultObsolete: Boolean(productId && currentLinkFingerprint && latestProductAny && !currentProductResult),
+  });
+}
+
+export async function readCentralHealthHistory(db, { runLimit = 20, resultLimit = 5000 } = {}) {
+  requireDb(db);
+  const runsLimit = boundedLimit(runLimit, 20, 100);
+  const resultsLimit = boundedLimit(resultLimit, 5000, 20000);
+  const [recentRunsResponse, resultsResponse, latestHealthyFull] = await Promise.all([
+    db.prepare(`SELECT run_id, trigger, scope, source_sha, started_at, finished_at, status, totals_json, metadata_json
+      FROM audit_runs ORDER BY COALESCE(finished_at, started_at) DESC LIMIT ?`).bind(runsLimit).all(),
+    db.prepare(`SELECT r.run_id, r.product_id, r.audited_link, r.link_fingerprint, r.classification, r.reason, r.checked_at, r.evidence_json,
+        u.trigger, u.scope, u.status, u.source_sha, u.started_at, u.finished_at
+      FROM audit_results r JOIN audit_runs u ON u.run_id = r.run_id
+      WHERE u.status IN ('SUCCESS', 'PARTIAL')
+      ORDER BY r.checked_at DESC LIMIT ?`).bind(resultsLimit).all(),
+    first(db, `SELECT run_id, trigger, scope, source_sha, started_at, finished_at, status, totals_json, metadata_json
+      FROM audit_runs WHERE scope = 'FULL' AND status = 'SUCCESS' AND finished_at IS NOT NULL
+      ORDER BY finished_at DESC LIMIT 1`),
+  ]);
+
+  return Object.freeze({
+    contract: CENTRAL_HISTORY_CONTRACT,
+    recentRuns: Object.freeze([...(recentRunsResponse?.results || [])]),
+    latestHealthyFull: latestHealthyFull || null,
+    results: Object.freeze([...(resultsResponse?.results || [])]),
   });
 }
