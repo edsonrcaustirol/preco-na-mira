@@ -34,9 +34,16 @@ async function enforceAdministrativeBoundary(request, env, url, options = {}) {
 }
 
 async function loadOperationalState(env) {
-  const [{ CENTRAL_PRODUCTS_PROJECTION }, { createEmptyCentralLinkHealthReadModel }, { readCentralOperationalHistory }, { buildCentralLinkHealthReadModelFromHistory }, { buildCentralOperationalReadModel }] = await Promise.all([
-    import('./generated/products.mjs'), import('./link-health.mjs'), import('./history-store.mjs'), import('./link-health-history.mjs'), import('./operational-read-model.mjs'),
-  ]);
+  let modules;
+  try {
+    modules = await Promise.all([
+      import('./generated/products.mjs'), import('./link-health.mjs'), import('./history-store.mjs'), import('./link-health-history.mjs'), import('./operational-read-model.mjs'),
+    ]);
+  } catch (error) {
+    if (error?.code === 'ERR_MODULE_NOT_FOUND' && String(error?.url || '').includes('/generated/products.mjs')) return null;
+    throw error;
+  }
+  const [{ CENTRAL_PRODUCTS_PROJECTION }, { createEmptyCentralLinkHealthReadModel }, { readCentralOperationalHistory }, { buildCentralLinkHealthReadModelFromHistory }, { buildCentralOperationalReadModel }] = modules;
   const products = CENTRAL_PRODUCTS_PROJECTION.products || [];
   let history = null; let historyStatus = 'unbound'; let linkHealth;
   if (!env?.PNM_HISTORY_DB) {
@@ -52,6 +59,7 @@ async function loadOperationalState(env) {
 async function renderProtectedPage(url, env) {
   if (url.pathname === '/novo-produto') return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '' };
   const state = await loadOperationalState(env);
+  if (!state) return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '' };
   if (url.pathname === '/' || url.pathname === '/painel') { const { renderOperationalDashboard } = await import('./operational-pages.mjs'); return { html: renderOperationalDashboard(state.operational), scriptNonce: '' }; }
   if (url.pathname === '/produtos') { const { renderOperationalProductsPage } = await import('./products-operational-page.mjs'); const scriptNonce = crypto.randomUUID().replaceAll('-', ''); return { html: renderOperationalProductsPage(state.projection, state.linkHealth, scriptNonce), scriptNonce }; }
   if (url.pathname === '/saude-links') { const { renderLinkHealthPage } = await import('./link-health-page.mjs'); const scriptNonce = crypto.randomUUID().replaceAll('-', ''); return { html: renderLinkHealthPage(state.linkHealth, scriptNonce), scriptNonce }; }
