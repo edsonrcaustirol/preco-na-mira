@@ -46,8 +46,17 @@ export const CENTRAL_CONTRACTS = Object.freeze({
     contract: 'pnm.affiliate-integrity/v1',
     command: 'npm run audit:affiliate-integrity',
     cli: 'scripts/audit-affiliate-integrity.mjs',
-    mode: 'on-demand-future-integration',
+    mode: 'github-actions-executor',
     centralReadModelContract: 'pnm.central-link-health/v1',
+    executionContract: 'pnm.affiliate-integrity-execution/v1',
+    executor: Object.freeze({
+      kind: 'github-actions',
+      workflow: '.github/workflows/auditar-links.yml',
+      wrapper: 'scripts/run-affiliate-integrity-workflow.mjs',
+      scopes: Object.freeze(['full', 'product', 'batch', 'input']),
+      scheduled: false,
+      arbitraryCommand: false,
+    }),
     classifications: Object.freeze([
       'CORRETO',
       'PROVÁVEL',
