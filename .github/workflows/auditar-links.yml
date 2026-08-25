@@ -2,8 +2,8 @@ name: Auditar integridade dos links
 
 on:
   schedule:
-    # Aproximação simples de ~3 dias por calendário. Em viradas de mês o intervalo pode variar.
-    - cron: '17 5 */3 * *'
+    # Aproximação simples de ~3 dias: domingo→quarta = 3 dias; quarta→domingo = 4 dias.
+    - cron: '17 5 * * 0,3'
   workflow_dispatch:
     inputs:
       scope:
