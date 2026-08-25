@@ -21,6 +21,17 @@ function optionalText(value) {
   return text || null;
 }
 
+function normalizeRun(run) {
+  if (!run) return null;
+  return {
+    runId: optionalText(run.runId ?? run.run_id),
+    scope: optionalText(run.scope),
+    sourceSha: optionalText(run.sourceSha ?? run.source_sha),
+    finishedAt: optionalText(run.finishedAt ?? run.finished_at),
+    status: optionalText(run.status),
+  };
+}
+
 function normalizeResult(result) {
   const classification = String(result?.classification || '').trim();
   if (!CLASSIFICATION_SET.has(classification)) {
@@ -36,6 +47,7 @@ function normalizeResult(result) {
     reason: optionalText(result?.reason ?? result?.summary),
     checkedAt: optionalText(result?.checkedAt ?? result?.checked_at),
     runId: optionalText(result?.runId ?? result?.run_id),
+    delta: optionalText(result?.delta),
     requiresAttention: ATTENTION_SET.has(classification),
     nonVerifiable: classification === LINK_HEALTH_NON_VERIFIABLE,
   };
@@ -58,31 +70,53 @@ function summarize(results) {
   };
 }
 
-export function createEmptyCentralLinkHealthReadModel() {
+function normalizeCoverage(coverage) {
+  if (!coverage) return null;
+  return {
+    productsTotal: Number(coverage.productsTotal) || 0,
+    currentResults: Number(coverage.currentResults) || 0,
+    staleResults: Number(coverage.staleResults) || 0,
+    notAudited: Number(coverage.notAudited) || 0,
+  };
+}
+
+export function createEmptyCentralLinkHealthReadModel({
+  historyStatus = 'unbound',
+  referenceFull = null,
+  coverage = null,
+  staleResults = [],
+} = {}) {
   return deepFreeze({
     contract: CENTRAL_LINK_HEALTH_CONTRACT,
     sourceContract: AFFILIATE_INTEGRITY_CONTRACT,
     availability: 'none',
     defaultView: 'attention',
+    historyStatus,
+    referenceFull: normalizeRun(referenceFull),
+    coverage: normalizeCoverage(coverage),
     run: null,
     summary: null,
+    staleResults: [...staleResults],
     results: [],
   });
 }
 
-export function buildCentralLinkHealthReadModel({ run, results = [] } = {}) {
+export function buildCentralLinkHealthReadModel({
+  run,
+  results = [],
+  historyStatus = 'available',
+  referenceFull = null,
+  coverage = null,
+  staleResults = [],
+} = {}) {
   if (!Array.isArray(results)) throw new Error('invalid-link-health-results');
-  if (!run && results.length === 0) return createEmptyCentralLinkHealthReadModel();
+  if (!run && results.length === 0) {
+    return createEmptyCentralLinkHealthReadModel({ historyStatus, referenceFull, coverage, staleResults });
+  }
   if (!run) throw new Error('link-health-run-required');
 
-  const normalizedRun = {
-    runId: optionalText(run.runId ?? run.run_id),
-    scope: optionalText(run.scope),
-    sourceSha: optionalText(run.sourceSha ?? run.source_sha),
-    finishedAt: optionalText(run.finishedAt ?? run.finished_at),
-    status: optionalText(run.status),
-  };
-  if (!normalizedRun.runId) throw new Error('link-health-run-id-required');
+  const normalizedRun = normalizeRun(run);
+  if (!normalizedRun?.runId) throw new Error('link-health-run-id-required');
 
   const normalizedResults = results.map(normalizeResult);
   return deepFreeze({
@@ -90,8 +124,12 @@ export function buildCentralLinkHealthReadModel({ run, results = [] } = {}) {
     sourceContract: AFFILIATE_INTEGRITY_CONTRACT,
     availability: 'available',
     defaultView: 'attention',
+    historyStatus,
+    referenceFull: normalizeRun(referenceFull),
+    coverage: normalizeCoverage(coverage),
     run: normalizedRun,
     summary: summarize(normalizedResults),
+    staleResults: [...staleResults],
     results: normalizedResults,
   });
 }

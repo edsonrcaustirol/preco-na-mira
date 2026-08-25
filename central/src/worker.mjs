@@ -164,7 +164,7 @@ async function enforceAdministrativeBoundary(request, env, url, options = {}) {
   return null;
 }
 
-async function renderProtectedPage(url) {
+async function renderProtectedPage(url, env) {
   if (url.pathname === '/produtos') {
     const [{ CENTRAL_PRODUCTS_PROJECTION }, { renderProductsPage }] = await Promise.all([
       import('./generated/products.mjs'),
@@ -178,13 +178,40 @@ async function renderProtectedPage(url) {
   }
 
   if (url.pathname === '/saude-links') {
-    const [{ createEmptyCentralLinkHealthReadModel }, { renderLinkHealthPage }] = await Promise.all([
+    const [
+      { CENTRAL_PRODUCTS_PROJECTION },
+      { createEmptyCentralLinkHealthReadModel },
+      { readCentralHealthHistory },
+      { buildCentralLinkHealthReadModelFromHistory },
+      { renderLinkHealthPage },
+    ] = await Promise.all([
+      import('./generated/products.mjs'),
       import('./link-health.mjs'),
+      import('./history-store.mjs'),
+      import('./link-health-history.mjs'),
       import('./link-health-page.mjs'),
     ]);
     const scriptNonce = crypto.randomUUID().replaceAll('-', '');
+    const products = CENTRAL_PRODUCTS_PROJECTION.products || [];
+    let readModel;
+    if (!env?.PNM_HISTORY_DB) {
+      readModel = createEmptyCentralLinkHealthReadModel({
+        historyStatus: 'unbound',
+        coverage: { productsTotal: products.length, currentResults: 0, staleResults: 0, notAudited: products.length },
+      });
+    } else {
+      try {
+        const history = await readCentralHealthHistory(env.PNM_HISTORY_DB);
+        readModel = await buildCentralLinkHealthReadModelFromHistory({ products, history });
+      } catch {
+        readModel = createEmptyCentralLinkHealthReadModel({
+          historyStatus: 'unavailable',
+          coverage: { productsTotal: products.length, currentResults: 0, staleResults: 0, notAudited: products.length },
+        });
+      }
+    }
     return {
-      html: renderLinkHealthPage(createEmptyCentralLinkHealthReadModel(), scriptNonce),
+      html: renderLinkHealthPage(readModel, scriptNonce),
       scriptNonce,
     };
   }
@@ -208,7 +235,7 @@ export async function handleCentralRequest(request, env, options = {}) {
 
   if (PAGE_PATHS.has(url.pathname)) {
     if (request.method === 'HEAD') return new Response(null, { status: 200, headers: headers() });
-    const page = await renderProtectedPage(url);
+    const page = await renderProtectedPage(url, env);
     return new Response(page.html, {
       status: 200,
       headers: headers({ 'content-type': 'text/html; charset=utf-8' }, page.scriptNonce),

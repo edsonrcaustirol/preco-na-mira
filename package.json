@@ -27,6 +27,7 @@
     "test:l2-4b-central-link-health": "node scripts/test-l2-4b-central-link-health.mjs",
     "test:l2-4c-affiliate-executor": "node scripts/test-l2-4c-affiliate-executor.mjs",
     "test:l2-4d-operational-history": "node scripts/test-l2-4d-operational-history.mjs",
+    "test:l2-4e-health-history": "node scripts/test-l2-4e-health-history.mjs",
     "test:e1-1-mobile-listings": "node scripts/test-e1-1-mobile-listings.mjs",
     "test:e2-catalog-operations": "node scripts/test-e2-catalog-operations.mjs",
     "validate:e2-catalog": "node scripts/validar-catalogo-operacional.mjs",
@@ -37,7 +38,7 @@
     "preview": "node scripts/preview.mjs",
     "deploy": "wrangler deploy",
     "deploy:preview": "wrangler versions upload",
-    "check": "npm run test:l2-2-central-foundation && npm run test:l2-4a-central-products && npm run test:l2-4b-central-link-health && npm run test:l2-4c-affiliate-executor && npm run test:l2-4d-operational-history && npm run test:affiliate-integrity && npm run test:m3-2-related-scope && npm run audit:m3-2-related-scope && npm run build:site && npm run test:e2-catalog-operations && npm run validate:e2-catalog && npm run test:e1-1-mobile-listings && npm run test:m1 && npm run test:m2-1 && npm run test:m3-1 && npm run test:m2-2 && npm run audit:strict && wrangler deploy --dry-run && wrangler deploy --dry-run --config central/wrangler.jsonc"
+    "check": "npm run test:l2-2-central-foundation && npm run test:l2-4a-central-products && npm run test:l2-4b-central-link-health && npm run test:l2-4c-affiliate-executor && npm run test:l2-4d-operational-history && npm run test:l2-4e-health-history && npm run test:affiliate-integrity && npm run test:m3-2-related-scope && npm run audit:m3-2-related-scope && npm run build:site && npm run test:e2-catalog-operations && npm run validate:e2-catalog && npm run test:e1-1-mobile-listings && npm run test:m1 && npm run test:m2-1 && npm run test:m3-1 && npm run test:m2-2 && npm run audit:strict && wrangler deploy --dry-run && wrangler deploy --dry-run --config central/wrangler.jsonc"
   },
   "devDependencies": {
     "wrangler": "4.123.0"
