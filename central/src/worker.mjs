@@ -225,10 +225,6 @@ async function loadOperationalState(env) {
 }
 
 async function renderProtectedPage(url, env) {
-  if (url.pathname === '/novo-produto') {
-    return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '' };
-  }
-
   const state = await loadOperationalState(env);
   if (!state) return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '' };
 
@@ -244,6 +240,12 @@ async function renderProtectedPage(url, env) {
       html: renderOperationalProductsPage(state.projection, state.linkHealth, scriptNonce),
       scriptNonce,
     };
+  }
+
+  if (url.pathname === '/novo-produto') {
+    const { renderNewProductPage } = await import('./new-product-page.mjs');
+    const scriptNonce = crypto.randomUUID().replaceAll('-', '');
+    return { html: renderNewProductPage(state.projection, scriptNonce), scriptNonce };
   }
 
   if (url.pathname === '/saude-links') {
