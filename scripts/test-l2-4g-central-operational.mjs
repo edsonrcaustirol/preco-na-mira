@@ -3,8 +3,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { CENTRAL_PRODUCTS_PROJECTION } from '../central/src/generated/products.mjs';
 import { buildCentralLinkHealthReadModel, createEmptyCentralLinkHealthReadModel } from '../central/src/link-health.mjs';
 import { buildCentralOperationalReadModel, productHealthState } from '../central/src/operational-read-model.mjs';
 import { renderOperationalDashboard, renderOperationalHistory } from '../central/src/operational-pages.mjs';
@@ -12,6 +12,12 @@ import { renderOperationalProductsPage } from '../central/src/products-operation
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
+const generatedPath = path.join(ROOT, 'central/src/generated/products.mjs');
+if (!fs.existsSync(generatedPath)) {
+  const built = spawnSync(process.execPath, ['scripts/build-central-products.mjs'], { cwd: ROOT, stdio: 'inherit', shell: false });
+  assert.equal(built.status, 0, 'projeção read-only deve ser gerável deterministicamente');
+}
+const { CENTRAL_PRODUCTS_PROJECTION } = await import('../central/src/generated/products.mjs');
 
 const emptyHealth = createEmptyCentralLinkHealthReadModel({ historyStatus: 'unbound', coverage: { productsTotal: CENTRAL_PRODUCTS_PROJECTION.total, currentResults: 0, staleResults: 0, notAudited: CENTRAL_PRODUCTS_PROJECTION.total } });
 const emptyOperational = buildCentralOperationalReadModel({ projection: CENTRAL_PRODUCTS_PROJECTION, history: null, historyStatus: 'unbound', linkHealth: emptyHealth });
@@ -43,6 +49,8 @@ assert.match(worker, /renderOperationalDashboard/);
 assert.match(worker, /renderOperationalProductsPage/);
 assert.match(worker, /renderOperationalHistory/);
 assert.match(worker, /PNM_HISTORY_DB/);
+assert.match(worker, /generated\/products\.mjs/);
+assert.match(worker, /ERR_MODULE_NOT_FOUND/);
 assert.match(worker, /verifyCloudflareAccessAssertion/);
 assert.doesNotMatch(worker, /spawnSync|auditProducts|GITHUB_TOKEN/);
 assert.equal(config.workers_dev, false);
