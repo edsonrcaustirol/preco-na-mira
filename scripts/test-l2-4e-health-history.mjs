@@ -90,7 +90,7 @@ function assertRuntimeSafety() {
   const page = read('central/src/link-health-page.mjs');
   const wrangler = JSON.parse(read('central/wrangler.jsonc'));
   assert.match(worker, /env\?\.PNM_HISTORY_DB/);
-  assert.match(worker, /readCentralHealthHistory\(env\.PNM_HISTORY_DB\)/);
+  assert.match(worker, /readCentralOperationalHistory\(env\.PNM_HISTORY_DB\)/);
   assert.match(worker, /historyStatus: 'unbound'/);
   assert.match(worker, /historyStatus: 'unavailable'/);
   assert.match(history, /u\.status IN \('SUCCESS', 'PARTIAL'\)/);
