@@ -107,7 +107,8 @@ function assertWorkflow() {
   const wrapper = read('scripts/run-affiliate-integrity-workflow.mjs');
   const evaluator = read('scripts/evaluate-affiliate-monitor.mjs');
   const wrangler = JSON.parse(read('central/wrangler.jsonc'));
-  assert.match(workflow, /cron: '17 5 \*\/3 \* \*'/);
+  assert.match(workflow, /cron: '17 5 \* \* 0,3'/);
+  assert.match(workflow, /domingo→quarta = 3 dias; quarta→domingo = 4 dias/);
   assert.match(workflow, /github\.event_name == 'schedule'.*'full'/);
   assert.match(workflow, /group: affiliate-integrity-\$\{\{ github\.repository \}\}/);
   assert.match(workflow, /cancel-in-progress: false/);
@@ -133,7 +134,8 @@ function assertContractsAndGate() {
   assert.equal(CENTRAL_CONTRACTS.d1.authoritativeCatalog, false);
   assert.equal(CENTRAL_CONTRACTS.d1.remoteProvisioned, false);
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduled, true);
-  assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduleCron, '17 5 */3 * *');
+  assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduleCron, '17 5 * * 0,3');
+  assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduleSemantics, 'weekly-sunday-wednesday-intervals-of-three-or-four-days');
   assert.deepEqual(CENTRAL_CONTRACTS.affiliateIntegrity.runStatuses, ['SUCCESS', 'PARTIAL', 'FAILED']);
   assert.match(fingerprintLink(' https://example.com/x '), /^sha256:[0-9a-f]{64}$/);
   const pkg = JSON.parse(read('package.json'));
@@ -150,8 +152,8 @@ assertWorkflow();
 assertContractsAndGate();
 console.log(JSON.stringify({
   l24fLinkMonitor: 'PASS',
-  schedule: '17 5 */3 * *',
-  scheduleSemantics: 'calendar-day-approximation-of-three-days',
+  schedule: '17 5 * * 0,3',
+  scheduleSemantics: 'weekly-sunday-wednesday-intervals-of-three-or-four-days',
   singleFlight: true,
   executorReused: true,
   statuses: ['SUCCESS', 'PARTIAL', 'FAILED'],
