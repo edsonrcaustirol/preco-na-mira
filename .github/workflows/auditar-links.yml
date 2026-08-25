@@ -1,0 +1,73 @@
+name: Auditar integridade dos links
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Escopo controlado da auditoria
+        required: true
+        default: full
+        type: choice
+        options:
+          - full
+          - product
+          - batch
+          - input
+      product_id:
+        description: ID único quando scope=product
+        required: false
+        type: string
+      product_ids:
+        description: IDs separados por vírgula quando scope=batch
+        required: false
+        type: string
+      input_json:
+        description: JSON de produtos externos quando scope=input
+        required: false
+        type: string
+      compare_report_json:
+        description: Relatório pnm.affiliate-integrity/v1 opcional para comparação
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: affiliate-integrity-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v5
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências travadas
+        run: npm ci
+
+      - name: Executar auditor oficial L1.1
+        env:
+          PNM_AUDIT_SCOPE: ${{ inputs.scope }}
+          PNM_AUDIT_PRODUCT_ID: ${{ inputs.product_id }}
+          PNM_AUDIT_PRODUCT_IDS: ${{ inputs.product_ids }}
+          PNM_AUDIT_INPUT_JSON: ${{ inputs.input_json }}
+          PNM_AUDIT_COMPARE_REPORT_JSON: ${{ inputs.compare_report_json }}
+        run: node scripts/run-affiliate-integrity-workflow.mjs
+
+      - name: Publicar resultado estruturado
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: affiliate-integrity-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/affiliate-integrity/
+          if-no-files-found: error
+          retention-days: 30
