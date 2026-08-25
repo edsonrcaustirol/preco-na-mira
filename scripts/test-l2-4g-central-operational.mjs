@@ -25,12 +25,29 @@ assert.equal(emptyOperational.catalog.total, 556);
 assert.equal(emptyOperational.catalog.owner, 'data/produtos-index.js');
 assert.equal(emptyOperational.history.remoteProvisioned, false);
 assert.equal(emptyOperational.monitor.configured, true);
+assert.equal(emptyOperational.monitor.observedScheduledRun, false);
+assert.equal(emptyOperational.health.currentResults, null, 'sem D1, cobertura histórica não pode virar zero real');
 assert.match(renderOperationalDashboard(emptyOperational), /Histórico remoto ainda não provisionado/);
 assert.match(renderOperationalDashboard(emptyOperational), />556</);
 assert.doesNotMatch(renderOperationalDashboard(emptyOperational), /PRECISA DE ATENÇÃO<\/span><strong>0</, 'ausência de D1 não pode inventar zero histórico');
+assert.doesNotMatch(renderOperationalDashboard(emptyOperational), /AUDITORIA ATUAL<\/span><strong>0</, 'ausência de D1 não pode inventar cobertura zero');
 
 const currentHealth = buildCentralLinkHealthReadModel({ run: { runId: 'full-1', scope: 'FULL', sourceSha: 'a'.repeat(40), finishedAt: '2026-08-25T01:00:00Z', status: 'SUCCESS' }, results: [{ productId: CENTRAL_PRODUCTS_PROJECTION.products[0].id, classification: 'CORRETO', auditedLink: CENTRAL_PRODUCTS_PROJECTION.products[0].linkAfiliado, reason: 'ok', checkedAt: '2026-08-25T01:00:00Z', runId: 'full-1' }], historyStatus: 'available', coverage: { productsTotal: 556, currentResults: 1, staleResults: 0, notAudited: 555 } });
 assert.equal(productHealthState(CENTRAL_PRODUCTS_PROJECTION.products[0].id, currentHealth).state, 'current');
+const operationalWithSchedule = buildCentralOperationalReadModel({
+  projection: CENTRAL_PRODUCTS_PROJECTION,
+  historyStatus: 'available',
+  linkHealth: currentHealth,
+  history: {
+    recentRuns: [{ run_id: 'full-1', trigger: 'schedule', scope: 'FULL', status: 'SUCCESS', source_sha: 'a'.repeat(40), finished_at: '2026-08-25T01:00:00Z' }],
+    latestHealthyFull: { run_id: 'full-1', trigger: 'schedule', scope: 'FULL', status: 'SUCCESS', source_sha: 'a'.repeat(40), finished_at: '2026-08-25T01:00:00Z' },
+    results: [{}],
+    events: [],
+  },
+});
+assert.equal(operationalWithSchedule.monitor.observedScheduledRun, true, 'execução agendada só é observada quando existe run schedule persistida');
+assert.equal(operationalWithSchedule.health.currentResults, 1);
+
 const productHtml = renderOperationalProductsPage(CENTRAL_PRODUCTS_PROJECTION, currentHealth, 'nonceFixture');
 assert.match(productHtml, /Resultado atual compatível com o link atual/);
 assert.match(productHtml, /AUDITAR NOVAMENTE/);
@@ -62,4 +79,4 @@ assert.equal('triggers' in config, false);
 const pkg = JSON.parse(read('package.json'));
 assert.equal(pkg.scripts['test:l2-4g-central-operational'], 'node scripts/test-l2-4g-central-operational.mjs');
 for (const gate of ['test:l2-4f-link-monitor', 'test:l2-4g-central-operational', 'test:affiliate-integrity', 'test:e2-catalog-operations']) assert.ok(pkg.scripts.check.includes(gate));
-console.log(JSON.stringify({ l24gCentralOperational: 'PASS', products: 556, dashboard: true, productsHealth: true, historyUx: true, d1RemoteProvisioned: false, adminRoute: false, mobileNoHorizontalOverflow: true }, null, 2));
+console.log(JSON.stringify({ l24gCentralOperational: 'PASS', products: 556, dashboard: true, productsHealth: true, historyUx: true, d1RemoteProvisioned: false, scheduledRunClaimRequiresEvidence: true, adminRoute: false, mobileNoHorizontalOverflow: true }, null, 2));
