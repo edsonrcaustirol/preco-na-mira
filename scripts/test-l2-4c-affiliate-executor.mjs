@@ -81,7 +81,7 @@ function assertWorkflow() {
   const workflow = read('.github/workflows/auditar-links.yml');
   assert.match(workflow, /^name: Auditar integridade dos links$/m);
   assert.match(workflow, /^  workflow_dispatch:$/m);
-  assert.doesNotMatch(workflow, /^  schedule:/m, 'schedule pertence à L2.4F');
+  assert.match(workflow, /^  schedule:$/m, 'schedule da L2.4F deve reutilizar o executor L2.4C');
   assert.match(workflow, /type: choice/);
   for (const scope of EXECUTOR_SCOPES) assert.match(workflow, new RegExp(`^          - ${scope}$`, 'm'));
   assert.match(workflow, /^permissions:\n  contents: read$/m);
@@ -117,7 +117,8 @@ function assertReuseAndSecurity() {
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executionContract, EXECUTION_CONTRACT);
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.kind, 'github-actions');
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.arbitraryCommand, false);
-  assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduled, false);
+  assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduled, true);
+  assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduleCron, '17 5 * * 0,3');
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.auditDispatchEnabled, false);
   assert.equal(CENTRAL_CONTRACTS.mutations.products, false);
   assert.equal(CENTRAL_CONTRACTS.mutations.github, false);
@@ -154,7 +155,8 @@ console.log(JSON.stringify({
   arbitraryCommand: false,
   shellInterpolation: false,
   reusesOfficialAuditor: true,
-  schedule: false,
+  schedule: true,
+  scheduleOwnedBy: 'L2.4F',
   secretsInWorkflow: false,
   productMutationEnabled: false,
 }, null, 2));

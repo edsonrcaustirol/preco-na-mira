@@ -1,6 +1,9 @@
 name: Auditar integridade dos links
 
 on:
+  schedule:
+    # Aproximação simples de ~3 dias: domingo→quarta = 3 dias; quarta→domingo = 4 dias.
+    - cron: '17 5 * * 0,3'
   workflow_dispatch:
     inputs:
       scope:
@@ -55,16 +58,24 @@ jobs:
         run: npm ci
 
       - name: Executar auditor oficial L1.1
+        id: audit
         env:
-          PNM_AUDIT_SCOPE: ${{ inputs.scope }}
+          PNM_AUDIT_SCOPE: ${{ github.event_name == 'schedule' && 'full' || inputs.scope }}
           PNM_AUDIT_PRODUCT_ID: ${{ inputs.product_id }}
           PNM_AUDIT_PRODUCT_IDS: ${{ inputs.product_ids }}
           PNM_AUDIT_INPUT_JSON: ${{ inputs.input_json }}
           PNM_AUDIT_COMPARE_REPORT_JSON: ${{ inputs.compare_report_json }}
         run: node scripts/run-affiliate-integrity-workflow.mjs
 
+      - name: Avaliar estado seguro do monitor
+        if: always()
+        env:
+          PNM_AUDIT_STEP_OUTCOME: ${{ steps.audit.outcome }}
+          PNM_MONITOR_SCOPE: ${{ github.event_name == 'schedule' && 'full' || inputs.scope }}
+        run: node scripts/evaluate-affiliate-monitor.mjs
+
       - name: Publicar resultado estruturado
-        if: success()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: affiliate-integrity-${{ github.run_id }}-${{ github.run_attempt }}

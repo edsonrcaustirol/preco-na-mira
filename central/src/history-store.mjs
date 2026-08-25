@@ -4,6 +4,7 @@ export const HISTORY_CLASSIFICATIONS = Object.freeze([
   'CORRETO', 'PROVÁVEL', 'DIVERGENTE', 'ANÚNCIO_INDISPONÍVEL',
   'DESTINO_GENÉRICO', 'PROBLEMA_DE_LINK', 'NÃO_COMPROVÁVEL',
 ]);
+export const HISTORY_RETENTION_POLICY = Object.freeze({ maxAgeDays: 120, keepRecentRuns: 40, preserveLatestHealthyFull: true });
 
 const STATUS_SET = new Set(HISTORY_RUN_STATUSES);
 const CLASSIFICATION_SET = new Set(HISTORY_CLASSIFICATIONS);
@@ -157,4 +158,22 @@ export async function readCentralHealthHistory(db, { runLimit = 20, resultLimit 
     latestHealthyFull: latestHealthyFull || null,
     results: Object.freeze([...(resultsResponse?.results || [])]),
   });
+}
+
+export async function pruneAuditHistory(db, { beforeIso, keepRecentRuns = HISTORY_RETENTION_POLICY.keepRecentRuns } = {}) {
+  requireDb(db);
+  const cutoff = required(beforeIso, 'beforeIso');
+  const keep = boundedLimit(keepRecentRuns, HISTORY_RETENTION_POLICY.keepRecentRuns, 200);
+  const statement = db.prepare(`DELETE FROM audit_runs
+    WHERE COALESCE(finished_at, started_at) < ?
+      AND run_id NOT IN (
+        SELECT run_id FROM audit_runs ORDER BY COALESCE(finished_at, started_at) DESC LIMIT ?
+      )
+      AND run_id <> COALESCE((
+        SELECT run_id FROM audit_runs
+        WHERE scope = 'FULL' AND status = 'SUCCESS' AND finished_at IS NOT NULL
+        ORDER BY finished_at DESC LIMIT 1
+      ), '')`).bind(cutoff, keep);
+  await db.batch([statement]);
+  return Object.freeze({ cutoff, keepRecentRuns: keep, preserveLatestHealthyFull: true });
 }
