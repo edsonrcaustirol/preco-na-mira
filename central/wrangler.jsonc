@@ -5,6 +5,10 @@
   "compatibility_date": "2026-08-23",
   "workers_dev": false,
   "preview_urls": false,
+  "build": {
+    "command": "node scripts/build-central-products.mjs",
+    "cwd": ".."
+  },
   "vars": {
     "PNM_CENTRAL_ACCESS_MODE": "cloudflare-access",
     "PNM_CENTRAL_EXPECTED_HOST": "central.preconamira.com.br"
