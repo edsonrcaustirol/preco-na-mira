@@ -165,19 +165,31 @@ async function enforceAdministrativeBoundary(request, env, url, options = {}) {
 }
 
 async function renderProtectedPage(url) {
-  if (url.pathname !== '/produtos') {
-    return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '' };
+  if (url.pathname === '/produtos') {
+    const [{ CENTRAL_PRODUCTS_PROJECTION }, { renderProductsPage }] = await Promise.all([
+      import('./generated/products.mjs'),
+      import('./products-page.mjs'),
+    ]);
+    const scriptNonce = crypto.randomUUID().replaceAll('-', '');
+    return {
+      html: renderProductsPage(CENTRAL_PRODUCTS_PROJECTION, scriptNonce),
+      scriptNonce,
+    };
   }
 
-  const [{ CENTRAL_PRODUCTS_PROJECTION }, { renderProductsPage }] = await Promise.all([
-    import('./generated/products.mjs'),
-    import('./products-page.mjs'),
-  ]);
-  const scriptNonce = crypto.randomUUID().replaceAll('-', '');
-  return {
-    html: renderProductsPage(CENTRAL_PRODUCTS_PROJECTION, scriptNonce),
-    scriptNonce,
-  };
+  if (url.pathname === '/saude-links') {
+    const [{ createEmptyCentralLinkHealthReadModel }, { renderLinkHealthPage }] = await Promise.all([
+      import('./link-health.mjs'),
+      import('./link-health-page.mjs'),
+    ]);
+    const scriptNonce = crypto.randomUUID().replaceAll('-', '');
+    return {
+      html: renderLinkHealthPage(createEmptyCentralLinkHealthReadModel(), scriptNonce),
+      scriptNonce,
+    };
+  }
+
+  return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '' };
 }
 
 export async function handleCentralRequest(request, env, options = {}) {

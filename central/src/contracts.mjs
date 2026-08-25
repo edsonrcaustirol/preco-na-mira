@@ -4,7 +4,7 @@ export const CENTRAL_AREAS = Object.freeze([
   Object.freeze({ id: 'painel', label: 'Painel', state: 'informativo' }),
   Object.freeze({ id: 'produtos', label: 'Produtos', state: 'somente-leitura' }),
   Object.freeze({ id: 'novo-produto', label: 'Novo Produto', state: 'indisponivel-nesta-etapa' }),
-  Object.freeze({ id: 'saude-links', label: 'Saúde dos Links', state: 'contrato-pronto' }),
+  Object.freeze({ id: 'saude-links', label: 'Saúde dos Links', state: 'somente-leitura' }),
   Object.freeze({ id: 'historico', label: 'Histórico', state: 'sem-persistencia-nesta-etapa' }),
 ]);
 
@@ -47,6 +47,24 @@ export const CENTRAL_CONTRACTS = Object.freeze({
     command: 'npm run audit:affiliate-integrity',
     cli: 'scripts/audit-affiliate-integrity.mjs',
     mode: 'on-demand-future-integration',
+    centralReadModelContract: 'pnm.central-link-health/v1',
+    classifications: Object.freeze([
+      'CORRETO',
+      'PROVÁVEL',
+      'DIVERGENTE',
+      'ANÚNCIO_INDISPONÍVEL',
+      'DESTINO_GENÉRICO',
+      'PROBLEMA_DE_LINK',
+      'NÃO_COMPROVÁVEL',
+    ]),
+    attentionClassifications: Object.freeze([
+      'DIVERGENTE',
+      'ANÚNCIO_INDISPONÍVEL',
+      'DESTINO_GENÉRICO',
+      'PROBLEMA_DE_LINK',
+    ]),
+    nonVerifiableClassification: 'NÃO_COMPROVÁVEL',
+    auditDispatchEnabled: false,
   }),
   githubTransaction: Object.freeze({
     mutationEnabled: false,
