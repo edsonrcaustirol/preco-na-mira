@@ -14,7 +14,7 @@ export function analyzeNewProductInput(input = {}, products = []) {
     const protocol = url.protocol.toLowerCase();
     const host = url.hostname.toLowerCase();
     const allowedHost = host === 'meli.la' || host === 'mercadolivre.com.br' || host.endsWith('.mercadolivre.com.br');
-    if (!['http:', 'https:'].includes(protocol) || !allowedHost || url.username || url.password) {
+    if (!['http:', 'https:'].includes(protocol) || !allowedHost || url.username || url.password || url.port) {
       return { ok: false, original, code: 'UNSUPPORTED_MERCADO_LIVRE_URL', normalized: null, comparisonKey: null, host };
     }
     url.protocol = protocol;
