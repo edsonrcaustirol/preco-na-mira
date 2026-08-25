@@ -66,7 +66,7 @@ export function renderLinkHealthPage(readModel, nonce) {
   const cards = readModel.results.map(resultCard).join('');
   const staleCards = (readModel.staleResults || []).map(staleCard).join('');
   const unavailable = readModel.availability === 'none';
-  const runLabel = readModel.run?.finishedAt || 'Nenhuma auditoria atual disponível';
+  const runLabel = readModel.run?.finishedAt || 'Nenhuma auditoria disponível';
   const fullLabel = readModel.referenceFull?.finishedAt || 'Nenhuma FULL saudável disponível';
   const historyLabel = readModel.historyStatus === 'available' ? 'Histórico disponível' : readModel.historyStatus === 'unbound' ? 'D1 ainda não vinculado' : 'Histórico indisponível';
 
@@ -75,7 +75,7 @@ export function renderLinkHealthPage(readModel, nonce) {
 </style></head><body><div class="layout"><aside class="side"><div class="brand">Preço na Mira</div><div class="sub">Central Operacional</div><nav>${nav}</nav></aside><main class="main"><div class="muted">L2.4E · ${escapeHtml(CENTRAL_LINK_HEALTH_CONTRACT)}</div><h1>Saúde dos Links</h1><p class="muted">Leitura segura do histórico produzido pelo auditor oficial ${escapeHtml(AFFILIATE_INTEGRITY_CONTRACT)}. Resultado de link antigo nunca representa o link atual.</p><div class="status"><span class="pill">Somente leitura</span><span class="pill">${escapeHtml(historyLabel)}</span><span class="pill">Última referência: ${escapeHtml(runLabel)}</span><span class="pill">Última FULL saudável: ${escapeHtml(fullLabel)}</span></div>
 <section class="summary" aria-label="Resumo"><div class="metric"><span>PRECISA DE ATENÇÃO</span><strong>${count(summary?.attention)}</strong></div><div class="metric"><span>${escapeHtml(LINK_HEALTH_NON_VERIFIABLE)}</span><strong>${count(summary?.nonVerifiable)}</strong></div><div class="metric"><span>RESULTADOS ATUAIS</span><strong>${count(coverage?.currentResults ?? summary?.total)}</strong></div><div class="metric"><span>RESULTADOS OBSOLETOS</span><strong>${count(coverage?.staleResults)}</strong></div></section>
 <div class="toolbar"><div class="field"><label for="health-filter">Mostrar</label><select id="health-filter">${options()}</select></div></div>
-${unavailable ? '<div class="notice" id="health-unavailable"><strong>Nenhuma auditoria atual disponível.</strong><br>Sem resultado compatível com o link atual, a Central não inventa um estado de saúde.</div>' : ''}
+${unavailable ? '<div class="notice" id="health-unavailable"><strong>Nenhuma auditoria disponível.</strong><br>Sem resultado compatível com o link atual, a Central não inventa um estado de saúde.</div>' : ''}
 <section class="results" id="health-results" aria-live="polite">${cards}</section><div class="empty" id="filtered-empty" hidden>Nenhum resultado atual corresponde ao filtro selecionado.</div>
 ${staleCards ? `<section class="stale-section"><h2>Resultados obsoletos</h2><p class="muted">Estes resultados pertencem a links anteriores e ficam fora da saúde atual.</p><div class="stale-list">${staleCards}</div></section>` : ''}
 <section class="detail" id="health-detail" hidden aria-labelledby="health-detail-title"><div class="detail-head"><div><div class="muted">Detalhe do resultado atual</div><h2 id="health-detail-title"></h2></div><button class="close" id="health-detail-close" type="button">Fechar</button></div><div id="health-detail-body"></div><div class="actions"><button type="button" disabled>AUDITAR NOVAMENTE</button><button type="button" disabled>INFORMAR NOVO LINK</button></div></section>
