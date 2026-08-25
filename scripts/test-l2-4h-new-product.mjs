@@ -36,6 +36,7 @@ assert.equal(short.l11.browserDispatch, false);
 assert.equal(analyzeNewProductInput({ link: 'https://www.mercadolivre.com.br/item/ABC?tracking=1' }, []).link.ok, true);
 assert.equal(analyzeNewProductInput({ link: 'https://example.com/item' }, []).link.ok, false);
 assert.equal(analyzeNewProductInput({ link: 'https://mercadolivre.com.br.evil.example/item' }, []).link.ok, false);
+assert.equal(analyzeNewProductInput({ link: 'https://meli.la:8443/item' }, []).link.ok, false);
 assert.equal(analyzeNewProductInput({ link: 'not a url' }, []).link.ok, false);
 
 const first = products[0];
@@ -51,6 +52,7 @@ assert.equal(nonDuplicate.duplicate.objective, false);
 
 const html = renderNewProductPage(CENTRAL_PRODUCTS_PROJECTION, 'fixtureNonce');
 for (const expected of ['1. LINK', '2. ANÁLISE', '3. DADOS', '4. REVISÃO', 'AUTOMÁTICO', 'SUGERIDO', 'HUMANO', 'BLOQUEANTE', 'NÃO PUBLICADO', 'Diff conceitual', 'Validação completa disponível após ativação segura da Central.']) assert.match(html, new RegExp(expected));
+assert.match(html, /porta não padrão/);
 assert.match(html, /<button class="publish" type="button" disabled>PUBLICAR<\/button>/);
 assert.match(html, /overflow-x:hidden/);
 assert.match(html, /word-break:break-word|overflow-wrap:anywhere/);
@@ -75,4 +77,4 @@ assert.equal(pkg.scripts['test:l2-4h-new-product'], 'node scripts/test-l2-4h-new
 for (const gate of ['test:l2-2-central-foundation','test:l2-4a-central-products','test:l2-4b-central-link-health','test:l2-4c-affiliate-executor','test:l2-4d-operational-history','test:l2-4e-health-history','test:l2-4f-link-monitor','test:l2-4g-central-operational','test:l2-4h-new-product','test:affiliate-integrity','test:e2-catalog-operations']) assert.ok(pkg.scripts.check.includes(gate));
 const ownerAfter = crypto.createHash('sha256').update(fs.readFileSync(ownerPath)).digest('hex');
 assert.equal(ownerAfter, ownerBefore, 'teste H não pode alterar owner');
-console.log(JSON.stringify({ l24hNewProduct: 'PASS', contract: CENTRAL_NEW_PRODUCT_CONTRACT, products: 556, structuralLinkValidation: true, objectiveDuplicateDetection: true, idCollisionBlocking: true, preview: true, conceptualDiff: true, publicationEnabled: false, ownerChanged: false, githubMutation: false, liveNetwork: false }, null, 2));
+console.log(JSON.stringify({ l24hNewProduct: 'PASS', contract: CENTRAL_NEW_PRODUCT_CONTRACT, products: 556, structuralLinkValidation: true, nonStandardPortRejected: true, objectiveDuplicateDetection: true, idCollisionBlocking: true, preview: true, conceptualDiff: true, publicationEnabled: false, ownerChanged: false, githubMutation: false, liveNetwork: false }, null, 2));
