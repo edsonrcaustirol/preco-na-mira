@@ -160,6 +160,34 @@ export async function readCentralHealthHistory(db, { runLimit = 20, resultLimit 
   });
 }
 
+export async function readCentralOperationalHistory(db, { runLimit = 30, resultLimit = 5000, eventLimit = 500 } = {}) {
+  requireDb(db);
+  const runsLimit = boundedLimit(runLimit, 30, 100);
+  const resultsLimit = boundedLimit(resultLimit, 5000, 20000);
+  const eventsLimit = boundedLimit(eventLimit, 500, 5000);
+  const [runsResponse, resultsResponse, eventsResponse, latestHealthyFull] = await Promise.all([
+    db.prepare(`SELECT run_id, trigger, scope, source_sha, started_at, finished_at, status, totals_json, metadata_json
+      FROM audit_runs ORDER BY COALESCE(finished_at, started_at) DESC LIMIT ?`).bind(runsLimit).all(),
+    db.prepare(`SELECT r.run_id, r.product_id, r.audited_link, r.link_fingerprint, r.classification, r.reason, r.checked_at, r.evidence_json,
+        u.trigger, u.scope, u.status, u.source_sha, u.started_at, u.finished_at
+      FROM audit_results r JOIN audit_runs u ON u.run_id = r.run_id
+      ORDER BY r.checked_at DESC LIMIT ?`).bind(resultsLimit).all(),
+    db.prepare(`SELECT event_id, run_id, product_id, event_type, occurred_at, previous_state_ref, metadata_json
+      FROM audit_events ORDER BY occurred_at DESC LIMIT ?`).bind(eventsLimit).all(),
+    first(db, `SELECT run_id, trigger, scope, source_sha, started_at, finished_at, status, totals_json, metadata_json
+      FROM audit_runs WHERE scope = 'FULL' AND status = 'SUCCESS' AND finished_at IS NOT NULL
+      ORDER BY finished_at DESC LIMIT 1`),
+  ]);
+
+  return Object.freeze({
+    contract: CENTRAL_HISTORY_CONTRACT,
+    recentRuns: Object.freeze([...(runsResponse?.results || [])]),
+    latestHealthyFull: latestHealthyFull || null,
+    results: Object.freeze([...(resultsResponse?.results || [])]),
+    events: Object.freeze([...(eventsResponse?.results || [])]),
+  });
+}
+
 export async function pruneAuditHistory(db, { beforeIso, keepRecentRuns = HISTORY_RETENTION_POLICY.keepRecentRuns } = {}) {
   requireDb(db);
   const cutoff = required(beforeIso, 'beforeIso');

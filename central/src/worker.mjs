@@ -164,55 +164,99 @@ async function enforceAdministrativeBoundary(request, env, url, options = {}) {
   return null;
 }
 
-async function renderProtectedPage(url, env) {
-  if (url.pathname === '/produtos') {
-    const [{ CENTRAL_PRODUCTS_PROJECTION }, { renderProductsPage }] = await Promise.all([
+async function loadOperationalState(env) {
+  let modules;
+  try {
+    modules = await Promise.all([
       import('./generated/products.mjs'),
-      import('./products-page.mjs'),
+      import('./link-health.mjs'),
+      import('./history-store.mjs'),
+      import('./link-health-history.mjs'),
+      import('./operational-read-model.mjs'),
     ]);
+  } catch (error) {
+    if (
+      error?.code === 'ERR_MODULE_NOT_FOUND' &&
+      String(error?.url || '').includes('/generated/products.mjs')
+    ) {
+      return null;
+    }
+    throw error;
+  }
+
+  const [
+    { CENTRAL_PRODUCTS_PROJECTION },
+    { createEmptyCentralLinkHealthReadModel },
+    { readCentralOperationalHistory },
+    { buildCentralLinkHealthReadModelFromHistory },
+    { buildCentralOperationalReadModel },
+  ] = modules;
+  const products = CENTRAL_PRODUCTS_PROJECTION.products || [];
+  let history = null;
+  let historyStatus = 'unbound';
+  let linkHealth;
+
+  if (!env?.PNM_HISTORY_DB) {
+    linkHealth = createEmptyCentralLinkHealthReadModel({
+      historyStatus: 'unbound',
+      coverage: { productsTotal: products.length, currentResults: 0, staleResults: 0, notAudited: products.length },
+    });
+  } else {
+    try {
+      history = await readCentralOperationalHistory(env.PNM_HISTORY_DB);
+      historyStatus = 'available';
+      linkHealth = await buildCentralLinkHealthReadModelFromHistory({ products, history });
+    } catch {
+      historyStatus = 'unavailable';
+      linkHealth = createEmptyCentralLinkHealthReadModel({
+        historyStatus: 'unavailable',
+        coverage: { productsTotal: products.length, currentResults: 0, staleResults: 0, notAudited: products.length },
+      });
+    }
+  }
+
+  const operational = buildCentralOperationalReadModel({
+    projection: CENTRAL_PRODUCTS_PROJECTION,
+    history,
+    historyStatus,
+    linkHealth,
+  });
+  return { projection: CENTRAL_PRODUCTS_PROJECTION, history, historyStatus, linkHealth, operational };
+}
+
+async function renderProtectedPage(url, env) {
+  if (url.pathname === '/novo-produto') {
+    return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '' };
+  }
+
+  const state = await loadOperationalState(env);
+  if (!state) return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '' };
+
+  if (url.pathname === '/' || url.pathname === '/painel') {
+    const { renderOperationalDashboard } = await import('./operational-pages.mjs');
+    return { html: renderOperationalDashboard(state.operational), scriptNonce: '' };
+  }
+
+  if (url.pathname === '/produtos') {
+    const { renderOperationalProductsPage } = await import('./products-operational-page.mjs');
     const scriptNonce = crypto.randomUUID().replaceAll('-', '');
     return {
-      html: renderProductsPage(CENTRAL_PRODUCTS_PROJECTION, scriptNonce),
+      html: renderOperationalProductsPage(state.projection, state.linkHealth, scriptNonce),
       scriptNonce,
     };
   }
 
   if (url.pathname === '/saude-links') {
-    const [
-      { CENTRAL_PRODUCTS_PROJECTION },
-      { createEmptyCentralLinkHealthReadModel },
-      { readCentralHealthHistory },
-      { buildCentralLinkHealthReadModelFromHistory },
-      { renderLinkHealthPage },
-    ] = await Promise.all([
-      import('./generated/products.mjs'),
-      import('./link-health.mjs'),
-      import('./history-store.mjs'),
-      import('./link-health-history.mjs'),
-      import('./link-health-page.mjs'),
-    ]);
+    const { renderLinkHealthPage } = await import('./link-health-page.mjs');
     const scriptNonce = crypto.randomUUID().replaceAll('-', '');
-    const products = CENTRAL_PRODUCTS_PROJECTION.products || [];
-    let readModel;
-    if (!env?.PNM_HISTORY_DB) {
-      readModel = createEmptyCentralLinkHealthReadModel({
-        historyStatus: 'unbound',
-        coverage: { productsTotal: products.length, currentResults: 0, staleResults: 0, notAudited: products.length },
-      });
-    } else {
-      try {
-        const history = await readCentralHealthHistory(env.PNM_HISTORY_DB);
-        readModel = await buildCentralLinkHealthReadModelFromHistory({ products, history });
-      } catch {
-        readModel = createEmptyCentralLinkHealthReadModel({
-          historyStatus: 'unavailable',
-          coverage: { productsTotal: products.length, currentResults: 0, staleResults: 0, notAudited: products.length },
-        });
-      }
-    }
+    return { html: renderLinkHealthPage(state.linkHealth, scriptNonce), scriptNonce };
+  }
+
+  if (url.pathname === '/historico') {
+    const { renderOperationalHistory } = await import('./operational-pages.mjs');
     return {
-      html: renderLinkHealthPage(readModel, scriptNonce),
-      scriptNonce,
+      html: renderOperationalHistory({ historyStatus: state.historyStatus, history: state.history }),
+      scriptNonce: '',
     };
   }
 

@@ -1,11 +1,11 @@
 export const CENTRAL_CONTRACT_VERSION = 'pnm.central-foundation/v1';
 
 export const CENTRAL_AREAS = Object.freeze([
-  Object.freeze({ id: 'painel', label: 'Painel', state: 'informativo' }),
+  Object.freeze({ id: 'painel', label: 'Painel', state: 'somente-leitura' }),
   Object.freeze({ id: 'produtos', label: 'Produtos', state: 'somente-leitura' }),
   Object.freeze({ id: 'novo-produto', label: 'Novo Produto', state: 'indisponivel-nesta-etapa' }),
   Object.freeze({ id: 'saude-links', label: 'Saúde dos Links', state: 'somente-leitura' }),
-  Object.freeze({ id: 'historico', label: 'Histórico', state: 'camada-d1-preparada' }),
+  Object.freeze({ id: 'historico', label: 'Histórico', state: 'somente-leitura' }),
 ]);
 
 export const CENTRAL_CONTRACTS = Object.freeze({
