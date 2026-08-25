@@ -118,7 +118,7 @@ function assertReuseAndSecurity() {
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.kind, 'github-actions');
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.arbitraryCommand, false);
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduled, true);
-  assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduleCron, '17 5 */3 * *');
+  assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduleCron, '17 5 * * 0,3');
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.auditDispatchEnabled, false);
   assert.equal(CENTRAL_CONTRACTS.mutations.products, false);
   assert.equal(CENTRAL_CONTRACTS.mutations.github, false);
