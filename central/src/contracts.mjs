@@ -5,7 +5,7 @@ export const CENTRAL_AREAS = Object.freeze([
   Object.freeze({ id: 'produtos', label: 'Produtos', state: 'somente-leitura' }),
   Object.freeze({ id: 'novo-produto', label: 'Novo Produto', state: 'indisponivel-nesta-etapa' }),
   Object.freeze({ id: 'saude-links', label: 'Saúde dos Links', state: 'somente-leitura' }),
-  Object.freeze({ id: 'historico', label: 'Histórico', state: 'sem-persistencia-nesta-etapa' }),
+  Object.freeze({ id: 'historico', label: 'Histórico', state: 'camada-d1-preparada' }),
 ]);
 
 export const CENTRAL_CONTRACTS = Object.freeze({
@@ -83,7 +83,13 @@ export const CENTRAL_CONTRACTS = Object.freeze({
     automaticMerge: false,
   }),
   d1: Object.freeze({
+    binding: 'PNM_HISTORY_DB',
+    databaseName: 'preco-na-mira-central-history',
+    migrationDir: 'central/migrations',
+    historyContract: 'pnm.central-history/v1',
+    schemaVersioned: true,
     bindingPrepared: false,
+    remoteProvisioned: false,
     authoritativeCatalog: false,
     allowedPurposes: Object.freeze(['historico', 'auditorias', 'eventos-operacionais', 'rastreabilidade']),
   }),
@@ -107,6 +113,7 @@ export function centralCapabilities() {
     productMutationEnabled: CENTRAL_CONTRACTS.mutations.products,
     automaticMergeEnabled: CENTRAL_CONTRACTS.githubTransaction.automaticMerge,
     d1AuthoritativeCatalog: CENTRAL_CONTRACTS.d1.authoritativeCatalog,
+    d1: CENTRAL_CONTRACTS.d1,
     e2: CENTRAL_CONTRACTS.catalog.e2,
     affiliateIntegrity: CENTRAL_CONTRACTS.affiliateIntegrity,
   };
