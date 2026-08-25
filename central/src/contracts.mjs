@@ -28,6 +28,14 @@ export const CENTRAL_CONTRACTS = Object.freeze({
     owner: 'data/produtos-index.js',
     ownerRole: 'canonical',
     centralDatabaseOwner: false,
+    projection: Object.freeze({
+      contract: 'pnm.central-products/v1',
+      source: 'data/produtos-index.js',
+      generatedModule: 'central/src/generated/products.mjs',
+      authoritative: false,
+      readOnly: true,
+      networkRequired: false,
+    }),
     e2: Object.freeze({
       lifecycleTestCommand: 'npm run test:e2-catalog-operations',
       validateCommand: 'npm run validate:e2-catalog',
@@ -66,6 +74,7 @@ export function centralCapabilities() {
     contract: CENTRAL_CONTRACT_VERSION,
     areas: CENTRAL_AREAS,
     owner: CENTRAL_CONTRACTS.catalog.owner,
+    catalogProjection: CENTRAL_CONTRACTS.catalog.projection,
     authentication: CENTRAL_CONTRACTS.authentication.provider,
     githubMutationEnabled: CENTRAL_CONTRACTS.githubTransaction.mutationEnabled,
     productMutationEnabled: CENTRAL_CONTRACTS.mutations.products,

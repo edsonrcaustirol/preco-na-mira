@@ -7,10 +7,11 @@ const PAGE_PATHS = new Set(['/', '/painel', '/produtos', '/novo-produto', '/saud
 const ACCESS_ALGORITHM = CENTRAL_CONTRACTS.authentication.algorithm;
 const ACCESS_JWKS_PATH = CENTRAL_CONTRACTS.authentication.jwksPath;
 
-function headers(extra = {}) {
+function headers(extra = {}, scriptNonce = '') {
+  const scriptSource = scriptNonce ? `script-src 'nonce-${scriptNonce}';` : "script-src 'none';";
   return {
     'cache-control': 'no-store',
-    'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+    'content-security-policy': `default-src 'none'; ${scriptSource} style-src 'unsafe-inline'; img-src https: data:; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
     'referrer-policy': 'no-referrer',
     'x-content-type-options': 'nosniff',
     ...extra,
@@ -163,6 +164,22 @@ async function enforceAdministrativeBoundary(request, env, url, options = {}) {
   return null;
 }
 
+async function renderProtectedPage(url) {
+  if (url.pathname !== '/produtos') {
+    return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '' };
+  }
+
+  const [{ CENTRAL_PRODUCTS_PROJECTION }, { renderProductsPage }] = await Promise.all([
+    import('./generated/products.mjs'),
+    import('./products-page.mjs'),
+  ]);
+  const scriptNonce = crypto.randomUUID().replaceAll('-', '');
+  return {
+    html: renderProductsPage(CENTRAL_PRODUCTS_PROJECTION, scriptNonce),
+    scriptNonce,
+  };
+}
+
 export async function handleCentralRequest(request, env, options = {}) {
   const url = new URL(request.url);
   const boundaryFailure = await enforceAdministrativeBoundary(request, env, url, options);
@@ -179,9 +196,10 @@ export async function handleCentralRequest(request, env, options = {}) {
 
   if (PAGE_PATHS.has(url.pathname)) {
     if (request.method === 'HEAD') return new Response(null, { status: 200, headers: headers() });
-    return new Response(renderCentralShell(), {
+    const page = await renderProtectedPage(url);
+    return new Response(page.html, {
       status: 200,
-      headers: headers({ 'content-type': 'text/html; charset=utf-8' }),
+      headers: headers({ 'content-type': 'text/html; charset=utf-8' }, page.scriptNonce),
     });
   }
 
