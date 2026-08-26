@@ -81,7 +81,7 @@ const levels = { A: 0, B: 0, C: 0 };
 const schemaClaims = { offers: 0, aggregateRating: 0, review: 0 };
 let categoryBreadcrumbs = 0;
 let catalogBreadcrumbs = 0;
-let relatedPages = 0;
+let pagesWithRelatedLayoutMarker = 0;
 const errors = [];
 
 for (const fileName of productFiles) {
@@ -131,7 +131,7 @@ for (const fileName of productFiles) {
     if (visualMiddleUrl !== middleUrl || visualMiddleName !== middle.name || visualProductName !== product.nome) errors.push(`${id}: breadcrumb visual diverge do schema.`);
   }
 
-  if (/class=(?:"[^"]*\brelated-block\b|"[^"]*\brelated-grid\b|'[^']*\brelated-block\b|'[^']*\brelated-grid\b)/i.test(html)) relatedPages += 1;
+  if (/class=(?:"[^"]*\brelated-block\b|"[^"]*\brelated-grid\b|'[^']*\brelated-block\b|'[^']*\brelated-grid\b)/i.test(html)) pagesWithRelatedLayoutMarker += 1;
   levels[dataLevel(product)] += 1;
 }
 
@@ -149,7 +149,9 @@ const result = {
   levels,
   categoryBreadcrumbs,
   catalogBreadcrumbs,
-  relatedPages,
+  relatedLayoutMarkerScope: 'classes related-block/related-grid; não representa total de páginas nem total de CTAs related',
+  pagesWithRelatedLayoutMarker,
+  pagesWithoutRelatedLayoutMarker: productFiles.length - pagesWithRelatedLayoutMarker,
   schemaClaims,
   affiliateLinksPreserved: errors.every(error => !error.includes('link afiliado')),
   inventedCommercialSchema: Boolean(schemaClaims.offers || schemaClaims.aggregateRating || schemaClaims.review),
