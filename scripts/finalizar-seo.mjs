@@ -15,7 +15,14 @@ if (!fs.existsSync(robotsPath)) throw new Error('robots.txt não foi gerado.');
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
 }[char]));
-const text = value => String(value || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+const text = value => String(value || '')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+  .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+  .replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'")
+  .replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+  .replace(/&nbsp;/gi, ' ').replace(/&ndash;/gi, '–').replace(/&mdash;/gi, '—')
+  .replace(/\s+/g, ' ').trim();
 
 function routeFor(fileName) {
   return fileName === 'index.html' ? '/' : `/${fileName.replace(/\.html$/i, '')}`;
@@ -112,9 +119,13 @@ if (/<lastmod>/i.test(sitemap)) throw new Error('lastmod permaneceu no sitemap s
 fs.writeFileSync(sitemapPath, sitemap);
 
 let robots = fs.readFileSync(robotsPath, 'utf8');
+const removedRobotsNoindexConflicts = [];
 robots = robots.split(/\r?\n/).filter(line => {
   const match = line.match(/^\s*Disallow:\s*(\S+)\s*$/i);
-  return !match || !PUBLIC_NOINDEX_ROUTES.has(match[1].replace(/\/$/, '') || '/');
+  const route = match?.[1]?.replace(/\/$/, '') || '/';
+  const conflict = Boolean(match && PUBLIC_NOINDEX_ROUTES.has(route));
+  if (conflict) removedRobotsNoindexConflicts.push(route);
+  return !conflict;
 }).join('\n').replace(/\n*$/, '\n');
 if (!robots.includes(`Sitemap: ${ORIGIN}/sitemap.xml`)) throw new Error('robots.txt não aponta para o sitemap oficial.');
 for (const route of PUBLIC_NOINDEX_ROUTES) {
@@ -143,7 +154,7 @@ console.log(JSON.stringify({
   productUrls,
   paginationUrls,
   robotsSitemap: true,
-  robotsNoindexConflictsRemoved: [...PUBLIC_NOINDEX_ROUTES],
+  robotsNoindexConflictsRemoved: removedRobotsNoindexConflicts,
   productBreadcrumbs,
   casaStudio: 'NOINDEX',
   dewaltMetadataChanged,
