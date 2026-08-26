@@ -143,7 +143,7 @@ function prepareScripts(files) {
 
 function sitemapEntry(fileName) {
   const loc = `${OFFICIAL_ORIGIN}${extensionless(fileName)}`;
-  return `  <url><loc>${loc}</loc><lastmod>2026-08-16</lastmod></url>`;
+  return `  <url><loc>${loc}</loc></url>`;
 }
 
 function isNoindexFile(fileName) {
@@ -161,6 +161,6 @@ const sitemapPages = htmlFiles
   .sort((a, b) => a === 'index.html' ? -1 : b === 'index.html' ? 1 : a.localeCompare(b));
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapPages.map(sitemapEntry).join('\n')}\n</urlset>\n`;
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
-fs.writeFileSync(path.join(ROOT, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /gerenciador\nDisallow: /automacao\nDisallow: /carrinho\nDisallow: /minha-lista\nDisallow: /projeto\nDisallow: /busca\n\nSitemap: ${OFFICIAL_ORIGIN}/sitemap.xml\n`);
+fs.writeFileSync(path.join(ROOT, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /gerenciador\nDisallow: /automacao\n\nSitemap: ${OFFICIAL_ORIGIN}/sitemap.xml\n`);
 
 console.log(JSON.stringify({ changedHtml, changedScripts, sitemapUrls: sitemapPages.length }, null, 2));
