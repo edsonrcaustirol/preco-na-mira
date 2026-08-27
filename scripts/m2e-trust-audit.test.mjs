@@ -34,6 +34,7 @@ test('classifica claims materialmente perigosos sem bloquear palavras genéricas
   assert.deepEqual(findDangerousClaims('<p>Guia independente de cabos elétricos</p>'), []);
   assert.deepEqual(findDangerousClaims('<p>Como escolher a melhor opção para sua necessidade.</p>'), []);
   assert.deepEqual(findDangerousClaims('<h1>Ofertas</h1><p>Veja a seleção atual.</p>'), []);
+  assert.deepEqual(findDangerousClaims('<p>Curadoria independente • veja produtos.</p>'), ['editorial-independence']);
 });
 
 test('remove claims frágeis de afiliado e deixa compra externa explícita', () => {
@@ -43,7 +44,17 @@ test('remove claims frágeis de afiliado e deixa compra externa explícita', () 
   assert.match(output, /data-pnm-trust="m2e"/);
   assert.match(output, /VER NO MERCADO LIVRE/);
   assert.match(output, /data-pnm-affiliate-disclosure="m2e"/);
+  assert.match(output, /compra acontece fora do Preço na Mira, no Mercado Livre/i);
   assert.match(output, /preço, estoque, entrega e condições finais/i);
+});
+
+test('normaliza variantes legadas de independência e ausência de custo na origem', () => {
+  const source = `<body><p>Curadoria independente • Links de oferta podem gerar comissão de afiliado, sem custo extra para você.</p><main><a href="${affiliate}" ${goodAttrs}>VER PRODUTO</a></main></body>`;
+  const output = applyTransparency(source);
+  assert.equal(findDangerousClaims(output).length, 0);
+  assert.doesNotMatch(output, /curadoria independente/i);
+  assert.doesNotMatch(output, /sem custo extra/i);
+  assert.match(output, /Mercado Livre/i);
 });
 
 test('injeta disclosure contextual somente quando há link afiliado', () => {
@@ -77,7 +88,7 @@ test('PASS: link auxiliar afiliado dentro de página comercial inequivocamente i
 });
 
 test('FAIL: imagem afiliada sem qualquer indicação textual do destino', () => {
-  const html = applyTransparency(`<main><a href="${affiliate}" ${goodAttrs}><img src="x.webp" alt="Produto"></a></main>`);
+  const html = `<main><a href="${affiliate}" ${goodAttrs}><img src="x.webp" alt="Produto"></a><div data-pnm-affiliate-disclosure="m2e">Alguns links são de afiliado e podem gerar comissão.</div></main>`;
   const page = auditHtml('imagem-sem-destino.html', html);
   assert.equal(page.hasDisclosure, true);
   assert.equal(page.explicitExternalDestination, false);
@@ -85,8 +96,9 @@ test('FAIL: imagem afiliada sem qualquer indicação textual do destino', () => 
 });
 
 test('FAIL: CTA Comprar sem contexto suficiente para perceber saída para marketplace', () => {
-  const html = applyTransparency(`<main><a href="${affiliate}" ${goodAttrs}>COMPRAR</a></main>`);
+  const html = `<main><a href="${affiliate}" ${goodAttrs}>COMPRAR</a><div data-pnm-affiliate-disclosure="m2e">Alguns links são de afiliado e podem gerar comissão.</div></main>`;
   const page = auditHtml('comprar-generico.html', html);
+  assert.equal(page.hasDisclosure, true);
   assert.equal(page.explicitExternalDestination, false);
   assert.match(validateReport(reportFromPage(page)).join(' | '), /destino externo suficientemente explícito/i);
 });
