@@ -10,7 +10,7 @@ const EXCLUDED = new Set(['automacao.html', 'gerenciador.html']);
 const AFFILIATE_HREF = /^https:\/\/(?:meli\.la|(?:www\.)?mercadolivre\.com(?:\.br)?)(?:\/|$)/i;
 
 export const DANGEROUS_CLAIMS = [
-  { id: 'editorial-independence', type: 'autoridade-editorial', re: /\bconte[uú]do independente\b/i },
+  { id: 'editorial-independence', type: 'autoridade-editorial', re: /\b(?:conte[uú]do|curadoria)\s+independente\b/i },
   { id: 'affiliate-no-extra-cost', type: 'afiliado-custo', re: /\bsem custo (?:extra|adicional)(?: para voc[eê])?\b/i },
   { id: 'lowest-price-guaranteed', type: 'preco-absoluto', re: /\bmenor pre[cç]o garantido\b/i },
   { id: 'best-price-guaranteed', type: 'preco-absoluto', re: /\bmelhor pre[cç]o garantido\b/i },
@@ -118,6 +118,7 @@ export function buildReport(files) {
   const pages = files.map(file => auditHtml(path.basename(file), fs.readFileSync(file, 'utf8')));
   const links = pages.flatMap(page => page.affiliateLinks);
   const commercial = pages.filter(page => page.commercial);
+  const missingExplicitDestination = commercial.filter(page => !page.explicitExternalDestination).map(page => page.name);
   const claimRows = pages.flatMap(page => page.dangerousClaimOccurrences.map(row => ({ page: page.name, ...row })));
   const semanticGroups = [...new Set(claimRows.map(row => row.claim))].sort();
   return {
@@ -129,6 +130,7 @@ export function buildReport(files) {
       commercial: commercial.length,
       commercialWithDisclosure: commercial.filter(page => page.hasDisclosure).length,
       commercialWithExplicitDestination: commercial.filter(page => page.explicitExternalDestination).length,
+      missingExplicitDestination,
     },
     affiliates: {
       total: links.length,
