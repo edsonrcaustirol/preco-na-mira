@@ -9,7 +9,27 @@ const EXCLUDED = new Set(['automacao.html', 'gerenciador.html']);
 const AFFILIATE_LINK = /<a\b(?=[^>]*\bhref=(?:"https:\/\/(?:meli\.la|(?:www\.)?mercadolivre\.com(?:\.br)?)[^"]*"|'https:\/\/(?:meli\.la|(?:www\.)?mercadolivre\.com(?:\.br)?)[^']*'))[^>]*>/i;
 
 const TOPBAR = '<div class="topbar" data-pnm-trust="m2e">O Preço na Mira organiza e apresenta produtos para facilitar a descoberta. Alguns links podem gerar comissão de afiliado em compras elegíveis.</div>';
-const DISCLOSURE = '<div class="affiliate-note" data-pnm-affiliate-disclosure="m2e">Alguns links desta página são de afiliado. Uma compra elegível no site de destino pode gerar comissão para o Preço na Mira. A compra acontece no site de destino; preço, estoque, entrega e condições finais são definidos pelo vendedor ou marketplace e devem ser confirmados antes da compra.</div>';
+const DISCLOSURE = '<div class="affiliate-note" data-pnm-affiliate-disclosure="m2e">Alguns links desta página levam ao Mercado Livre e são links de afiliado. Uma compra elegível no Mercado Livre pode gerar comissão para o Preço na Mira. A compra acontece fora do Preço na Mira, no Mercado Livre; preço, estoque, entrega e condições finais são definidos pelo vendedor ou marketplace e devem ser confirmados antes da compra.</div>';
+
+function sanitizeUnsupportedTrustClaims(input) {
+  let html = String(input || '');
+
+  // Não alegar independência editorial/curatorial sem uma política factual que a sustente.
+  html = html.replace(/\b(?:Conte[uú]do|Curadoria)\s+independente\b\s*(?:[•·|—-]\s*)?/gi, '');
+
+  // Não alegar ausência de custo adicional como consequência do programa de afiliados.
+  // A regra é deliberadamente limitada a frases que também mencionam links/comissão de afiliado.
+  html = html.replace(
+    /((?:alguns\s+)?links?(?:\s+de\s+oferta)?\s+(?:podem|pode)\s+gerar\s+comiss[aã]o\s+de\s+afiliado),?\s*sem\s+custo\s+(?:extra|adicional)(?:\s+para\s+voc[eê])?\.?/gi,
+    '$1.',
+  );
+  html = html.replace(
+    /(\b(?:podemos\s+receber|pode\s+gerar)\s+comiss[aã]o(?:\s+de\s+afiliado)?),?\s*sem\s+custo\s+(?:extra|adicional)(?:\s+para\s+voc[eê])?\.?/gi,
+    '$1.',
+  );
+
+  return html;
+}
 
 export function applyTransparency(input) {
   let html = String(input || '');
@@ -22,6 +42,8 @@ export function applyTransparency(input) {
     /<div class="topbar">\s*Conte[uú]do independente\s*•\s*Alguns links podem gerar comiss[aã]o de afiliado\.?\s*<\/div>/gi,
     TOPBAR,
   );
+
+  html = sanitizeUnsupportedTrustClaims(html);
   html = html.replace(/VER OFERTA ATUAL\s*↗/gi, 'VER NO MERCADO LIVRE ↗');
 
   html = html.replace(
