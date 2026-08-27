@@ -49,7 +49,7 @@ test('remove claims frágeis de afiliado e deixa compra externa explícita', () 
 });
 
 test('normaliza variantes legadas de independência e ausência de custo na origem', () => {
-  const source = `<body><p>Curadoria independente • Links de oferta podem gerar comissão de afiliado, sem custo extra para você.</p><main><a href="${affiliate}" ${goodAttrs}>VER PRODUTO</a></main></body>`;
+  const source = `<body><p>Curadoria independente • Links de oferta podem gerar comissão, sem custo extra para você.</p><main><a href="${affiliate}" ${goodAttrs}>VER PRODUTO</a></main></body>`;
   const output = applyTransparency(source);
   assert.equal(findDangerousClaims(output).length, 0);
   assert.doesNotMatch(output, /curadoria independente/i);
