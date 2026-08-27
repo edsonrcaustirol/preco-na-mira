@@ -111,10 +111,32 @@ function lifecycleTest() {
     assert.throws(() => synchronizeCatalog(root), /Produto incompleto/);
     assert.equal(fs.readFileSync(path.join(root, 'data', 'produtos-mobile.js'), 'utf8'), mobileBefore);
 
+    const legacyTrailingHyphen = {...product(92), id: 'fixture-legado-', linkAfiliado: 'https://meli.la/fixturelegado'};
+    writeCanonical(root, [...stableProducts, legacyTrailingHyphen]);
+    syncAndValidate(root, [...stableProducts, legacyTrailingHyphen], 'id legado com hífen final');
+    assert.equal(fs.existsSync(path.join(root, 'produto-fixture-legado-.html')), true);
+
+    const stableWithLegacy = [...stableProducts, legacyTrailingHyphen];
+    const mobileWithLegacy = fs.readFileSync(path.join(root, 'data', 'produtos-mobile.js'), 'utf8');
+    const traversal = {...product(93), id: '../escape', linkAfiliado: 'https://meli.la/fixtureescape'};
+    writeCanonical(root, [...stableWithLegacy, traversal]);
+    assert.throws(() => synchronizeCatalog(root), /ID inválido/);
+    assert.equal(fs.readFileSync(path.join(root, 'data', 'produtos-mobile.js'), 'utf8'), mobileWithLegacy);
+    assert.equal(fs.existsSync(path.join(root, '..', 'produto-escape.html')), false);
+
+    const leadingHyphen = {...product(94), id: '-fixture-invalido', linkAfiliado: 'https://meli.la/fixtureleading'};
+    writeCanonical(root, [...stableWithLegacy, leadingHyphen]);
+    assert.throws(() => synchronizeCatalog(root), /ID inválido/);
+    assert.equal(fs.readFileSync(path.join(root, 'data', 'produtos-mobile.js'), 'utf8'), mobileWithLegacy);
+
+    writeCanonical(root, stableProducts);
+    syncAndValidate(root, stableProducts, 'restauração após regressões de ID');
+
     const transactionCandidate = product(91);
+    const stableMobile = fs.readFileSync(path.join(root, 'data', 'produtos-mobile.js'), 'utf8');
     writeCanonical(root, [...stableProducts, transactionCandidate]);
     assert.throws(() => synchronizeCatalog(root, { failAfter: 1 }), /Falha transacional simulada/);
-    assert.equal(fs.readFileSync(path.join(root, 'data', 'produtos-mobile.js'), 'utf8'), mobileBefore);
+    assert.equal(fs.readFileSync(path.join(root, 'data', 'produtos-mobile.js'), 'utf8'), stableMobile);
     assert.equal(fs.existsSync(path.join(root, `produto-${transactionCandidate.id}.html`)), false);
 
     writeCanonical(root, stableProducts);
@@ -127,6 +149,8 @@ function lifecycleTest() {
       remove: 'PASS — página órfã é removida automaticamente',
       duplicate: 'PASS — duplicidade falha antes de qualquer escrita',
       incomplete: 'PASS — produto incompleto falha antes de qualquer escrita',
+      legacyId: 'PASS — ID legado terminado em hífen é aceito e gera página prevista',
+      unsafeId: 'PASS — path traversal e hífen inicial continuam bloqueados antes da escrita',
       transaction: 'PASS — falha simulada restaura derivados anteriores',
     };
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
@@ -157,4 +181,4 @@ function offerOverrideTest() {
 
 const lifecycle = lifecycleTest();
 const offers = offerOverrideTest();
-console.log(JSON.stringify({ fixtureOnly: true, productionDataModified: false, pipelineAdd: lifecycle.add, pipelineBatch: lifecycle.batch, pipelineEdit: lifecycle.edit, pipelineRemove: lifecycle.remove, duplicateGuard: lifecycle.duplicate, incompleteGuard: lifecycle.incomplete, transactionalRollback: lifecycle.transaction, testOfferOn: offers.offerOn, testOfferOff: offers.offerOff }, null, 2));
+console.log(JSON.stringify({ fixtureOnly: true, productionDataModified: false, pipelineAdd: lifecycle.add, pipelineBatch: lifecycle.batch, pipelineEdit: lifecycle.edit, pipelineRemove: lifecycle.remove, duplicateGuard: lifecycle.duplicate, incompleteGuard: lifecycle.incomplete, legacyTrailingHyphenId: lifecycle.legacyId, unsafeIdGuard: lifecycle.unsafeId, transactionalRollback: lifecycle.transaction, testOfferOn: offers.offerOn, testOfferOff: offers.offerOff }, null, 2));
