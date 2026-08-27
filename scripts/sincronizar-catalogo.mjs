@@ -34,7 +34,7 @@ function validateProducts(products) {
     const link = String(product.linkAfiliado).trim();
     if (ids.has(id)) throw new Error(`ID duplicado: ${id}`);
     if (links.has(link)) throw new Error(`Link afiliado duplicado: ${link}`);
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) throw new Error(`ID inválido: ${id}`);
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) throw new Error(`ID inválido: ${id}`);
     ids.add(id);
     links.add(link);
   }
