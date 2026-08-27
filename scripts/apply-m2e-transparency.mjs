@@ -18,9 +18,9 @@ function sanitizeUnsupportedTrustClaims(input) {
   html = html.replace(/\b(?:Conte[uú]do|Curadoria)\s+independente\b\s*(?:[•·|—-]\s*)?/gi, '');
 
   // Não alegar ausência de custo adicional como consequência do programa de afiliados.
-  // A regra é deliberadamente limitada a frases que também mencionam links/comissão de afiliado.
+  // A regra é deliberadamente limitada a frases que também mencionam links e comissão.
   html = html.replace(
-    /((?:alguns\s+)?links?(?:\s+de\s+oferta)?\s+(?:podem|pode)\s+gerar\s+comiss[aã]o\s+de\s+afiliado),?\s*sem\s+custo\s+(?:extra|adicional)(?:\s+para\s+voc[eê])?\.?/gi,
+    /((?:alguns\s+)?links?(?:\s+de\s+oferta)?\s+(?:podem|pode)\s+gerar\s+comiss[aã]o(?:\s+de\s+afiliado)?),?\s*sem\s+custo\s+(?:extra|adicional)(?:\s+para\s+voc[eê])?\.?/gi,
     '$1.',
   );
   html = html.replace(
