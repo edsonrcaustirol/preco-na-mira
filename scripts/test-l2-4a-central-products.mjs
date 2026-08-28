@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import {
   buildCentralProductsProjection,
@@ -36,16 +37,24 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
+function countOwnerProducts(source) {
+  const sandbox = {};
+  vm.createContext(sandbox);
+  vm.runInContext(`${source}\nthis.__products = PRODUTOS;`, sandbox);
+  return sandbox.__products.length;
+}
+
 function assertProjection() {
   const source = fs.readFileSync(OWNER_PATH, 'utf8');
   const projection = buildCentralProductsProjection(source);
   const second = buildCentralProductsProjection(source);
+  const expectedTotal = countOwnerProducts(source);
 
   assert.equal(projection.contract, CENTRAL_PRODUCTS_CONTRACT);
   assert.equal(projection.contract, 'pnm.central-products/v1');
   assert.equal(projection.source, 'data/produtos-index.js');
   assert.equal(projection.sourceFingerprint, `sha256:${crypto.createHash('sha256').update(source, 'utf8').digest('hex')}`);
-  assert.equal(projection.total, 556, 'catálogo projetado deve continuar com 556 produtos');
+  assert.equal(projection.total, expectedTotal, 'catálogo projetado deve refletir o owner atual');
   assert.equal(projection.products.length, projection.total);
   assert.deepEqual(second, projection, 'projeção deve ser determinística');
   assert.equal(renderCentralProductsModule(second), renderCentralProductsModule(projection), 'módulo gerado deve ser determinístico');
@@ -67,7 +76,7 @@ function assertProjection() {
   const build = generateCentralProducts();
   assert.equal(build.contract, 'pnm.central-products/v1');
   assert.equal(build.source, 'data/produtos-index.js');
-  assert.equal(build.total, 556);
+  assert.equal(build.total, expectedTotal);
   assert.equal(build.output, GENERATED_RELATIVE);
   assert.equal(fs.existsSync(GENERATED_PATH), true, 'módulo gerado deve existir após o build');
   assert.match(fs.readFileSync(GENERATED_PATH, 'utf8'), /ARQUIVO GERADO — NÃO EDITAR MANUALMENTE/);
@@ -117,7 +126,7 @@ function assertUi(projection) {
   const nonce = 'fixtureNonce123';
   const html = renderProductsPage(projection, nonce);
   assert.match(html, /pnm\.central-products\/v1/);
-  assert.match(html, /data-total="556"/);
+  assert.match(html, new RegExp(`data-total=\"${projection.total}\"`));
   assert.match(html, /id="q"/);
   assert.match(html, /id="cat"/);
   assert.match(html, /id="brand"/);
@@ -143,7 +152,7 @@ function assertUi(projection) {
   const gridMatch = html.match(/<section class="grid" id="grid"[^>]*>([\s\S]*?)<\/section>/);
   assert.ok(gridMatch, 'grade de produtos ausente');
   assert.equal(gridMatch[1].includes(projection.products[0].linkAfiliado), false, 'listagem não pode exibir URL afiliada completa');
-  assert.equal((gridMatch[1].match(/loading="lazy"/g) || []).length, 556, 'todas as miniaturas devem usar lazy loading');
+  assert.equal((gridMatch[1].match(/loading="lazy"/g) || []).length, projection.total, 'todas as miniaturas devem usar lazy loading');
 }
 
 function createAccessFixture() {
@@ -189,7 +198,7 @@ async function assertReadOnlyRuntime() {
   assert.match(response.headers.get('content-security-policy') || '', /script-src 'nonce-[A-Za-z0-9]+'/);
   assert.doesNotMatch(response.headers.get('content-security-policy') || '', /script-src 'unsafe-inline'/);
   const html = await response.text();
-  assert.match(html, /data-total="556"/);
+  assert.match(html, new RegExp(`data-total=\"${projection.total}\"`));
   assert.match(html, /Saúde dos links será integrada na próxima etapa\./);
 
   for (const method of ['POST', 'PUT', 'PATCH', 'DELETE']) {

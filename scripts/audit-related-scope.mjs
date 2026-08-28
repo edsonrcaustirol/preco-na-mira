@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { parseArrayFile } from './seo-inventory.mjs';
 import { readFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,8 +7,8 @@ import { fileURLToPath } from 'node:url';
 export const LEGACY_CTA = 'VER OFERTA ↗';
 export const CURRENT_CTA = 'VER NO MERCADO LIVRE ↗';
 export const EXACT_CTA = LEGACY_CTA;
-export const EXPECTED_PRODUCT_FILE_COUNT = 556;
-export const EXPECTED_RELATED_CTA_COUNT = 2457;
+export const FIXTURE_PRODUCT_FILE_COUNT = 556;
+export const FIXTURE_RELATED_CTA_COUNT = 2457;
 const RELATED_CLASS = 'related-actions';
 const ACTION_TAGS = new Set(['a', 'button']);
 const RAW_TEXT_TAGS = new Set(['script', 'style', 'textarea', 'title']);
@@ -260,17 +261,19 @@ export function postAuditFailures({
   currentOutside,
   currentUnresolved,
   ambiguousFileCount,
+  expectedProductFileCount = FIXTURE_PRODUCT_FILE_COUNT,
+  expectedRelatedCtaCount = FIXTURE_RELATED_CTA_COUNT,
 }) {
   const failures = [];
-  if (fileCount !== EXPECTED_PRODUCT_FILE_COUNT) {
-    failures.push(`produto-*.html divergente: ${fileCount} != ${EXPECTED_PRODUCT_FILE_COUNT}`);
+  if (fileCount !== expectedProductFileCount) {
+    failures.push(`produto-*.html divergente: ${fileCount} != ${expectedProductFileCount}`);
   }
   if (legacyTotal !== 0) failures.push(`restaram ${legacyTotal} CTA(s) comercial(is) legado(s) "${LEGACY_CTA}"`);
   if (legacyRelated !== 0) failures.push(`restaram ${legacyRelated} CTA(s) legado(s) em .${RELATED_CLASS}`);
   if (legacyOutside !== 0) failures.push(`restaram ${legacyOutside} CTA(s) legado(s) fora de .${RELATED_CLASS}`);
   if (legacyUnresolved !== 0) failures.push(`restaram ${legacyUnresolved} CTA(s) legado(s) não classificado(s)`);
-  if (currentRelated !== EXPECTED_RELATED_CTA_COUNT) {
-    failures.push(`CTA novo em related divergente: ${currentRelated} != ${EXPECTED_RELATED_CTA_COUNT}`);
+  if (currentRelated !== expectedRelatedCtaCount) {
+    failures.push(`CTA novo em related divergente: ${currentRelated} != ${expectedRelatedCtaCount}`);
   }
   if (currentOutside > 0) failures.push(`${currentOutside} CTA(s) novo(s) fora de ${RELATED_CLASS}`);
   if (currentUnresolved !== 0) failures.push(`CTA novo possui ${currentUnresolved} ocorrência(s) não classificada(s)`);
@@ -289,6 +292,7 @@ function trackedProductFiles() {
 
 function runAudit() {
   const files = trackedProductFiles();
+  const expectedProductFileCount = parseArrayFile(resolve('data/produtos-index.js')).length;
   const ambiguousFiles = new Map();
   const currentFiles = [];
   let legacyTotal = 0;
@@ -368,13 +372,15 @@ function runAudit() {
     currentOutside,
     currentUnresolved,
     ambiguousFileCount: ambiguousFiles.size,
+    expectedProductFileCount,
+    expectedRelatedCtaCount: relatedBlocks,
   });
 
   console.log('INVARIANTES_POS_M3_2:');
-  console.log(`- produto-*.html = ${EXPECTED_PRODUCT_FILE_COUNT}`);
+  console.log(`- produto-*.html = owner atual (${expectedProductFileCount})`);
   console.log(`- zero CTA comercial legado "${LEGACY_CTA}" permanece`);
   console.log(`- CTA novo "${CURRENT_CTA}" é contado estruturalmente apenas em .${RELATED_CLASS}`);
-  console.log(`- related com CTA novo = ${EXPECTED_RELATED_CTA_COUNT}`);
+  console.log(`- cada bloco .related-actions reconhecido possui exatamente um CTA novo (${relatedBlocks})`);
   console.log(`- zero CTA novo "${CURRENT_CTA}" pode existir fora de .${RELATED_CLASS}`);
   console.log('- nenhuma ocorrência antiga fica fora de related ou sem classificação');
   console.log('- nesting estrutural relevante cruzado/malformado torna o arquivo ambíguo');
