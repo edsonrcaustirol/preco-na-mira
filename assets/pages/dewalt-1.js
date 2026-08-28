@@ -4,7 +4,6 @@
   const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const all=Array.isArray(window.PRODUTOS)?window.PRODUTOS:(typeof PRODUTOS!=='undefined'?PRODUTOS:[]);
   const products=all.filter(p=>norm(p.marca).includes('dewalt')||norm(p.nome).includes('dewalt'));
-  const pending=Array.isArray(window.PNM_DEWALT_PENDING)?window.PNM_DEWALT_PENDING:[];
   const special=products.find(p=>[p.linkAfiliado,p.linkOriginal].filter(Boolean).some(x=>String(x).includes('24zmozq')));
   const grid=document.getElementById('dewaltGrid');
   const filters=document.getElementById('dewaltFilters');
@@ -15,15 +14,11 @@
   const specialText=document.getElementById('dewaltSpecialText');
   const specialAnalyze=document.getElementById('dewaltSpecialAnalyze');
   const specialOffer=document.getElementById('dewaltSpecialOffer');
-  const pendingCount=document.getElementById('dewaltPendingCount');
-  const pendingGrid=document.getElementById('dewaltPendingGrid');
   const subtype=p=>p.subtipoObra||p.subtipoAcessorio||p.subtipoInstalacao||p.subtipo||p.tipoProduto||p.categoria||'Outros';
   const nice=s=>String(s||'').replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
   const kinds=[...new Set(products.map(subtype).filter(Boolean))].sort((a,b)=>nice(a).localeCompare(nice(b),'pt-BR'));
   if(count)count.textContent=products.length||'—';
   if(categoryCount)categoryCount.textContent=kinds.length||'—';
-  if(pendingCount)pendingCount.textContent=pending.length;
-  if(pendingGrid)pendingGrid.innerHTML=pending.map((item,index)=>`<a class="dw-pending-card${item.especial?' special':''}" href="${esc(item.link)}" target="_blank" rel="sponsored nofollow noopener noreferrer"><span>${item.especial?'SÉRIE ESPECIAL':'LINK RECEBIDO'}</span><b>Oferta ${String(index+1).padStart(2,'0')}</b><small>Abra o anúncio para conferir produto, modelo, preço e vendedor.</small><strong>CONFERIR OFERTA →</strong></a>`).join('');
   if(special){
     specialTitle.textContent=special.nome;
     specialText.textContent=special.chamada||special.resumo||'Uma edição especial escolhida para ocupar a vitrine principal da Linha DeWalt.';
@@ -52,7 +47,7 @@
   function render(kind=''){
     const view=kind?products.filter(p=>subtype(p)===kind):products;
     if(!view.length){
-      grid.innerHTML='<div class="dw-empty"><b>Novos produtos estão em validação.</b><span>Os links deste lote já entraram na fila. Nome, modelo e foto só aparecem aqui depois da confirmação para evitar cadastro errado.</span></div>';
+      grid.innerHTML='<div class="dw-empty"><b>Novos produtos estão em validação.</b><span>Os produtos aparecem aqui somente depois de identificação e validação no catálogo.</span></div>';
       return;
     }
     grid.innerHTML=view.map(card).join('');
