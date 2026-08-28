@@ -54,6 +54,17 @@ function replaceMeta(content, selector, value, attribute = 'name') {
   return content.replace(/<\/head>/i, `${tag}</head>`);
 }
 
+function metaValue(content, selector, attribute = 'name') {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const matcher = new RegExp(`<meta\\b(?=[^>]*\\b${attribute}=(?:"${escaped}"|'${escaped}'))(?=[^>]*\\bcontent=(?:"([^"]*)"|'([^']*)'))[^>]*>`, 'i');
+  const match = content.match(matcher);
+  return match?.[1] ?? match?.[2] ?? '';
+}
+
+function titleValue(content) {
+  return String((content.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || '').replace(/\s+/g, ' ').trim();
+}
+
 function replaceCanonical(content, value) {
   const tag = `<link rel="canonical" href="${value}">`;
   if (/<link\b(?=[^>]*\brel=(?:"canonical"|'canonical'))[^>]*>/i.test(content)) {
@@ -90,6 +101,22 @@ function absoluteSocialImage(content, fileName) {
   return content;
 }
 
+function syncSocialTextMetadata(content, fileName) {
+  const title = titleValue(content);
+  const description = metaValue(content, 'description');
+  const isProduct = /^produto-/.test(fileName) && fileName !== 'produto.html';
+  if (title) {
+    content = replaceMeta(content, 'og:title', title, 'property');
+    content = replaceMeta(content, 'twitter:title', title);
+  }
+  if (description) {
+    content = replaceMeta(content, 'og:description', description, 'property');
+    content = replaceMeta(content, 'twitter:description', description);
+  }
+  content = replaceMeta(content, 'og:type', isProduct ? 'product' : 'website', 'property');
+  return content;
+}
+
 function prepareHtml(file) {
   const fileName = path.basename(file);
   let content = fs.readFileSync(file, 'utf8');
@@ -115,6 +142,7 @@ function prepareHtml(file) {
   }
   if (fileName === 'busca.html') content = content.replace('CENTRAL DE BUSCA • V17.2', 'CENTRAL DE BUSCA');
   if (NOINDEX.has(fileName)) content = replaceMeta(content, 'robots', 'noindex,follow');
+  content = syncSocialTextMetadata(content, fileName);
 
   if (!SKIP_DEPLOYED.has(fileName)) {
     if (!content.includes(PLATFORM_CSS)) content = content.replace(/<\/head>/i, `<link rel="stylesheet" href="${PLATFORM_CSS}"></head>`);
@@ -152,6 +180,26 @@ function isNoindexFile(fileName) {
   return /<meta\b(?=[^>]*\bname=(?:"robots"|'robots'))(?=[^>]*\bcontent=(?:"[^"]*noindex|'[^']*noindex))[^>]*>/i.test(content);
 }
 
+function socialMetadataProblems(fileName) {
+  const content = fs.readFileSync(path.join(ROOT, fileName), 'utf8');
+  const title = titleValue(content);
+  const description = metaValue(content, 'description');
+  const canonical = existingCanonical(content, fileName);
+  const expectedType = /^produto-/.test(fileName) && fileName !== 'produto.html' ? 'product' : 'website';
+  const checks = [
+    ['OG_TITLE', metaValue(content, 'og:title', 'property') === title],
+    ['OG_DESCRIPTION', metaValue(content, 'og:description', 'property') === description],
+    ['OG_URL', metaValue(content, 'og:url', 'property') === canonical],
+    ['OG_IMAGE', /^https:\/\//i.test(metaValue(content, 'og:image', 'property'))],
+    ['OG_TYPE', metaValue(content, 'og:type', 'property') === expectedType],
+    ['TWITTER_CARD', metaValue(content, 'twitter:card') === 'summary_large_image'],
+    ['TWITTER_TITLE', metaValue(content, 'twitter:title') === title],
+    ['TWITTER_DESCRIPTION', metaValue(content, 'twitter:description') === description],
+    ['TWITTER_IMAGE', /^https:\/\//i.test(metaValue(content, 'twitter:image'))],
+  ];
+  return checks.filter(([, ok]) => !ok).map(([code]) => `${fileName}:${code}`);
+}
+
 const changedHtml = htmlFiles.reduce((count, file) => count + Number(prepareHtml(file)), 0);
 const changedScripts = prepareScripts(walk());
 const sitemapPages = htmlFiles
@@ -163,4 +211,9 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
 fs.writeFileSync(path.join(ROOT, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /gerenciador\nDisallow: /automacao\n\nSitemap: ${OFFICIAL_ORIGIN}/sitemap.xml\n`);
 
-console.log(JSON.stringify({ changedHtml, changedScripts, sitemapUrls: sitemapPages.length }, null, 2));
+const socialProblems = sitemapPages.flatMap(socialMetadataProblems);
+if (socialProblems.length) {
+  throw new Error(`Metadados sociais incompletos ou divergentes: ${socialProblems.slice(0, 20).join(', ')}${socialProblems.length > 20 ? ` (+${socialProblems.length - 20})` : ''}`);
+}
+
+console.log(JSON.stringify({ changedHtml, changedScripts, sitemapUrls: sitemapPages.length, socialIndexablePages: sitemapPages.length, socialProblems: socialProblems.length }, null, 2));
