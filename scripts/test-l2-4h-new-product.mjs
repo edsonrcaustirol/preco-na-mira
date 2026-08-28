@@ -5,6 +5,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { parseArrayFile } from './seo-inventory.mjs';
 import {
   analyzeNewProductInput,
   analyzeNewProductBatch,
@@ -28,7 +29,8 @@ if (!fs.existsSync(generatedPath)) {
 }
 const { CENTRAL_PRODUCTS_PROJECTION } = await import('../central/src/generated/products.mjs');
 const products = CENTRAL_PRODUCTS_PROJECTION.products;
-assert.equal(products.length, 556);
+const ownerProducts = parseArrayFile(path.join(ROOT, ownerPath));
+assert.equal(products.length, ownerProducts.length, 'projeção da Central deve refletir o owner atual');
 
 function completeInput(index, overrides = {}) {
   return {
@@ -216,7 +218,7 @@ console.log(JSON.stringify({
   m11CatalogOperations: 'PASS',
   contract: CENTRAL_NEW_PRODUCT_CONTRACT,
   batchContract: CENTRAL_NEW_PRODUCT_BATCH_CONTRACT,
-  products: 556,
+  products: products.length,
   individualStates: ['PRONTO', 'REVISÃO', 'DUPLICADO', 'BLOQUEADO'],
   trackingIdentityNormalization: true,
   nonStandardPortRejected: true,

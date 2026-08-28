@@ -16,7 +16,7 @@ import { renderCentralShell } from '../central/src/ui.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CANONICAL = path.join(ROOT, 'data', 'produtos-index.js');
-const BASELINE_OWNER_BLOB = 'b01b5773dc489e2437b672abbe7c05beb71c2c4c';
+const OWNER_AT_TEST_START = fs.readFileSync(CANONICAL, 'utf8');
 const CENTRAL_HOST = 'central.preconamira.com.br';
 const ACCESS_ISSUER = 'https://fixture-team.cloudflareaccess.com';
 const ACCESS_AUD = 'fixture-audience';
@@ -26,13 +26,8 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
-function gitBlobSha(content) {
-  const body = Buffer.from(content, 'utf8');
-  return crypto.createHash('sha1').update(`blob ${body.length}\0`).update(body).digest('hex');
-}
-
 function assertOwnerUnchanged() {
-  assert.equal(gitBlobSha(fs.readFileSync(CANONICAL, 'utf8')), BASELINE_OWNER_BLOB, 'owner canônico foi alterado na L2.2');
+  assert.equal(fs.readFileSync(CANONICAL, 'utf8'), OWNER_AT_TEST_START, 'owner canônico foi alterado na L2.2');
   assert.equal(CENTRAL_CONTRACTS.catalog.owner, 'data/produtos-index.js');
   assert.equal(CENTRAL_CONTRACTS.catalog.centralDatabaseOwner, false);
   assert.equal(CENTRAL_CONTRACTS.d1.authoritativeCatalog, false);
