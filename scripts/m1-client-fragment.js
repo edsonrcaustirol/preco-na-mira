@@ -3,15 +3,17 @@
   if (window.PNMAnalytics?.__m1 === true) return;
 
   const ENDPOINT = '/__pnm/analytics';
-  const TRAFFIC_KEY = 'pnm:m1:traffic';
+  const JOURNEY_KEY = 'pnm:m1:journey:v1';
   const PLACEMENTS = new Set(['card','primary','sidebar','sticky','related','search_result','saved','cart','comparison','project','studio','small_spaces','obra_base','dewalt_pending']);
   const IMPRESSION_PLACEMENTS = new Set(['card','related']);
+  const CHANNELS = new Set(['organic','direct','referral','social','paid','internal','unknown']);
   const IMPRESSION_RATIO = 0.5;
   const IMPRESSION_DWELL_MS = 500;
+  const JOURNEY_FIELDS = ['landing','channel','session_id'];
   const EVENT_FIELDS = {
-    page_view: new Set(['page','page_type','product_id','utm_source','utm_medium','utm_campaign','referrer_host']),
-    affiliate_click: new Set(['product_id','store','page','placement','utm_source','utm_medium','utm_campaign','referrer_host']),
-    commercial_impression: new Set(['product_id','store','page','page_type','placement','utm_source','utm_medium','utm_campaign','referrer_host'])
+    page_view: new Set(['page','page_type','product_id','utm_source','utm_medium','utm_campaign','referrer_host', ...JOURNEY_FIELDS]),
+    affiliate_click: new Set(['product_id','store','page','placement','utm_source','utm_medium','utm_campaign','referrer_host', ...JOURNEY_FIELDS]),
+    commercial_impression: new Set(['product_id','store','page','page_type','placement','utm_source','utm_medium','utm_campaign','referrer_host', ...JOURNEY_FIELDS])
   };
 
   const clean = (value, max = 120) => String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
@@ -19,10 +21,31 @@
     const out = clean(value, max).toLowerCase().replace(/[^a-z0-9._/-]+/g, '_').replace(/^_+|_+$/g, '');
     return out || fallback;
   };
-  const safeCampaign = value => clean(value, 120).replace(/[^\p{L}\p{N} _./:-]/gu, '').slice(0, 120);
+  const hasPiiShape = value => {
+    const raw = clean(value, 160);
+    if (!raw) return false;
+    if (/[^\s@]+@[^\s@]+\.[^\s@]+/.test(raw)) return true;
+    return (raw.match(/\d/g) || []).length >= 9;
+  };
+  const safeSourceMedium = value => hasPiiShape(value) ? '' : slug(value, '', 80);
+  const safeCampaign = value => hasPiiShape(value) ? '' : clean(value, 120).replace(/[^\p{L}\p{N} _./:-]/gu, '').slice(0, 120);
+  const safeLanding = value => {
+    const raw = clean(value, 160).split(/[?#]/, 1)[0];
+    if (!raw.startsWith('/')) return '';
+    const normalized = raw.replace(/\/?index\.html$/i, '/').replace(/\.html$/i, '').replace(/\/$/, '') || '/';
+    return normalized.toLowerCase().replace(/[^a-z0-9._~/%/-]/g, '').slice(0, 160) || '/';
+  };
+  const safeSessionId = value => {
+    const normalized = clean(value, 36).toLowerCase();
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(normalized) ? normalized : '';
+  };
+
+  function currentPath() {
+    return safeLanding(location.pathname) || '/';
+  }
 
   function routeInfo() {
-    const path = location.pathname.replace(/\/?index\.html$/i, '/').replace(/\.html$/i, '').replace(/\/$/, '') || '/';
+    const path = currentPath();
     const productMatch = path.match(/^\/produto-([^/]+)$/i);
     const queryProduct = new URL(location.href).searchParams.get('id');
     const productId = productMatch ? decodeURIComponent(productMatch[1]) : (/^\/produto$/i.test(path) ? queryProduct : '');
@@ -39,32 +62,98 @@
     return { page: slug(path.split('/').filter(Boolean).pop() || 'home'), page_type: 'other', product_id: '' };
   }
 
-  function readTraffic() {
-    const url = new URL(location.href);
-    const current = {
-      utm_source: slug(url.searchParams.get('utm_source') || '', '', 80),
-      utm_medium: slug(url.searchParams.get('utm_medium') || '', '', 80),
-      utm_campaign: safeCampaign(url.searchParams.get('utm_campaign') || ''),
-      referrer_host: ''
+  function referrerInfo() {
+    const out = { referrer_host: '', internal_referrer: false };
+    try {
+      if (!document.referrer) return out;
+      const ref = new URL(document.referrer);
+      if (!ref.hostname) return out;
+      if (ref.hostname.toLowerCase() === location.hostname.toLowerCase()) out.internal_referrer = true;
+      else out.referrer_host = clean(ref.hostname.toLowerCase(), 120);
+    } catch (_) {}
+    return out;
+  }
+
+  function isSearchHost(host) {
+    const value = String(host || '').toLowerCase().replace(/^www\./, '');
+    return /(^|\.)google\.[a-z.]+$/.test(value) || value === 'bing.com' || value.endsWith('.bing.com') || value === 'search.yahoo.com' || value === 'duckduckgo.com' || value.endsWith('.duckduckgo.com');
+  }
+
+  function isSocialHost(value) {
+    const host = String(value || '').toLowerCase().replace(/^www\./, '');
+    return ['instagram.com','facebook.com','fb.com','tiktok.com','x.com','twitter.com','linkedin.com','youtube.com','youtu.be','pinterest.com','t.co'].some(domain => host === domain || host.endsWith(`.${domain}`));
+  }
+
+  function classifyChannel({ utm_source = '', utm_medium = '', referrer_host = '', internal_referrer = false } = {}) {
+    const source = String(utm_source || '').toLowerCase();
+    const medium = String(utm_medium || '').toLowerCase();
+    if (/^(cpc|ppc|paid|paid_social|display|cpm|sem|ads?)$/.test(medium)) return 'paid';
+    if (/^(organic|seo)$/.test(medium)) return 'organic';
+    if (/^(social|social_media|social-media)$/.test(medium) || isSocialHost(source)) return 'social';
+    if (/^(referral|referrer)$/.test(medium)) return 'referral';
+    if (referrer_host) {
+      if (isSearchHost(referrer_host)) return 'organic';
+      if (isSocialHost(referrer_host)) return 'social';
+      return 'referral';
+    }
+    if (internal_referrer) return 'internal';
+    if (!source && !medium) return 'direct';
+    return 'unknown';
+  }
+
+  function createSessionId() {
+    try {
+      if (typeof crypto?.randomUUID === 'function') return crypto.randomUUID().toLowerCase();
+      if (typeof crypto?.getRandomValues === 'function') {
+        const bytes = new Uint8Array(16);
+        crypto.getRandomValues(bytes);
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = [...bytes].map(value => value.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+      }
+    } catch (_) {}
+    const randomPart = () => Math.random().toString(16).slice(2).padEnd(16, '0');
+    const hex = `${randomPart()}${randomPart()}`.slice(0, 32);
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
+  }
+
+  function normalizeJourney(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const normalized = {
+      landing: safeLanding(value.landing),
+      channel: CHANNELS.has(String(value.channel || '').toLowerCase()) ? String(value.channel).toLowerCase() : '',
+      session_id: safeSessionId(value.session_id),
+      utm_source: safeSourceMedium(value.utm_source || ''),
+      utm_medium: safeSourceMedium(value.utm_medium || ''),
+      utm_campaign: safeCampaign(value.utm_campaign || ''),
+      referrer_host: clean(value.referrer_host || '', 120).toLowerCase()
     };
+    return normalized.landing && normalized.channel && normalized.session_id ? normalized : null;
+  }
+
+  function readJourney() {
     try {
-      if (document.referrer) {
-        const ref = new URL(document.referrer);
-        if (ref.hostname && ref.hostname !== location.hostname) current.referrer_host = clean(ref.hostname.toLowerCase(), 120);
-      }
+      const prior = normalizeJourney(JSON.parse(sessionStorage.getItem(JOURNEY_KEY) || 'null'));
+      if (prior) return prior;
     } catch (_) {}
-    const hasCurrent = Object.values(current).some(Boolean);
-    try {
-      if (hasCurrent) sessionStorage.setItem(TRAFFIC_KEY, JSON.stringify(current));
-      else {
-        const prior = JSON.parse(sessionStorage.getItem(TRAFFIC_KEY) || '{}');
-        return {
-          utm_source: slug(prior.utm_source || '', '', 80), utm_medium: slug(prior.utm_medium || '', '', 80),
-          utm_campaign: safeCampaign(prior.utm_campaign || ''), referrer_host: clean(prior.referrer_host || '', 120)
-        };
-      }
-    } catch (_) {}
-    return current;
+
+    const url = new URL(location.href);
+    const referrer = referrerInfo();
+    const attribution = {
+      utm_source: safeSourceMedium(url.searchParams.get('utm_source') || ''),
+      utm_medium: safeSourceMedium(url.searchParams.get('utm_medium') || ''),
+      utm_campaign: safeCampaign(url.searchParams.get('utm_campaign') || ''),
+      referrer_host: referrer.referrer_host
+    };
+    const journey = {
+      landing: currentPath(),
+      channel: classifyChannel({ ...attribution, internal_referrer: referrer.internal_referrer }),
+      session_id: createSessionId(),
+      ...attribution
+    };
+    try { sessionStorage.setItem(JOURNEY_KEY, JSON.stringify(journey)); } catch (_) {}
+    return journey;
   }
 
   function sanitize(eventName, data) {
@@ -73,7 +162,13 @@
     const out = {};
     for (const key of allowed) {
       if (!(key in (data || {}))) continue;
-      const value = key === 'utm_campaign' ? safeCampaign(data[key]) : (['page','page_type','product_id','store','placement','utm_source','utm_medium'].includes(key) ? slug(data[key], '', key === 'product_id' ? 120 : 80) : clean(data[key], 120));
+      let value;
+      if (key === 'utm_campaign') value = safeCampaign(data[key]);
+      else if (key === 'utm_source' || key === 'utm_medium') value = safeSourceMedium(data[key]);
+      else if (key === 'landing') value = safeLanding(data[key]);
+      else if (key === 'channel') value = CHANNELS.has(String(data[key] || '').toLowerCase()) ? String(data[key]).toLowerCase() : '';
+      else if (key === 'session_id') value = safeSessionId(data[key]);
+      else value = ['page','page_type','product_id','store','placement'].includes(key) ? slug(data[key], '', key === 'product_id' ? 120 : 80) : clean(data[key], 120);
       if (value) out[key] = value;
     }
     if (eventName === 'page_view' && (!out.page || !out.page_type)) return null;
@@ -105,10 +200,10 @@
   window.PNMAnalytics = api;
 
   const info = routeInfo();
-  const traffic = readTraffic();
+  const journey = readJourney();
   if (!window.__PNM_M1_PAGE_VIEW__) {
     window.__PNM_M1_PAGE_VIEW__ = true;
-    api.track('page_view', { page: info.page, page_type: info.page_type, ...(info.product_id ? { product_id: info.product_id } : {}), ...traffic });
+    api.track('page_view', { page: info.page, page_type: info.page_type, ...(info.product_id ? { product_id: info.product_id } : {}), ...journey });
   }
 
   function storeFromHref(href) {
@@ -202,7 +297,7 @@
       observedTargets.add(target);
       targetMeta.set(target, {
         key,
-        data: { product_id: productId, store, page: info.page, page_type: info.page_type, placement, ...traffic }
+        data: { product_id: productId, store, page: info.page, page_type: info.page_type, placement, ...journey }
       });
       observer.observe(target);
     }
@@ -235,7 +330,7 @@
       const store = storeFromHref(anchor.href || anchor.getAttribute?.('href') || '');
       if (!store) return;
       const placement = placementFor(anchor);
-      api.track('affiliate_click', { product_id: productIdFor(anchor), store, page: info.page, placement: PLACEMENTS.has(placement) ? placement : 'card', ...traffic });
+      api.track('affiliate_click', { product_id: productIdFor(anchor), store, page: info.page, placement: PLACEMENTS.has(placement) ? placement : 'card', ...journey });
     }, true);
   }
 })();
