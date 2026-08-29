@@ -46,6 +46,14 @@ function githubHeaders(token) {
   };
 }
 
+function githubPublicReadHeaders() {
+  return {
+    accept: 'application/vnd.github+json',
+    'user-agent': 'preco-na-mira-central',
+    'x-github-api-version': '2022-11-28',
+  };
+}
+
 function utf8Base64(value) {
   const bytes = new TextEncoder().encode(String(value));
   let binary = '';
@@ -204,7 +212,7 @@ export async function getNewProductTransactionStatus({ env = {}, transactionId, 
   const headSha = text(pr?.head?.sha);
   if (!headSha) return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PR CRIADA', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
   let checksResponse;
-  try { checksResponse = await fetchImpl(`${base}/commits/${encodeURIComponent(headSha)}/check-runs?per_page=100`, { headers }); }
+  try { checksResponse = await fetchImpl(`${base}/commits/${encodeURIComponent(headSha)}/check-runs?per_page=100`, { headers: githubPublicReadHeaders() }); }
   catch { return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PR CRIADA', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url }; }
   if (!checksResponse?.ok) return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PR CRIADA', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
   const checksPayload = await checksResponse.json();
