@@ -12,7 +12,14 @@ const IMPRESSION_FIELDS = new Set(['product_id','store','page','page_type','plac
 
 const clean = (value, max = 120) => String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
 const slug = (value, max = 120) => clean(value, max).toLowerCase().replace(/[^a-z0-9._/-]+/g, '_').replace(/^_+|_+$/g, '');
-const campaign = value => clean(value, 120).replace(/[^\p{L}\p{N} _./:-]/gu, '').slice(0, 120);
+const hasPiiShape = value => {
+  const raw = clean(value, 160);
+  if (!raw) return false;
+  if (/[^\s@]+@[^\s@]+\.[^\s@]+/.test(raw)) return true;
+  return (raw.match(/\d/g) || []).length >= 9;
+};
+const sourceMedium = value => hasPiiShape(value) ? '' : slug(value, 80);
+const campaign = value => hasPiiShape(value) ? '' : clean(value, 120).replace(/[^\p{L}\p{N} _./:-]/gu, '').slice(0, 120);
 const landing = value => {
   const raw = clean(value, 160).split(/[?#]/, 1)[0];
   if (!raw.startsWith('/')) return '';
@@ -32,6 +39,7 @@ function sanitize(event, data) {
     if (!(key in data)) continue;
     let value;
     if (key === 'utm_campaign') value = campaign(data[key]);
+    else if (key === 'utm_source' || key === 'utm_medium') value = sourceMedium(data[key]);
     else if (key === 'referrer_host') value = clean(data[key], 120).toLowerCase();
     else if (key === 'landing') value = landing(data[key]);
     else if (key === 'channel') value = CHANNELS.has(String(data[key] || '').toLowerCase()) ? String(data[key]).toLowerCase() : '';
