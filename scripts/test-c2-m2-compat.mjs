@@ -4,8 +4,8 @@ import { getQuery as getM2Query } from './m2-1-analytics-lib.mjs';
 import { getQuery as getM3Query } from './m3-1-analytics-lib.mjs';
 
 const accountId = '0123456789abcdef0123456789abcdef';
-const panelPassword = 'compat-password';
-const apiToken = 'compat-token';
+const panelPassword = 'pw-fixture';
+const apiToken = 'tok-fixture';
 const auth = `Basic ${Buffer.from(`pnm:${panelPassword}`).toString('base64')}`;
 const environment = {
   PNM_PANEL_PASSWORD: panelPassword,
@@ -89,7 +89,7 @@ async function assertAllQueriesFailure({ status, category, responseBody }) {
   assert.doesNotMatch(combined, new RegExp(apiToken));
   assert.doesNotMatch(combined, new RegExp(panelPassword));
   assert.doesNotMatch(combined, new RegExp(accountId));
-  assert.doesNotMatch(combined, /Bearer\s+compat-token|PNM_CF_ANALYTICS_TOKEN|PNM_PANEL_PASSWORD/);
+  assert.doesNotMatch(combined, /Bearer\s+tok-fixture|PNM_CF_ANALYTICS_TOKEN|PNM_PANEL_PASSWORD/);
   assert.doesNotMatch(combined, /https:\/\/api\.cloudflare\.com\/client\/v4\/accounts\//);
   assert.ok(logs.some(line => line.includes('PNM commercial panel diagnostics')));
   return body;
@@ -129,7 +129,7 @@ assert.doesNotMatch(rejectedBody, /SELECT\s/i);
   const combined = `${html}\n${logs.join('\n')}`;
   assert.ok(logs.some(line => line.includes('PNM commercial panel partial diagnostics')));
   assert.ok(logs.some(line => line.includes('M3.1') && line.includes('affiliate_click_rate_by_placement') && line.includes('query_rejected')));
-  assert.doesNotMatch(combined, /SELECT\s|Bearer\s+compat-token/);
+  assert.doesNotMatch(combined, /SELECT\s|Bearer\s+tok-fixture/);
 }
 
 console.log('C2 M2 transport + diagnostics compatibility tests: OK');
