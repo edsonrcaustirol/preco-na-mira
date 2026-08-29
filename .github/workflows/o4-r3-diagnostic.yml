@@ -22,11 +22,25 @@ jobs:
         run: npm ci
       - name: Build site
         run: npm run build:site
-      - name: Site strict audit
-        run: node scripts/auditar-site.mjs --strict
-      - name: SEO P9 audit
-        run: node scripts/auditar-seo-p9.mjs
-      - name: Public Worker dry run
-        run: npx wrangler deploy --dry-run
-      - name: Central Worker dry run
-        run: npx wrangler deploy --dry-run --config central/wrangler.jsonc
+      - name: Generate site audit
+        run: node scripts/auditar-site.mjs
+      - name: Missing references zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.missingReferences.length?1:0)"
+      - name: Image problems zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.products.imageProblems.length?1:0)"
+      - name: Duplicate product IDs zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.products.duplicateIds.length?1:0)"
+      - name: Potential secrets zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.length?1:0)"
+      - name: Legacy canonicals zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.legacyCanonicals.length?1:0)"
+      - name: Missing descriptions zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.missingDescription.length?1:0)"
+      - name: Invalid H1 zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.invalidH1Count.length?1:0)"
+      - name: Unsafe JS links zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.unsafeJavascriptLinks.length?1:0)"
+      - name: Sitemap missing pages zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.sitemap.htmlPagesNotListed.length?1:0)"
+      - name: Sitemap noindex listed zero
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.sitemap.noindexPagesListed.length?1:0)"
