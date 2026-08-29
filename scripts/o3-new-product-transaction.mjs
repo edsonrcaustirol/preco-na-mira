@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { analyzeNewProductInput } from '../central/src/new-product.mjs';
+import { findIdentityConflict } from '../central/src/new-product-transaction.mjs';
 import { synchronizeCatalog } from './sincronizar-catalogo.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -40,6 +41,12 @@ function normalizeInput(input = {}) {
 export function applyNewProductTransaction(root = ROOT, input = {}, options = {}) {
   const snapshot = readOwnerProducts(root);
   const normalized = normalizeInput(input);
+  const identityConflict = findIdentityConflict(normalized, snapshot.products);
+  if (identityConflict) {
+    const error = new Error(identityConflict.type === 'UNSAFE_ID' ? 'unsafe-product-id' : 'duplicate-listing');
+    error.code = identityConflict.type === 'UNSAFE_ID' ? 'UNSAFE_ID' : 'DUPLICATE_PRODUCT';
+    throw error;
+  }
   const analysis = analyzeNewProductInput(normalized, snapshot.products);
   if (!analysis.canAdvance) {
     const error = new Error(analysis.state === 'DUPLICADO' ? 'duplicate-product' : analysis.pending.length ? 'blocked-by-data' : 'new-product-blocked');
