@@ -4,19 +4,19 @@ import { executeQuery as executeM3Query } from '../scripts/m3-1-analytics-lib.mj
 export const PANEL_PATH = '/__pnm/commercial';
 export const PANEL_USERNAME = 'pnm';
 export const M31_START_UTC = '2026-08-22T05:24:34Z';
+export const C2_PERIOD = 'FIXO';
 export const C2_THRESHOLDS = Object.freeze({
   landingActivity: 10,
   productViews: 5,
   placementImpressions: 20,
   weakPlacementRatio: 0.5,
 });
-export const C2_PERIOD = 'FIXO';
 
 const encoder = new TextEncoder();
 const numberFormat = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
 const percentFormat = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const runtimeFetch = (...args) => fetch(...args);
-const DIAGNOSTIC_DETAIL_LIMIT = 300;
+const DETAIL_LIMIT = 300;
 const TOP_ROWS = 20;
 
 function secureHeaders(contentType) {
@@ -59,8 +59,7 @@ async function constantTimeEqual(left, right) {
 function decodeBasicCredential(encoded) {
   try {
     const binary = atob(encoded);
-    const bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
-    return new TextDecoder().decode(bytes);
+    return new TextDecoder().decode(Uint8Array.from(binary, character => character.charCodeAt(0)));
   } catch {
     return '';
   }
@@ -71,8 +70,7 @@ export async function isPanelAuthorized(request, password) {
   const authorization = request.headers.get('authorization') || '';
   const match = authorization.match(/^Basic\s+([A-Za-z0-9+/=]+)$/i);
   if (!match) return false;
-  const presented = decodeBasicCredential(match[1]);
-  return constantTimeEqual(presented, `${PANEL_USERNAME}:${password}`);
+  return constantTimeEqual(decodeBasicCredential(match[1]), `${PANEL_USERNAME}:${password}`);
 }
 
 function rows(result) {
@@ -119,7 +117,7 @@ function sanitizeDiagnosticDetail(value, { accountId = '', apiToken = '', panelP
     if (secret) text = text.replaceAll(String(secret), '[redacted]');
   }
 
-  text = text
+  return text
     .replace(/https?:\/\/[^\s"'<>]+/gi, '[redacted]')
     .replace(/\bAuthorization\b(?:\s*[:=]\s*|\s+)[^,;]+/gi, '[redacted]')
     .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]+/gi, '[redacted]')
@@ -129,17 +127,16 @@ function sanitizeDiagnosticDetail(value, { accountId = '', apiToken = '', panelP
     .replace(/\b[a-f0-9]{32}\b/gi, '[redacted]')
     .replace(/\b(?:SELECT|SHOW|WITH|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER)\b[\s\S]*/i, '[redacted]')
     .replace(/\s+/g, ' ')
-    .trim();
-
-  return text.slice(0, DIAGNOSTIC_DETAIL_LIMIT);
+    .trim()
+    .slice(0, DETAIL_LIMIT);
 }
 
-async function executeDashboardQuery({ source, name, execute, options }) {
+async function executeDashboardQuery(spec) {
   let observedStatus = null;
   let transportFailure = false;
   const diagnosticFetch = async (...args) => {
     try {
-      const response = await options.fetchImpl(...args);
+      const response = await spec.options.fetchImpl(...args);
       observedStatus = Number.isInteger(response?.status) ? response.status : null;
       return response;
     } catch {
@@ -149,13 +146,13 @@ async function executeDashboardQuery({ source, name, execute, options }) {
   };
 
   try {
-    return await execute(name, { ...options, fetchImpl: diagnosticFetch });
+    return await spec.execute(spec.name, { ...spec.options, fetchImpl: diagnosticFetch });
   } catch (error) {
-    const detail = observedStatus === 400 ? sanitizeDiagnosticDetail(error?.message, options) : '';
+    const detail = observedStatus === 400 ? sanitizeDiagnosticDetail(error?.message, spec.options) : '';
     throw {
       pnmSafeDiagnostic: true,
-      source,
-      query: name,
+      source: spec.source,
+      query: spec.name,
       status: observedStatus,
       category: classifyAnalyticsFailure(observedStatus, transportFailure),
       ...(detail ? { detail } : {}),
@@ -163,23 +160,23 @@ async function executeDashboardQuery({ source, name, execute, options }) {
   }
 }
 
-function normalizeDiagnostic(reason, fallback) {
+function normalizeDiagnostic(reason, spec) {
   if (reason?.pnmSafeDiagnostic === true) {
     return {
-      key: String(fallback.key || fallback.name),
-      block: String(fallback.block || 'unknown'),
-      source: String(reason.source || fallback.source),
-      query: String(reason.query || fallback.name),
+      key: spec.key,
+      block: spec.block,
+      source: String(reason.source || spec.source),
+      query: String(reason.query || spec.name),
       status: Number.isInteger(reason.status) ? reason.status : null,
       category: String(reason.category || 'unexpected'),
       detail: String(reason.detail || ''),
     };
   }
   return {
-    key: String(fallback.key || fallback.name),
-    block: String(fallback.block || 'unknown'),
-    source: String(fallback.source),
-    query: String(fallback.name),
+    key: spec.key,
+    block: spec.block,
+    source: spec.source,
+    query: spec.name,
     status: null,
     category: 'unexpected',
     detail: '',
@@ -191,25 +188,21 @@ const QUERY_SPECS = Object.freeze([
   { key: 'productViews', block: 'summary', source: 'C2', name: 'total_product_views', execute: executeM2Query },
   { key: 'affiliateClicks', block: 'summary', source: 'M2.1', name: 'total_affiliate_clicks', execute: executeM2Query },
   { key: 'commercialImpressions', block: 'summary', source: 'M3.1', name: 'total_commercial_impressions', execute: executeM3Query },
-
   { key: 'pageViewsByChannel', block: 'origins', source: 'C2', name: 'page_views_by_channel', execute: executeM2Query },
   { key: 'productViewsByChannel', block: 'origins', source: 'C2', name: 'product_views_by_channel', execute: executeM2Query },
   { key: 'clicksByChannel', block: 'origins', source: 'M2.1', name: 'affiliate_clicks_by_channel', execute: executeM2Query },
-
   { key: 'pageViewsByLanding', block: 'landings', source: 'C2', name: 'page_views_by_landing', execute: executeM2Query },
   { key: 'productViewsByLanding', block: 'landings', source: 'C2', name: 'product_views_by_landing', execute: executeM2Query },
   { key: 'clicksByLanding', block: 'landings', source: 'M2.1', name: 'affiliate_clicks_by_landing', execute: executeM2Query },
-
   { key: 'productViewsByProduct', block: 'products', source: 'C2', name: 'product_views_by_product', execute: executeM2Query },
   { key: 'clicksByProduct', block: 'products', source: 'M2.1', name: 'affiliate_clicks_by_product', execute: executeM2Query },
   { key: 'ctrByProduct', block: 'products', source: 'M3.1', name: 'affiliate_click_rate_by_product', execute: executeM3Query },
-
   { key: 'clicksByPlacement', block: 'placements', source: 'M2.1', name: 'affiliate_clicks_by_placement', execute: executeM2Query },
   { key: 'impressionsByPlacement', block: 'placements', source: 'M3.1', name: 'impressions_by_placement', execute: executeM3Query },
   { key: 'ctrByPlacement', block: 'placements', source: 'M3.1', name: 'affiliate_click_rate_by_placement', execute: executeM3Query },
 ]);
 
-function mergeRows({ id, sources, available }) {
+function mergeRows({ id, available, sources }) {
   const output = new Map();
   for (const source of sources) {
     if (!available.has(source.key)) continue;
@@ -247,15 +240,13 @@ function commercialSort(a, b) {
 }
 
 export async function loadCommercialDashboard({ accountId, apiToken, fetchImpl = runtimeFetch } = {}) {
-  const m2 = { accountId, apiToken, fetchImpl };
-  const m3 = { accountId, apiToken, fetchImpl, m31StartUtc: M31_START_UTC };
-  const specs = QUERY_SPECS.map(spec => ({
-    ...spec,
-    options: spec.source === 'M3.1' ? m3 : m2,
-  }));
-  const settled = await Promise.allSettled(specs.map(spec => executeDashboardQuery(spec)));
+  const m2Options = { accountId, apiToken, fetchImpl };
+  const m3Options = { accountId, apiToken, fetchImpl, m31StartUtc: M31_START_UTC };
+  const specs = QUERY_SPECS.map(spec => ({ ...spec, options: spec.source === 'M3.1' ? m3Options : m2Options }));
+  const settled = await Promise.allSettled(specs.map(executeDashboardQuery));
   const values = new Map();
   const failures = [];
+
   settled.forEach((result, index) => {
     const spec = specs[index];
     if (result.status === 'fulfilled') values.set(spec.key, result.value);
@@ -275,8 +266,7 @@ export async function loadCommercialDashboard({ accountId, apiToken, fetchImpl =
   const getScalar = (key, field) => available.has(key) ? finite(firstValue(values.get(key), field)) ?? 0 : null;
 
   const origins = mergeRows({
-    id: 'channel',
-    available,
+    id: 'channel', available,
     sources: [
       { key: 'pageViewsByChannel', rows: getRows('pageViewsByChannel'), field: 'page_views', target: 'pageViews' },
       { key: 'productViewsByChannel', rows: getRows('productViewsByChannel'), field: 'product_views', target: 'productViews' },
@@ -286,8 +276,7 @@ export async function loadCommercialDashboard({ accountId, apiToken, fetchImpl =
     .sort(commercialSort).slice(0, TOP_ROWS);
 
   const landings = mergeRows({
-    id: 'landing',
-    available,
+    id: 'landing', available,
     sources: [
       { key: 'pageViewsByLanding', rows: getRows('pageViewsByLanding'), field: 'page_views', target: 'pageViews' },
       { key: 'productViewsByLanding', rows: getRows('productViewsByLanding'), field: 'product_views', target: 'productViews' },
@@ -297,8 +286,7 @@ export async function loadCommercialDashboard({ accountId, apiToken, fetchImpl =
     .sort(commercialSort).slice(0, TOP_ROWS);
 
   const products = mergeRows({
-    id: 'product_id',
-    available,
+    id: 'product_id', available,
     sources: [
       { key: 'productViewsByProduct', rows: getRows('productViewsByProduct'), field: 'product_views', target: 'productViews' },
       { key: 'clicksByProduct', rows: getRows('clicksByProduct'), field: 'affiliate_clicks', target: 'affiliateClicks' },
@@ -307,8 +295,7 @@ export async function loadCommercialDashboard({ accountId, apiToken, fetchImpl =
   }).sort(commercialSort).slice(0, TOP_ROWS);
 
   const placements = mergeRows({
-    id: 'placement',
-    available,
+    id: 'placement', available,
     sources: [
       { key: 'clicksByPlacement', rows: getRows('clicksByPlacement'), field: 'affiliate_clicks', target: 'affiliateClicks' },
       { key: 'impressionsByPlacement', rows: getRows('impressionsByPlacement'), field: 'commercial_impressions', target: 'commercialImpressions' },
@@ -361,8 +348,7 @@ export function parseCanonicalProductTitles(source) {
 export async function loadCanonicalProductTitles(assets, requestUrl) {
   if (!assets || typeof assets.fetch !== 'function') return new Map();
   try {
-    const url = new URL('/data/produtos-index.js', requestUrl);
-    const response = await assets.fetch(new Request(url));
+    const response = await assets.fetch(new Request(new URL('/data/produtos-index.js', requestUrl)));
     if (!response?.ok) return new Map();
     return parseCanonicalProductTitles(await response.text());
   } catch {
@@ -403,8 +389,8 @@ function renderState(status, noun) {
   return `<p class="state ${kind}" role="status">${escapeHtml(message)}</p>`;
 }
 
-function renderRows(items, columns, emptyMessage = 'Ainda não há dados suficientes para esta dimensão.') {
-  if (!items.length) return `<tr><td colspan="${columns.length}" class="empty">${escapeHtml(emptyMessage)}</td></tr>`;
+function renderRows(items, columns) {
+  if (!items.length) return `<tr><td colspan="${columns.length}" class="empty">Ainda não há dados suficientes para esta dimensão.</td></tr>`;
   return items.map(item => `<tr>${columns.map(column => {
     const value = column.value ? column.value(item) : item[column.key];
     return `<td>${escapeHtml(value)}</td>`;
@@ -420,10 +406,9 @@ function renderTable(title, description, block, columns) {
 function opportunityRows(data, productTitles) {
   const opportunities = [];
   if (data.landings.status !== 'error') {
-    const trafficWithoutClick = data.landings.rows
-      .filter(item => finite(item.pageViews) !== null && item.pageViews >= C2_THRESHOLDS.landingActivity && finite(item.affiliateClicks) === 0)
-      .sort((a, b) => b.pageViews - a.pageViews).slice(0, 3);
-    for (const item of trafficWithoutClick) {
+    for (const item of data.landings.rows
+      .filter(row => finite(row.pageViews) !== null && row.pageViews >= C2_THRESHOLDS.landingActivity && finite(row.affiliateClicks) === 0)
+      .sort((a, b) => b.pageViews - a.pageViews).slice(0, 3)) {
       opportunities.push({
         label: 'TRÁFEGO SEM CLIQUE',
         title: item.landing,
@@ -433,20 +418,17 @@ function opportunityRows(data, productTitles) {
     const strong = data.landings.rows
       .filter(item => item.pageViews >= C2_THRESHOLDS.landingActivity && item.affiliateClicks > 0 && finite(item.clickRatePct) !== null)
       .sort((a, b) => b.clickRatePct - a.clickRatePct)[0];
-    if (strong) {
-      opportunities.push({
-        label: 'LANDING COM SINAL COMERCIAL',
-        title: strong.landing,
-        detail: `${formatPercent(strong.clickRatePct)} cliques/page view com ${formatCount(strong.pageViews)} page views. É um sinal agregado, não uma taxa de venda.`,
-      });
-    }
+    if (strong) opportunities.push({
+      label: 'LANDING COM SINAL COMERCIAL',
+      title: strong.landing,
+      detail: `${formatPercent(strong.clickRatePct)} cliques/page view com ${formatCount(strong.pageViews)} page views. É um sinal agregado, não uma taxa de venda.`,
+    });
   }
 
   if (data.products.status !== 'error') {
-    const viewedWithoutClick = data.products.rows
-      .filter(item => finite(item.productViews) !== null && item.productViews >= C2_THRESHOLDS.productViews && finite(item.affiliateClicks) === 0)
-      .sort((a, b) => b.productViews - a.productViews).slice(0, 3);
-    for (const item of viewedWithoutClick) {
+    for (const item of data.products.rows
+      .filter(row => finite(row.productViews) !== null && row.productViews >= C2_THRESHOLDS.productViews && finite(row.affiliateClicks) === 0)
+      .sort((a, b) => b.productViews - a.productViews).slice(0, 3)) {
       opportunities.push({
         label: 'PRODUTO VISTO SEM CLIQUE',
         title: productTitles.get(item.product_id) || item.product_id,
@@ -456,8 +438,9 @@ function opportunityRows(data, productTitles) {
   }
 
   if (data.placements.status !== 'error') {
-    const comparable = data.placements.rows
-      .filter(item => finite(item.eligibleImpressions) !== null && item.eligibleImpressions >= C2_THRESHOLDS.placementImpressions && finite(item.eligibleCtrPct) !== null);
+    const comparable = data.placements.rows.filter(item => finite(item.eligibleImpressions) !== null
+      && item.eligibleImpressions >= C2_THRESHOLDS.placementImpressions
+      && finite(item.eligibleCtrPct) !== null);
     const bestCtr = comparable.reduce((best, item) => Math.max(best, item.eligibleCtrPct), 0);
     for (const item of comparable.filter(item => bestCtr > 0 && item.eligibleCtrPct < bestCtr * C2_THRESHOLDS.weakPlacementRatio).slice(0, 2)) {
       opportunities.push({
@@ -470,13 +453,11 @@ function opportunityRows(data, productTitles) {
 
   if (data.origins.status !== 'error') {
     const organic = data.origins.rows.find(item => item.channel === 'organic' && finite(item.affiliateClicks) !== null && item.affiliateClicks > 0);
-    if (organic) {
-      opportunities.push({
-        label: 'ORGANIC COMERCIAL',
-        title: 'organic',
-        detail: `${formatCount(organic.affiliateClicks)} affiliate clicks atribuídos ao canal organic.`,
-      });
-    }
+    if (organic) opportunities.push({
+      label: 'ORGANIC COMERCIAL',
+      title: 'organic',
+      detail: `${formatCount(organic.affiliateClicks)} affiliate clicks atribuídos ao canal organic.`,
+    });
   }
   return opportunities.slice(0, 8);
 }
@@ -497,7 +478,7 @@ function renderFunnel(data) {
     <div class="funnel-step"><span>PRODUCT VIEWS</span><strong>${escapeHtml(formatCount(data.totals.productViews))}</strong><small>${productViewShare === null ? 'taxa indisponível' : `${escapeHtml(formatPercent(productViewShare))} dos page views`}</small></div>
     <div class="funnel-arrow" aria-hidden="true">↓</div>
     <div class="funnel-step"><span>AFFILIATE CLICKS</span><strong>${escapeHtml(formatCount(data.totals.affiliateClicks))}</strong><small>saídas para o Mercado Livre</small></div>
-  </div><p class="definition">Os estágios são eventos, não pessoas únicas. Cliques podem acontecer em cards/listagens sem uma product view imediatamente anterior; por isso o painel não inventa “conversão” entre product view e click.</p></section>`;
+  </div><p class="definition">Os estágios são eventos, não pessoas únicas. Cliques podem acontecer em cards/listagens sem uma product view imediatamente anterior; por isso o painel não inventa uma taxa sequencial entre product view e click.</p></section>`;
 }
 
 export function renderCommercialDashboard(data, { productTitles = new Map() } = {}) {
@@ -505,7 +486,7 @@ export function renderCommercialDashboard(data, { productTitles = new Map() } = 
     const title = productTitles.get(item.product_id);
     return title ? `${title} · ${item.product_id}` : item.product_id;
   };
-  const html = `<!doctype html>
+  return `<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
@@ -521,7 +502,7 @@ export function renderCommercialDashboard(data, { productTitles = new Map() } = 
     .panel-section{margin-top:16px;border:1px solid #20344d;background:#0c1828;border-radius:12px;overflow:hidden}.section-heading{padding:15px 17px;border-bottom:1px solid #20344d}.section-heading p{margin:5px 0 0;font-size:.84rem}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{padding:10px 16px;border-bottom:1px solid #1b2c42;text-align:left;font-size:.88rem;vertical-align:top}th{color:#8f9ba8;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;background:#101c2d}tbody tr:last-child td{border-bottom:0}.empty{color:#7f8b97}
     .state{margin:14px 16px;padding:12px;border-radius:9px}.empty-state{background:#101c2d;color:#9eabb8}.partial-state{background:#2a2417;color:#f3d59a}.error-state{background:#2b171a;color:#ffb3b3}.funnel{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:10px;padding:18px}.funnel-step{border:1px solid #28425f;border-radius:12px;padding:15px;background:#101c2d;text-align:center}.funnel-step span,.funnel-step small{display:block;color:#8fa7c2}.funnel-step strong{display:block;font-size:1.75rem;margin:5px 0}.funnel-arrow{font-size:1.35rem;color:#6fa9e8}.definition{margin:0;padding:0 18px 18px;font-size:.82rem}
     .opportunities{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px}.opportunity{border:1px solid #28425f;border-radius:10px;padding:12px;background:#101c2d}.opportunity span{font-size:.7rem;letter-spacing:.08em;color:#79b8ff}.opportunity strong{display:block;margin:5px 0}.opportunity p{margin:0;font-size:.82rem}.foot{margin-top:20px;font-size:.8rem;color:#7f8b97}
-    :focus-visible{outline:2px solid #9ac8ff;outline-offset:3px}@media(max-width:820px){main{width:min(100% - 20px,1240px);padding-top:24px}.top{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr 1fr}.funnel{grid-template-columns:1fr}.funnel-arrow{transform:none}.opportunities{grid-template-columns:1fr}}@media(max-width:480px){.cards{grid-template-columns:1fr}.card strong{font-size:1.6rem}}
+    :focus-visible{outline:2px solid #9ac8ff;outline-offset:3px}@media(max-width:820px){main{width:min(100% - 20px,1240px);padding-top:24px}.top{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr 1fr}.funnel{grid-template-columns:1fr}.opportunities{grid-template-columns:1fr}}@media(max-width:480px){.cards{grid-template-columns:1fr}.card strong{font-size:1.6rem}}
   </style>
 </head>
 <body>
@@ -567,7 +548,6 @@ export function renderCommercialDashboard(data, { productTitles = new Map() } = 
 </main>
 </body>
 </html>`;
-  return html;
 }
 
 function safeDiagnosticsFromError(error, secrets) {
