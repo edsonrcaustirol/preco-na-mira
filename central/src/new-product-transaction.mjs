@@ -35,10 +35,28 @@ function githubHeaders(token) {
 function utf8Base64(value) {
   const bytes = new TextEncoder().encode(String(value));
   let binary = '';
-  for (let offset = 0; offset < bytes.length; offset += 0x4000) {
-    binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x4000));
-  }
+  for (let offset = 0; offset < bytes.length; offset += 0x4000) binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x4000));
   return btoa(binary);
+}
+
+export function mercadoLivreListingId(raw) {
+  const value = text(raw);
+  if (!value) return null;
+  let url;
+  try { url = new URL(value); } catch { return null; }
+  const host = url.hostname.toLowerCase();
+  if (!(host === 'mercadolivre.com.br' || host.endsWith('.mercadolivre.com.br'))) return null;
+  const match = `${url.pathname}${url.search}`.match(/\bMLB-?(\d{6,})\b/i);
+  return match ? `MLB${match[1]}` : null;
+}
+
+export function findIdentityConflict(input = {}, products = []) {
+  const id = text(input.id);
+  if (id && !/^[a-z0-9][a-z0-9-]*$/.test(id)) return { type: 'UNSAFE_ID', id };
+  const listingId = mercadoLivreListingId(input.linkAfiliado ?? input.link);
+  if (!listingId) return null;
+  const product = (Array.isArray(products) ? products : []).find(candidate => mercadoLivreListingId(candidate?.linkAfiliado) === listingId);
+  return product ? { type: 'DUPLICATE_LISTING', listingId, product: { id: text(product.id), nome: text(product.nome) } } : null;
 }
 
 export function publicationGate(env = {}) {
@@ -72,14 +90,15 @@ export function transactionBranch(transactionId) {
 }
 
 function safeInputFromAnalysis(analysis) {
-  const allowed = [
-    'id', 'nome', 'marca', 'categoria', 'imagem', 'imagemAlt', 'linkAfiliado', 'loja', 'resumo',
-    'selo', 'oferta', 'destaque',
-  ];
+  const allowed = ['id', 'nome', 'marca', 'categoria', 'imagem', 'imagemAlt', 'linkAfiliado', 'loja', 'resumo', 'selo', 'oferta', 'destaque'];
   return Object.fromEntries(allowed.filter(key => analysis.previewRecord[key] !== undefined).map(key => [key, analysis.previewRecord[key]]));
 }
 
 export async function dispatchNewProductTransaction({ env = {}, input = {}, products = [], fetchImpl = globalThis.fetch, transactionId = null } = {}) {
+  const identityConflict = findIdentityConflict(input, products);
+  if (identityConflict?.type === 'UNSAFE_ID') return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'UNSAFE_ID', state: 'DADOS PENDENTES' };
+  if (identityConflict?.type === 'DUPLICATE_LISTING') return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'DUPLICATE_PRODUCT', state: 'DUPLICADO', conflict: identityConflict };
+
   const analysis = analyzeNewProductInput(input, products);
   if (!analysis.canAdvance) {
     return {
@@ -102,9 +121,7 @@ export async function dispatchNewProductTransaction({ env = {}, input = {}, prod
       message: 'Publicação permanece bloqueada até Access e configuração GitHub server-side estarem completos.',
     };
   }
-  if (typeof fetchImpl !== 'function') {
-    return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_BACKEND_UNAVAILABLE', state: 'FALHOU' };
-  }
+  if (typeof fetchImpl !== 'function') return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_BACKEND_UNAVAILABLE', state: 'FALHOU' };
 
   const id = transactionId || createTransactionId();
   const branch = transactionBranch(id);
@@ -117,26 +134,12 @@ export async function dispatchNewProductTransaction({ env = {}, input = {}, prod
     response = await fetchImpl(url, {
       method: 'POST',
       headers: githubHeaders(env.PNM_GITHUB_TOKEN),
-      body: JSON.stringify({
-        ref: env.PNM_GITHUB_BASE_BRANCH,
-        inputs: {
-          transaction_id: id,
-          payload_b64: utf8Base64(JSON.stringify(payload)),
-        },
-      }),
+      body: JSON.stringify({ ref: env.PNM_GITHUB_BASE_BRANCH, inputs: { transaction_id: id, payload_b64: utf8Base64(JSON.stringify(payload)) } }),
     });
   } catch {
     return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_BACKEND_UNAVAILABLE', state: 'FALHOU' };
   }
-  if (response?.status !== 204) {
-    return {
-      ok: false,
-      contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT,
-      code: 'GITHUB_DISPATCH_FAILED',
-      state: 'FALHOU',
-      githubStatus: Number(response?.status) || null,
-    };
-  }
+  if (response?.status !== 204) return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_DISPATCH_FAILED', state: 'FALHOU', githubStatus: Number(response?.status) || null };
   return {
     ok: true,
     contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT,
@@ -152,9 +155,7 @@ export async function dispatchNewProductTransaction({ env = {}, input = {}, prod
 
 export async function getNewProductTransactionStatus({ env = {}, transactionId, fetchImpl = globalThis.fetch } = {}) {
   const gate = publicationGate(env);
-  if (!gate.enabled) {
-    return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'PUBLICATION_GATE_CLOSED', state: 'DADOS PENDENTES' };
-  }
+  if (!gate.enabled) return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'PUBLICATION_GATE_CLOSED', state: 'DADOS PENDENTES' };
   const branch = transactionBranch(transactionId);
   if (typeof fetchImpl !== 'function') return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_BACKEND_UNAVAILABLE', state: 'FALHOU' };
   const { owner, repo } = repoParts(env.PNM_GITHUB_REPOSITORY);
@@ -162,39 +163,24 @@ export async function getNewProductTransactionStatus({ env = {}, transactionId, 
   const headers = githubHeaders(env.PNM_GITHUB_TOKEN);
   const head = `${owner}:${branch}`;
   let pullResponse;
-  try {
-    pullResponse = await fetchImpl(`${base}/pulls?state=all&head=${encodeURIComponent(head)}&per_page=1`, { headers });
-  } catch {
-    return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_BACKEND_UNAVAILABLE', state: 'FALHOU' };
-  }
+  try { pullResponse = await fetchImpl(`${base}/pulls?state=all&head=${encodeURIComponent(head)}&per_page=1`, { headers }); }
+  catch { return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_BACKEND_UNAVAILABLE', state: 'FALHOU' }; }
   if (!pullResponse?.ok) return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_STATUS_FAILED', state: 'FALHOU', githubStatus: Number(pullResponse?.status) || null };
   const pulls = await pullResponse.json();
   const pr = Array.isArray(pulls) ? pulls[0] : null;
   if (!pr) return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PREPARANDO PUBLICAÇÃO', transactionId, branch };
   if (pr.merged_at) return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PUBLICADO', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
   if (pr.state === 'closed') return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'FALHOU', code: 'PR_CLOSED_WITHOUT_MERGE', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
-
   const headSha = text(pr?.head?.sha);
   if (!headSha) return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PR CRIADA', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
   let checksResponse;
-  try {
-    checksResponse = await fetchImpl(`${base}/commits/${encodeURIComponent(headSha)}/check-runs?per_page=100`, { headers });
-  } catch {
-    return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PR CRIADA', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
-  }
+  try { checksResponse = await fetchImpl(`${base}/commits/${encodeURIComponent(headSha)}/check-runs?per_page=100`, { headers }); }
+  catch { return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PR CRIADA', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url }; }
   if (!checksResponse?.ok) return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PR CRIADA', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
   const checksPayload = await checksResponse.json();
   const checks = Array.isArray(checksPayload?.check_runs) ? checksPayload.check_runs : [];
   const failed = checks.some(check => check.status === 'completed' && !['success', 'neutral', 'skipped'].includes(check.conclusion));
   if (failed) return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'FALHOU', code: 'CI_FAILED', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
   const running = checks.some(check => check.status !== 'completed');
-  return {
-    ok: true,
-    contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT,
-    state: running ? 'CI EM ANDAMENTO' : 'PR CRIADA',
-    transactionId,
-    branch,
-    prNumber: pr.number,
-    prUrl: pr.html_url,
-  };
+  return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: running ? 'CI EM ANDAMENTO' : 'PR CRIADA', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
 }
