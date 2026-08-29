@@ -44,3 +44,49 @@ jobs:
         run: npm run test:o3-new-product-transaction
       - name: O4-R3 GitHub OAuth
         run: npm run test:o4-github-oauth-auth
+      - name: Affiliate integrity
+        run: npm run test:affiliate-integrity
+      - name: M3.2 related test
+        run: npm run test:m3-2-related-scope
+      - name: M3.2 related audit
+        run: npm run audit:m3-2-related-scope
+      - name: M2D internal links
+        run: npm run test:m2d-internal-links
+      - name: Build site
+        run: npm run build:site
+      - name: M2E audit
+        run: npm run audit:m2e-trust
+      - name: M2 SEO test
+        run: npm run test:m2-seo
+      - name: M2 SEO audit
+        run: npm run audit:m2-seo
+      - name: M2C product SEO
+        run: npm run test:m2c-product-seo
+      - name: M2D architecture test
+        run: npm run test:m2d-architecture
+      - name: M2D architecture audit
+        run: npm run audit:m2d-architecture
+      - name: M2D categories audit
+        run: npm run audit:m2d-categories
+      - name: M2D architecture validate
+        run: npm run validate:m2d-architecture
+      - name: E2 operations
+        run: npm run test:e2-catalog-operations
+      - name: E2 validate
+        run: npm run validate:e2-catalog
+      - name: E1.1 mobile listings
+        run: npm run test:e1-1-mobile-listings
+      - name: M1
+        run: npm run test:m1
+      - name: M2.1
+        run: npm run test:m2-1
+      - name: M3.1
+        run: npm run test:m3-1
+      - name: M2.2
+        run: npm run test:m2-2
+      - name: Strict audit
+        run: npm run audit:strict
+      - name: Public Worker dry run
+        run: npx wrangler deploy --dry-run
+      - name: Central Worker dry run
+        run: npx wrangler deploy --dry-run --config central/wrangler.jsonc
