@@ -160,7 +160,11 @@ async function exchangeCodeForIdentity(code, verifier, env, fetchImpl) {
   });
   const tokenResponse = await fetchImpl('https://github.com/login/oauth/access_token', {
     method: 'POST',
-    headers: { accept: 'application/json', 'content-type': 'application/x-www-form-urlencoded' },
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/x-www-form-urlencoded',
+      'user-agent': 'preco-na-mira-central',
+    },
     body: body.toString(),
   });
   if (!tokenResponse?.ok) throw new Error('oauth-token-exchange-failed');
@@ -172,6 +176,7 @@ async function exchangeCodeForIdentity(code, verifier, env, fetchImpl) {
     headers: {
       accept: 'application/vnd.github+json',
       authorization: `Bearer ${accessToken}`,
+      'user-agent': 'preco-na-mira-central',
       'x-github-api-version': '2022-11-28',
     },
   });
