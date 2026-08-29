@@ -1,4 +1,4 @@
-export const CENTRAL_CONTRACT_VERSION = 'pnm.central-foundation/v1';
+export const CENTRAL_CONTRACT_VERSION = 'pnm.central-foundation/v2';
 
 export const CENTRAL_AREAS = Object.freeze([
   Object.freeze({ id: 'painel', label: 'Painel', state: 'somente-leitura' }),
@@ -11,11 +11,40 @@ export const CENTRAL_AREAS = Object.freeze([
 export const CENTRAL_CONTRACTS = Object.freeze({
   version: CENTRAL_CONTRACT_VERSION,
   authentication: Object.freeze({
-    provider: 'cloudflare-access',
-    enforcement: 'external-boundary-plus-worker-jwt-verification',
+    provider: 'github-oauth',
+    supportedProviders: Object.freeze(['github-oauth', 'cloudflare-access']),
+    enforcement: 'worker-github-oauth-pkce-session',
     localPassword: false,
     workerJwtVerification: true,
     requiredRuntime: Object.freeze([
+      'PNM_CENTRAL_AUTH_MODE',
+      'PNM_CENTRAL_EXPECTED_HOST',
+      'PNM_GITHUB_OAUTH_CLIENT_ID',
+      'PNM_GITHUB_OAUTH_CLIENT_SECRET',
+      'PNM_GITHUB_ALLOWED_USER_ID',
+      'PNM_GITHUB_ALLOWED_LOGIN',
+      'PNM_CENTRAL_SESSION_SECRET',
+    ]),
+    githubOAuth: Object.freeze({
+      contract: 'pnm.central-auth/github-oauth-v1',
+      authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+      tokenEndpoint: 'https://github.com/login/oauth/access_token',
+      identityEndpoint: 'https://api.github.com/user',
+      callbackPath: '/auth/github/callback',
+      loginPath: '/auth/github/login',
+      logoutPath: '/auth/logout',
+      pkce: true,
+      stateRequired: true,
+      requestedScopes: Object.freeze([]),
+      sessionCookie: '__Host-pnm_central_session',
+      sessionTtlSeconds: 14400,
+      oauthCookie: '__Host-pnm_oauth',
+      oauthTtlSeconds: 600,
+      allowedIdentity: 'github-user-id-plus-login',
+      oauthTokenStored: false,
+      oauthTokenSentToBrowser: false,
+    }),
+    cloudflareAccessRequiredRuntime: Object.freeze([
       'PNM_CENTRAL_ACCESS_AUD',
       'PNM_CENTRAL_ACCESS_ISSUER',
       'PNM_CENTRAL_EXPECTED_HOST',
@@ -75,7 +104,7 @@ export const CENTRAL_CONTRACTS = Object.freeze({
     prepared: true,
     contract: 'pnm.central-new-product-transaction/v1',
     mutationEnabled: false,
-    publicationGate: 'access-plus-server-config',
+    publicationGate: 'authenticated-admin-session-plus-server-config',
     endpoint: '/api/new-product/transactions',
     workflow: '.github/workflows/o3-new-product-transaction.yml',
     targetBranch: 'main',
@@ -113,6 +142,7 @@ export function centralCapabilities() {
     owner: CENTRAL_CONTRACTS.catalog.owner,
     catalogProjection: CENTRAL_CONTRACTS.catalog.projection,
     authentication: CENTRAL_CONTRACTS.authentication.provider,
+    authenticationContract: CENTRAL_CONTRACTS.authentication.githubOAuth.contract,
     githubTransactionPrepared: CENTRAL_CONTRACTS.githubTransaction.prepared,
     githubMutationEnabled: CENTRAL_CONTRACTS.githubTransaction.mutationEnabled,
     productMutationEnabled: CENTRAL_CONTRACTS.mutations.products,
