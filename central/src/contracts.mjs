@@ -27,9 +27,6 @@ export const CENTRAL_CONTRACTS = Object.freeze({
     ]),
     githubOAuth: Object.freeze({
       contract: 'pnm.central-auth/github-oauth-v1',
-      authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-      tokenEndpoint: 'https://github.com/login/oauth/access_token',
-      identityEndpoint: 'https://api.github.com/user',
       callbackPath: '/auth/github/callback',
       loginPath: '/auth/github/login',
       logoutPath: '/auth/logout',
