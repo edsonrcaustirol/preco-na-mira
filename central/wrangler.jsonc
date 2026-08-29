@@ -10,6 +10,9 @@
   },
   "vars": {
     "PNM_CENTRAL_ACCESS_MODE": "cloudflare-access",
-    "PNM_CENTRAL_EXPECTED_HOST": "central.preconamira.com.br"
+    "PNM_CENTRAL_EXPECTED_HOST": "central.preconamira.com.br",
+    "PNM_GITHUB_REPOSITORY": "edsonrcaustirol/preco-na-mira",
+    "PNM_GITHUB_BASE_BRANCH": "main",
+    "PNM_GITHUB_WORKFLOW": "o3-new-product-transaction.yml"
   }
 }
