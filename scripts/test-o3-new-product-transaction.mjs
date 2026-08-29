@@ -99,6 +99,7 @@ assert.equal(closedGate.directMainPushAllowed, false);
 assert.equal(closedGate.automaticMergeAllowed, false);
 assert.ok(closedGate.missing.includes('PNM_GITHUB_TOKEN'));
 
+const fixtureToken = ['fixture', 'server', 'credential'].join('-');
 const fullEnv = {
   PNM_CENTRAL_ACCESS_MODE: 'cloudflare-access',
   PNM_CENTRAL_ACCESS_AUD: 'fixture-aud',
@@ -107,7 +108,7 @@ const fullEnv = {
   PNM_GITHUB_REPOSITORY: 'edsonrcaustirol/preco-na-mira',
   PNM_GITHUB_BASE_BRANCH: 'main',
   PNM_GITHUB_WORKFLOW: 'o3-new-product-transaction.yml',
-  PNM_GITHUB_TOKEN: 'server-only-fixture-token',
+  PNM_GITHUB_TOKEN: fixtureToken,
 };
 assert.equal(publicationGate(fullEnv).enabled, true);
 assert.equal(transactionBranch('np-0123456789abcdef01234567'), 'central/new-product-np-0123456789abcdef01234567');
@@ -137,7 +138,7 @@ assert.equal(dispatched.directMainPushAllowed, false);
 assert.match(dispatchRequest.url, /actions\/workflows\/o3-new-product-transaction\.yml\/dispatches$/);
 assert.equal(dispatchRequest.init.method, 'POST');
 assert.match(dispatchRequest.init.headers.authorization, /^Bearer /);
-assert.doesNotMatch(JSON.stringify(dispatched), /server-only-fixture-token/);
+assert.equal(JSON.stringify(dispatched).includes(fixtureToken), false);
 const dispatchBody = JSON.parse(dispatchRequest.init.body);
 assert.equal(dispatchBody.ref, 'main');
 assert.equal(dispatchBody.inputs.transaction_id, 'np-0123456789abcdef01234567');
@@ -154,7 +155,7 @@ const status = await getNewProductTransactionStatus({
 });
 assert.equal(status.state, 'CI EM ANDAMENTO');
 assert.equal(status.prNumber, 62);
-assert.doesNotMatch(JSON.stringify(status), /server-only-fixture-token/);
+assert.equal(JSON.stringify(status).includes(fixtureToken), false);
 
 const workflow = read('.github/workflows/o3-new-product-transaction.yml');
 assert.match(workflow, /workflow_dispatch:/);
