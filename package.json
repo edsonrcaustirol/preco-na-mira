@@ -37,6 +37,7 @@
     "test:l2-4g-central-operational": "node scripts/test-l2-4g-central-operational.mjs",
     "test:l2-4h-new-product": "node scripts/test-l2-4h-new-product.mjs",
     "test:o3-new-product-transaction": "node scripts/test-o3-new-product-transaction.mjs",
+    "test:o4-github-oauth-auth": "node scripts/test-o4-github-oauth-auth.mjs",
     "test:e1-1-mobile-listings": "node scripts/test-e1-1-mobile-listings.mjs",
     "test:e2-catalog-operations": "node scripts/test-e2-catalog-operations.mjs",
     "validate:e2-catalog": "node scripts/validar-catalogo-operacional.mjs",
@@ -55,7 +56,7 @@
     "preview": "node scripts/preview.mjs",
     "deploy": "wrangler deploy",
     "deploy:preview": "wrangler versions upload",
-    "check": "npm run test:m2e-trust && npm run test:l2-2-central-foundation && npm run test:l2-4a-central-products && npm run test:l2-4b-central-link-health && npm run test:l2-4c-affiliate-executor && npm run test:l2-4d-operational-history && npm run test:l2-4e-health-history && npm run test:l2-4f-link-monitor && npm run test:l2-4g-central-operational && npm run test:l2-4h-new-product && npm run test:o3-new-product-transaction && npm run test:affiliate-integrity && npm run test:m3-2-related-scope && npm run audit:m3-2-related-scope && npm run test:m2d-internal-links && npm run build:site && npm run audit:m2e-trust && npm run test:m2-seo && npm run audit:m2-seo && npm run test:m2c-product-seo && npm run test:m2d-architecture && npm run audit:m2d-architecture && npm run audit:m2d-categories && npm run validate:m2d-architecture && npm run test:e2-catalog-operations && npm run validate:e2-catalog && npm run test:e1-1-mobile-listings && npm run test:m1 && npm run test:m2-1 && npm run test:m3-1 && npm run test:m2-2 && npm run audit:strict && wrangler deploy --dry-run && wrangler deploy --dry-run --config central/wrangler.jsonc"
+    "check": "npm run test:m2e-trust && npm run test:l2-2-central-foundation && npm run test:l2-4a-central-products && npm run test:l2-4b-central-link-health && npm run test:l2-4c-affiliate-executor && npm run test:l2-4d-operational-history && npm run test:l2-4e-health-history && npm run test:l2-4f-link-monitor && npm run test:l2-4g-central-operational && npm run test:l2-4h-new-product && npm run test:o3-new-product-transaction && npm run test:o4-github-oauth-auth && npm run test:affiliate-integrity && npm run test:m3-2-related-scope && npm run audit:m3-2-related-scope && npm run test:m2d-internal-links && npm run build:site && npm run audit:m2e-trust && npm run test:m2-seo && npm run audit:m2-seo && npm run test:m2c-product-seo && npm run test:m2d-architecture && npm run audit:m2d-architecture && npm run audit:m2d-categories && npm run validate:m2d-architecture && npm run test:e2-catalog-operations && npm run validate:e2-catalog && npm run test:e1-1-mobile-listings && npm run test:m1 && npm run test:m2-1 && npm run test:m3-1 && npm run test:m2-2 && npm run audit:strict && wrangler deploy --dry-run && wrangler deploy --dry-run --config central/wrangler.jsonc"
   },
   "devDependencies": {
     "wrangler": "4.123.0"
