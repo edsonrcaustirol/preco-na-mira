@@ -4,13 +4,32 @@ const ENDPOINT = '/__pnm/analytics';
 const EVENTS = new Set(['page_view', 'affiliate_click', 'commercial_impression']);
 const PLACEMENTS = new Set(['card','primary','sidebar','sticky','related','search_result','saved','cart','comparison','project','studio','small_spaces','obra_base','dewalt_pending']);
 const IMPRESSION_PLACEMENTS = new Set(['card','related']);
-const PAGE_FIELDS = new Set(['page','page_type','product_id','utm_source','utm_medium','utm_campaign','referrer_host']);
-const CLICK_FIELDS = new Set(['product_id','store','page','placement','utm_source','utm_medium','utm_campaign','referrer_host']);
-const IMPRESSION_FIELDS = new Set(['product_id','store','page','page_type','placement','utm_source','utm_medium','utm_campaign','referrer_host']);
+const CHANNELS = new Set(['organic','direct','referral','social','paid','internal','unknown']);
+const JOURNEY_FIELDS = ['landing','channel','session_id'];
+const PAGE_FIELDS = new Set(['page','page_type','product_id','utm_source','utm_medium','utm_campaign','referrer_host', ...JOURNEY_FIELDS]);
+const CLICK_FIELDS = new Set(['product_id','store','page','placement','utm_source','utm_medium','utm_campaign','referrer_host', ...JOURNEY_FIELDS]);
+const IMPRESSION_FIELDS = new Set(['product_id','store','page','page_type','placement','utm_source','utm_medium','utm_campaign','referrer_host', ...JOURNEY_FIELDS]);
 
 const clean = (value, max = 120) => String(value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
 const slug = (value, max = 120) => clean(value, max).toLowerCase().replace(/[^a-z0-9._/-]+/g, '_').replace(/^_+|_+$/g, '');
-const campaign = value => clean(value, 120).replace(/[^\p{L}\p{N} _./:-]/gu, '').slice(0, 120);
+const hasPiiShape = value => {
+  const raw = clean(value, 160);
+  if (!raw) return false;
+  if (/[^\s@]+@[^\s@]+\.[^\s@]+/.test(raw)) return true;
+  return (raw.match(/\d/g) || []).length >= 9;
+};
+const sourceMedium = value => hasPiiShape(value) ? '' : slug(value, 80);
+const campaign = value => hasPiiShape(value) ? '' : clean(value, 120).replace(/[^\p{L}\p{N} _./:-]/gu, '').slice(0, 120);
+const landing = value => {
+  const raw = clean(value, 160).split(/[?#]/, 1)[0];
+  if (!raw.startsWith('/')) return '';
+  const normalized = raw.replace(/\/?index\.html$/i, '/').replace(/\.html$/i, '').replace(/\/$/, '') || '/';
+  return normalized.toLowerCase().replace(/[^a-z0-9._~/%/-]/g, '').slice(0, 160) || '/';
+};
+const sessionId = value => {
+  const normalized = clean(value, 36).toLowerCase();
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(normalized) ? normalized : '';
+};
 
 function sanitize(event, data) {
   const fields = event === 'page_view' ? PAGE_FIELDS : event === 'affiliate_click' ? CLICK_FIELDS : event === 'commercial_impression' ? IMPRESSION_FIELDS : null;
@@ -18,7 +37,14 @@ function sanitize(event, data) {
   const out = {};
   for (const key of fields) {
     if (!(key in data)) continue;
-    const value = key === 'utm_campaign' ? campaign(data[key]) : key === 'referrer_host' ? clean(data[key], 120).toLowerCase() : slug(data[key], key === 'product_id' ? 120 : 80);
+    let value;
+    if (key === 'utm_campaign') value = campaign(data[key]);
+    else if (key === 'utm_source' || key === 'utm_medium') value = sourceMedium(data[key]);
+    else if (key === 'referrer_host') value = clean(data[key], 120).toLowerCase();
+    else if (key === 'landing') value = landing(data[key]);
+    else if (key === 'channel') value = CHANNELS.has(String(data[key] || '').toLowerCase()) ? String(data[key]).toLowerCase() : '';
+    else if (key === 'session_id') value = sessionId(data[key]);
+    else value = slug(data[key], key === 'product_id' ? 120 : 80);
     if (value) out[key] = value;
   }
   if (event === 'page_view' && (!out.page || !out.page_type)) return null;
@@ -32,7 +58,8 @@ function pointFor(event, data, host) {
     indexes: [event],
     blobs: [
       'm1-v1', event, data.page || '', data.page_type || '', data.product_id || '', data.store || '', data.placement || '',
-      data.utm_source || '', data.utm_medium || '', data.utm_campaign || '', data.referrer_host || '', host
+      data.utm_source || '', data.utm_medium || '', data.utm_campaign || '', data.referrer_host || '', host,
+      data.landing || '', data.channel || '', data.session_id || ''
     ],
     doubles: [1]
   };

@@ -12,13 +12,17 @@ assert.equal(SCHEMA.product_id, 'blob5');
 assert.equal(SCHEMA.store, 'blob6');
 assert.equal(SCHEMA.placement, 'blob7');
 assert.equal(SCHEMA.host, 'blob12');
+assert.equal(SCHEMA.landing, 'blob13');
+assert.equal(SCHEMA.channel, 'blob14');
+assert.equal(SCHEMA.session_id, 'blob15');
 assert.equal(SCHEMA.weight, 'double1');
 assert.equal(PLACEMENTS.length, 14);
 
 const requiredMetrics = [
   'total_page_views','total_affiliate_clicks','affiliate_clicks_by_product','affiliate_clicks_by_page',
   'affiliate_clicks_by_placement','affiliate_clicks_by_store','top_products','top_commercial_pages',
-  'events_by_hour','affiliate_click_rate_by_page',
+  'events_by_hour','affiliate_click_rate_by_page','affiliate_clicks_by_channel','affiliate_clicks_by_landing',
+  'product_views_by_landing_product','affiliate_clicks_by_landing_product',
 ];
 const requiredQuality = [
   'unknown_event_types','missing_affiliate_click_fields','unexpected_affiliate_values',
@@ -39,6 +43,11 @@ assert.match(getQuery('affiliate_click_rate_by_page').sql, /GROUP BY page/);
 assert.match(getQuery('affiliate_click_rate_by_page').sql, /page_view/);
 assert.match(getQuery('affiliate_click_rate_by_page').sql, /affiliate_click/);
 assert.match(getQuery('possible_technical_duplicates').description, /Heurística/);
+assert.match(getQuery('affiliate_clicks_by_channel').sql, /blob14 AS channel/);
+assert.match(getQuery('affiliate_clicks_by_landing').sql, /blob13 AS landing/);
+assert.match(getQuery('product_views_by_landing_product').sql, /blob4 = 'product'/);
+assert.match(getQuery('product_views_by_landing_product').sql, /GROUP BY landing, product_id/);
+assert.match(getQuery('affiliate_clicks_by_landing_product').sql, /blob5 != 'unknown'/);
 
 let captured;
 const fakeFetch = async (url, options) => {
