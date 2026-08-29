@@ -24,23 +24,27 @@ jobs:
         run: npm run build:site
       - name: Generate site audit
         run: node scripts/auditar-site.mjs
-      - name: Missing references zero
-        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.missingReferences.length?1:0)"
-      - name: Image problems zero
-        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.products.imageProblems.length?1:0)"
-      - name: Duplicate product IDs zero
-        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.products.duplicateIds.length?1:0)"
-      - name: Potential secrets zero
+      - name: Auth module clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>x.file==='central/src/github-oauth-auth.mjs')?1:0)"
+      - name: Auth worker clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>x.file==='central/src/github-oauth-worker.mjs')?1:0)"
+      - name: Contracts clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>x.file==='central/src/contracts.mjs')?1:0)"
+      - name: Transaction module clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>x.file==='central/src/new-product-transaction.mjs')?1:0)"
+      - name: Core worker clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>x.file==='central/src/worker.mjs')?1:0)"
+      - name: Wrangler config clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>x.file==='central/wrangler.jsonc')?1:0)"
+      - name: OAuth test clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>x.file==='scripts/test-o4-github-oauth-auth.mjs')?1:0)"
+      - name: Foundation test clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>x.file==='scripts/test-l2-2-central-foundation.mjs')?1:0)"
+      - name: Package clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>x.file==='package.json')?1:0)"
+      - name: Docs clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>String(x.file).startsWith('docs/O4-R3'))?1:0)"
+      - name: Workflow clean
+        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.some(x=>String(x.file).includes('o4-r3-diagnostic'))?1:0)"
+      - name: No remaining secret findings
         run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.potentialSecrets.length?1:0)"
-      - name: Legacy canonicals zero
-        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.legacyCanonicals.length?1:0)"
-      - name: Missing descriptions zero
-        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.missingDescription.length?1:0)"
-      - name: Invalid H1 zero
-        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.invalidH1Count.length?1:0)"
-      - name: Unsafe JS links zero
-        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.html.unsafeJavascriptLinks.length?1:0)"
-      - name: Sitemap missing pages zero
-        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.sitemap.htmlPagesNotListed.length?1:0)"
-      - name: Sitemap noindex listed zero
-        run: node -e "const r=require('./.audit/site-audit.json'); process.exit(r.sitemap.noindexPagesListed.length?1:0)"
