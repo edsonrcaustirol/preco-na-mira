@@ -41,6 +41,7 @@ function githubHeaders(token) {
     accept: 'application/vnd.github+json',
     authorization: `Bearer ${token}`,
     'content-type': 'application/json; charset=utf-8',
+    'user-agent': 'preco-na-mira-central',
     'x-github-api-version': '2022-11-28',
   };
 }
