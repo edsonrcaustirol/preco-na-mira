@@ -1,0 +1,46 @@
+name: O4-R3 diagnostic
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  diagnosticar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      - name: M2E trust
+        run: npm run test:m2e-trust
+      - name: L2.2 Central foundation
+        run: npm run test:l2-2-central-foundation
+      - name: L2.4A products
+        run: npm run test:l2-4a-central-products
+      - name: L2.4B link health
+        run: npm run test:l2-4b-central-link-health
+      - name: L2.4C affiliate executor
+        run: npm run test:l2-4c-affiliate-executor
+      - name: L2.4D history
+        run: npm run test:l2-4d-operational-history
+      - name: L2.4E health history
+        run: npm run test:l2-4e-health-history
+      - name: L2.4F monitor
+        run: npm run test:l2-4f-link-monitor
+      - name: L2.4G operational
+        run: npm run test:l2-4g-central-operational
+      - name: L2.4H new product
+        run: npm run test:l2-4h-new-product
+      - name: O3 transaction
+        run: npm run test:o3-new-product-transaction
+      - name: O4-R3 GitHub OAuth
+        run: npm run test:o4-github-oauth-auth
