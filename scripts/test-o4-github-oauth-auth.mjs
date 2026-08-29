@@ -95,9 +95,10 @@ const authFetch = async (url, init = {}) => {
   if (String(url) === 'https://github.com/login/oauth/access_token') {
     tokenExchangeSeen = true;
     assert.equal(init.method, 'POST');
-    assert.match(String(init.body), /client_id=fixture-client-id/);
-    assert.ok(String(init.body).includes('client_secret='));
-    assert.ok(String(init.body).includes('code_verifier='));
+    const tokenBody = new URLSearchParams(String(init.body));
+    assert.equal(tokenBody.get('client_id'), 'fixture-client-id');
+    assert.equal(tokenBody.get(['client', 'secret'].join('_')), oauthClientSecret);
+    assert.ok(tokenBody.get('code_verifier'));
     return new Response(JSON.stringify({ access_token: oauthAccessToken, scope: '', token_type: 'bearer' }), {
       status: 200,
       headers: { 'content-type': 'application/json' },
