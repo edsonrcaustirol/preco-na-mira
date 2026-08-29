@@ -11,6 +11,7 @@
   "vars": {
     "PNM_CENTRAL_AUTH_MODE": "github-oauth",
     "PNM_CENTRAL_EXPECTED_HOST": "central.preconamira.com.br",
+    "PNM_GITHUB_OAUTH_CLIENT_ID": "Ov23liois8WhrxD2mrIW",
     "PNM_GITHUB_ALLOWED_USER_ID": "315643281",
     "PNM_GITHUB_ALLOWED_LOGIN": "edsonrcaustirol",
     "PNM_GITHUB_REPOSITORY": "edsonrcaustirol/preco-na-mira",
