@@ -21,7 +21,7 @@
     "test:m2-1": "node scripts/test-m2-1-analytics.mjs",
     "analytics:m3-1": "node scripts/m3-1-analytics.mjs",
     "test:m3-1": "node scripts/test-m3-1-analytics.mjs",
-    "test:m2-2": "node scripts/test-m2-2-commercial-panel.mjs",
+    "test:m2-2": "node scripts/test-m2-2-commercial-panel.mjs && node scripts/test-c2-m2-compat.mjs",
     "audit:m3-2-related-scope": "node scripts/audit-related-scope.mjs",
     "test:m3-2-related-scope": "node --test scripts/audit-related-scope.test.mjs",
     "audit:affiliate-integrity": "node scripts/audit-affiliate-integrity.mjs",
