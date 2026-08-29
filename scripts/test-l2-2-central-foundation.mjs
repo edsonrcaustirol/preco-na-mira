@@ -39,11 +39,11 @@ function assertSeparatedWorker() {
   assert.equal(publicConfig.name, 'preco-na-mira');
   assert.equal(publicConfig.main, 'src/worker.mjs');
   assert.equal(centralConfig.name, 'preco-na-mira-central');
-  assert.equal(centralConfig.main, 'src/worker.mjs');
+  assert.equal(centralConfig.main, 'src/github-oauth-worker.mjs');
   assert.notEqual(centralConfig.name, publicConfig.name);
   assert.equal(centralConfig.workers_dev, false);
   assert.equal(centralConfig.preview_urls, false);
-  assert.equal('routes' in centralConfig, false, 'rota administrativa não deve existir antes do Access');
+  assert.equal('routes' in centralConfig, false, 'rota administrativa não deve existir antes da autenticação operacional');
   assert.equal('d1_databases' in centralConfig, false, 'D1 não deve ser preparado como owner nesta etapa');
 }
 
@@ -63,11 +63,18 @@ function assertReusableContracts() {
   assert.equal(fs.existsSync(path.join(ROOT, CENTRAL_CONTRACTS.affiliateIntegrity.cli)), true);
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.command, 'npm run audit:affiliate-integrity');
   assert.equal(CENTRAL_CONTRACTS.affiliateIntegrity.contract, 'pnm.affiliate-integrity/v1');
+  assert.equal(CENTRAL_CONTRACTS.authentication.provider, 'github-oauth');
   assert.deepEqual(CENTRAL_CONTRACTS.authentication.requiredRuntime, [
-    'PNM_CENTRAL_ACCESS_AUD',
-    'PNM_CENTRAL_ACCESS_ISSUER',
+    'PNM_CENTRAL_AUTH_MODE',
     'PNM_CENTRAL_EXPECTED_HOST',
+    'PNM_GITHUB_OAUTH_CLIENT_ID',
+    'PNM_GITHUB_OAUTH_CLIENT_SECRET',
+    'PNM_GITHUB_ALLOWED_USER_ID',
+    'PNM_GITHUB_ALLOWED_LOGIN',
+    'PNM_CENTRAL_SESSION_SECRET',
   ]);
+  assert.equal(CENTRAL_CONTRACTS.authentication.githubOAuth.pkce, true);
+  assert.deepEqual(CENTRAL_CONTRACTS.authentication.githubOAuth.requestedScopes, []);
   assert.equal(CENTRAL_CONTRACTS.authentication.algorithm, 'RS256');
   assert.equal(CENTRAL_CONTRACTS.authentication.jwksPath, '/cdn-cgi/access/certs');
   assert.equal(CENTRAL_CONTRACTS.authentication.workerJwtVerification, true);
@@ -81,10 +88,17 @@ function assertMutationDisabled() {
   assert.equal(CENTRAL_CONTRACTS.mutations.batch, false);
   assert.equal(CENTRAL_CONTRACTS.mutations.automaticLinkCorrection, false);
   assert.equal(CENTRAL_CONTRACTS.mutations.automaticLinkMonitor, false);
-  const source = [read('central/src/worker.mjs'), read('central/src/contracts.mjs'), read('central/src/ui.mjs')].join('\n');
-  assert.equal(/api\.github\.com/i.test(source), false, 'Worker administrativo não pode chamar GitHub nesta etapa');
-  assert.equal(/gh[pousr]_[A-Za-z0-9_]{20,}/.test(source), false, 'possível token GitHub hardcoded');
-  assert.equal(/(?:password|secret|token)\s*[:=]\s*["'][^"']{8,}["']/i.test(source), false, 'possível secret hardcoded');
+  const mutationSource = [read('central/src/worker.mjs'), read('central/src/ui.mjs')].join('\n');
+  assert.equal(/api\.github\.com/i.test(mutationSource), false, 'núcleo histórico da Central não deve chamar GitHub diretamente');
+  const secretSource = [
+    read('central/src/worker.mjs'),
+    read('central/src/contracts.mjs'),
+    read('central/src/ui.mjs'),
+    read('central/src/github-oauth-auth.mjs'),
+    read('central/src/github-oauth-worker.mjs'),
+  ].join('\n');
+  assert.equal(/gh[pousr]_[A-Za-z0-9_]{20,}/.test(secretSource), false, 'possível token GitHub hardcoded');
+  assert.equal(/(?:password|secret|token)\s*[:=]\s*["'][^"']{8,}["']/i.test(secretSource), false, 'possível secret hardcoded');
 }
 
 function assertShellAreas() {
@@ -266,7 +280,8 @@ console.log(JSON.stringify({
   ownerUnchanged: true,
   publicNavigationExposure: false,
   separateAdminWorker: true,
-  cloudflareAccessPrepared: true,
+  activeAuthentication: CENTRAL_CONTRACTS.authentication.provider,
+  cloudflareAccessFallbackPrepared: true,
   cloudflareAccessJwtVerification: 'PASS',
   cloudflareAccessAlgorithm: 'RS256',
   cloudflareAccessJwks: 'fixture-only-no-network',

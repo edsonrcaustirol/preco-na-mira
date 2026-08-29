@@ -5,14 +5,27 @@ export const O3_EXPECTED_REPOSITORY = 'edsonrcaustirol/preco-na-mira';
 export const O3_EXPECTED_BASE_BRANCH = 'main';
 export const O3_EXPECTED_WORKFLOW = 'o3-new-product-transaction.yml';
 
-const REQUIRED_SERVER_CONFIG = Object.freeze([
-  'PNM_CENTRAL_ACCESS_AUD',
-  'PNM_CENTRAL_ACCESS_ISSUER',
-  'PNM_CENTRAL_EXPECTED_HOST',
+const REQUIRED_GITHUB_SERVER_CONFIG = Object.freeze([
   'PNM_GITHUB_REPOSITORY',
   'PNM_GITHUB_BASE_BRANCH',
   'PNM_GITHUB_WORKFLOW',
   'PNM_GITHUB_TOKEN',
+]);
+
+const CLOUDFLARE_ACCESS_SERVER_CONFIG = Object.freeze([
+  'PNM_CENTRAL_ACCESS_AUD',
+  'PNM_CENTRAL_ACCESS_ISSUER',
+  'PNM_CENTRAL_EXPECTED_HOST',
+]);
+
+const GITHUB_OAUTH_SERVER_CONFIG = Object.freeze([
+  'PNM_CENTRAL_AUTH_MODE',
+  'PNM_CENTRAL_EXPECTED_HOST',
+  'PNM_GITHUB_OAUTH_CLIENT_ID',
+  'PNM_GITHUB_OAUTH_CLIENT_SECRET',
+  'PNM_GITHUB_ALLOWED_USER_ID',
+  'PNM_GITHUB_ALLOWED_LOGIN',
+  'PNM_CENTRAL_SESSION_SECRET',
 ]);
 
 const text = value => String(value ?? '').trim();
@@ -59,16 +72,32 @@ export function findIdentityConflict(input = {}, products = []) {
   return product ? { type: 'DUPLICATE_LISTING', listingId, product: { id: text(product.id), nome: text(product.nome) } } : null;
 }
 
+function authenticationMode(env = {}) {
+  return text(env.PNM_CENTRAL_AUTH_MODE || env.PNM_CENTRAL_ACCESS_MODE);
+}
+
 export function publicationGate(env = {}) {
-  const missing = REQUIRED_SERVER_CONFIG.filter(key => !text(env[key]));
+  const mode = authenticationMode(env);
+  const authRequired = mode === 'github-oauth'
+    ? GITHUB_OAUTH_SERVER_CONFIG
+    : mode === 'cloudflare-access'
+      ? CLOUDFLARE_ACCESS_SERVER_CONFIG
+      : [];
+  const missing = [...authRequired, ...REQUIRED_GITHUB_SERVER_CONFIG].filter(key => !text(env[key]));
   const mismatches = [];
-  if (text(env.PNM_CENTRAL_ACCESS_MODE) !== 'cloudflare-access') mismatches.push('PNM_CENTRAL_ACCESS_MODE');
-  if (text(env.PNM_CENTRAL_EXPECTED_HOST) !== 'central.preconamira.com.br') mismatches.push('PNM_CENTRAL_EXPECTED_HOST');
+  if (!['github-oauth', 'cloudflare-access'].includes(mode)) mismatches.push('PNM_CENTRAL_AUTH_MODE');
+  if (text(env.PNM_CENTRAL_EXPECTED_HOST) && text(env.PNM_CENTRAL_EXPECTED_HOST) !== 'central.preconamira.com.br') mismatches.push('PNM_CENTRAL_EXPECTED_HOST');
+  if (mode === 'github-oauth') {
+    if (!/^\d+$/.test(text(env.PNM_GITHUB_ALLOWED_USER_ID)) || Number(env.PNM_GITHUB_ALLOWED_USER_ID) <= 0) mismatches.push('PNM_GITHUB_ALLOWED_USER_ID');
+    if (!/^[A-Za-z0-9-]{1,39}$/.test(text(env.PNM_GITHUB_ALLOWED_LOGIN))) mismatches.push('PNM_GITHUB_ALLOWED_LOGIN');
+    if (new TextEncoder().encode(text(env.PNM_CENTRAL_SESSION_SECRET)).byteLength < 32) mismatches.push('PNM_CENTRAL_SESSION_SECRET');
+  }
   if (text(env.PNM_GITHUB_REPOSITORY) && text(env.PNM_GITHUB_REPOSITORY) !== O3_EXPECTED_REPOSITORY) mismatches.push('PNM_GITHUB_REPOSITORY');
   if (text(env.PNM_GITHUB_BASE_BRANCH) && text(env.PNM_GITHUB_BASE_BRANCH) !== O3_EXPECTED_BASE_BRANCH) mismatches.push('PNM_GITHUB_BASE_BRANCH');
   if (text(env.PNM_GITHUB_WORKFLOW) && text(env.PNM_GITHUB_WORKFLOW) !== O3_EXPECTED_WORKFLOW) mismatches.push('PNM_GITHUB_WORKFLOW');
   return {
     contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT,
+    authenticationMode: mode || null,
     enabled: missing.length === 0 && mismatches.length === 0,
     missing,
     mismatches,
@@ -118,7 +147,7 @@ export async function dispatchNewProductTransaction({ env = {}, input = {}, prod
       code: 'PUBLICATION_GATE_CLOSED',
       state: 'DADOS PENDENTES',
       gate: { enabled: false, missing: gate.missing, mismatches: gate.mismatches },
-      message: 'Publicação permanece bloqueada até Access e configuração GitHub server-side estarem completos.',
+      message: 'Publicação permanece bloqueada até autenticação administrativa e configuração GitHub server-side estarem completas.',
     };
   }
   if (typeof fetchImpl !== 'function') return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_BACKEND_UNAVAILABLE', state: 'FALHOU' };

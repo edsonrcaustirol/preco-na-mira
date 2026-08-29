@@ -1,7 +1,7 @@
 import { CENTRAL_CONTRACTS, centralCapabilities } from './contracts.mjs';
 import { renderCentralShell } from './ui.mjs';
 
-const REQUIRED_RUNTIME = CENTRAL_CONTRACTS.authentication.requiredRuntime;
+const REQUIRED_RUNTIME = CENTRAL_CONTRACTS.authentication.cloudflareAccessRequiredRuntime || CENTRAL_CONTRACTS.authentication.requiredRuntime;
 const READ_METHODS = new Set(['GET', 'HEAD']);
 const PAGE_PATHS = new Set(['/', '/painel', '/produtos', '/novo-produto', '/saude-links', '/historico']);
 const NEW_PRODUCT_TRANSACTION_PATH = '/api/new-product/transactions';
@@ -223,7 +223,9 @@ async function readNewProductTransactionStatus(request, env, transactionId, opti
 
 export async function handleCentralRequest(request, env, options = {}) {
   const url = new URL(request.url);
-  const boundaryFailure = await enforceAdministrativeBoundary(request, env, url, options);
+  const boundaryFailure = options.skipAdministrativeBoundary
+    ? null
+    : await enforceAdministrativeBoundary(request, env, url, options);
   if (boundaryFailure) return boundaryFailure;
 
   if (url.pathname === NEW_PRODUCT_TRANSACTION_PATH && request.method === 'POST') return createNewProductTransaction(request, env, options);
