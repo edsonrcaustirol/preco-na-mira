@@ -1,4 +1,5 @@
 import { handleCentralRequest } from './worker.mjs';
+import { enrichMercadoLivreProduct } from './mercado-livre-enrichment.mjs';
 import {
   GITHUB_OAUTH_PATHS,
   beginGithubOauth,
@@ -24,6 +25,9 @@ const O5_FIRST_PRODUCT = Object.freeze({
   oferta: false,
   destaque: false,
 });
+const NEW_PRODUCT_ENRICH_PATH = '/api/new-product/enrich';
+const NEW_PRODUCT_CLIENT_PATH = '/__pnm/new-product-client.js';
+const MAX_ENRICH_BODY_BYTES = 8192;
 
 function securityHeaders(extra = {}) {
   return {
@@ -48,6 +52,43 @@ function expectedHost(env = {}) {
 
 function originAllowed(request, env) {
   return String(request.headers.get('origin') || '').trim() === `https://${expectedHost(env)}`;
+}
+
+function linkAutofillClient() {
+  return `\n;(function(){'use strict';
+if(location.pathname!=='/novo-produto')return;
+const form=document.getElementById('new-product-form');if(!form)return;
+const link=form.elements.namedItem('linkAfiliado'),status=document.getElementById('analysis-status');if(!link||!status)return;
+const fields=['nome','id','marca','categoria','imagem','imagemAlt','resumo'];
+const categories=[...document.querySelectorAll('#category-list option')].map(x=>x.value).filter(Boolean);
+const norm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+const slug=v=>norm(v).replace(/\\s+/g,'-').slice(0,96).replace(/^-+|-+$/g,'');
+function chooseCategory(name,hint){const direct=categories.find(c=>norm(c)===norm(hint));if(direct)return direct;const hay=norm(name+' '+hint);const aliases=[[/costur/,'Casa'],[/air fryer|fritadeira|cafeteira|liquidificador|micro ondas|forno|cooktop|geladeira/,'Cozinha'],[/furadeira|parafusadeira|serra|martelete|esmerilhadeira|ferrament/,'Ferramentas'],[/celular|smartphone|iphone|galaxy/,'Celulares'],[/notebook|monitor|teclado|mouse|placa de video|processador|ssd|memoria/,'Tecnologia']];for(const [re,target] of aliases){if(re.test(hay)){const hit=categories.find(c=>norm(c)===norm(target));if(hit)return hit;}}let best='',score=0;for(const c of categories){const words=norm(c).split(' ').filter(w=>w.length>2);const s=words.filter(w=>hay.includes(w)).length;if(s>score){score=s;best=c;}}return best||hint||'';}
+function put(name,value){const el=form.elements.namedItem(name);if(!el||!value)return;el.value=value;el.dataset.autoFilled='1';}
+let timer=0,sequence=0,last='';
+async function enrich(){const value=String(link.value||'').trim();if(!value||value===last)return;last=value;const current=++sequence;status.textContent='Analisando produto no Mercado Livre…';try{const response=await fetch('${NEW_PRODUCT_ENRICH_PATH}',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({linkAfiliado:value})});const payload=await response.json();if(current!==sequence)return;if(!response.ok||!payload.ok){status.textContent='Link reconhecido, mas não foi possível preencher todos os dados automaticamente · '+(payload.code||'erro');return;}const d=payload.data||{};put('nome',d.nome);put('id',slug(d.nome));put('marca',d.marca);put('categoria',chooseCategory(d.nome,d.categoriaHint));put('imagem',d.imagem);put('imagemAlt',d.imagemAlt||d.nome);put('resumo',d.resumo);form.dispatchEvent(new Event('input',{bubbles:true}));status.textContent='Dados preenchidos automaticamente pelo Mercado Livre · revise e publique';}catch{if(current===sequence)status.textContent='Falha temporária ao analisar o Mercado Livre; tente colar o link novamente.';}}
+link.addEventListener('input',()=>{clearTimeout(timer);last='';timer=setTimeout(enrich,450)});link.addEventListener('change',()=>{clearTimeout(timer);last='';enrich()});
+if(String(link.value||'').trim())enrich();
+})();`;
+}
+
+async function enrichNewProduct(request, env, options = {}) {
+  if (request.method !== 'POST') return new Response(null, { status: 405, headers: securityHeaders({ allow: 'POST' }) });
+  if (!originAllowed(request, env)) return json({ ok: false, code: 'ORIGIN_REJECTED' }, 403);
+  const contentType = String(request.headers.get('content-type') || '').toLowerCase();
+  if (!contentType.startsWith('application/json')) return json({ ok: false, code: 'JSON_REQUIRED' }, 415);
+  const raw = await request.text();
+  if (new TextEncoder().encode(raw).byteLength > MAX_ENRICH_BODY_BYTES) return json({ ok: false, code: 'PAYLOAD_TOO_LARGE' }, 413);
+  let body;
+  try { body = JSON.parse(raw); } catch { return json({ ok: false, code: 'INVALID_JSON' }, 400); }
+  const link = String(body?.linkAfiliado || body?.link || '').trim();
+  if (!link) return json({ ok: false, code: 'LINK_REQUIRED' }, 422);
+  try {
+    const result = await enrichMercadoLivreProduct(link, { fetchImpl: options.mercadoLivreFetchImpl || globalThis.fetch });
+    return json(result, result.ok ? 200 : 422);
+  } catch (error) {
+    return json({ ok: false, code: String(error?.message || 'ENRICH_FAILED') }, 422);
+  }
 }
 
 async function runO5FirstPublication(env, options = {}) {
@@ -94,6 +135,15 @@ export async function handleGithubOauthCentralRequest(request, env, options = {}
 
   const auth = await verifyGithubOauthSession(request, env, options);
   if (!auth.ok) return githubOauthUnauthorizedResponse(request);
+
+  if (url.pathname === NEW_PRODUCT_ENRICH_PATH) return enrichNewProduct(request, env, options);
+
+  if (url.pathname === NEW_PRODUCT_CLIENT_PATH && request.method === 'GET') {
+    const base = await handleCentralRequest(request, env, { ...options, skipAdministrativeBoundary: true, githubIdentity: auth.identity });
+    if (!base.ok) return base;
+    const source = await base.text();
+    return new Response(`${source}${linkAutofillClient()}`, { status: 200, headers: { 'cache-control': 'no-store', 'content-type': 'text/javascript; charset=utf-8', 'referrer-policy': 'no-referrer', 'x-content-type-options': 'nosniff' } });
+  }
 
   if (url.pathname === O5_FIRST_PUBLICATION_PATH) {
     if (request.method !== 'GET') return new Response(null, { status: 405, headers: securityHeaders({ allow: 'GET' }) });
