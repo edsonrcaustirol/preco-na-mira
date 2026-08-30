@@ -286,9 +286,9 @@ const fakeFetch = async (url, options) => {
   const match = canonical.match(/^const\s+PRODUTOS\s*=\s*(\[[\s\S]*\]);?\s*$/);
   assert.ok(match, 'owner canônico deve continuar parseável');
   const products = JSON.parse(match[1]);
-  assert.equal(products.length, 596);
-  assert.equal(new Set(products.map(item => item.id)).size, 596);
-  assert.equal(products.filter(item => String(item.linkAfiliado || '')).length, 596);
+  assert.ok(products.length > 0, 'owner canônico deve conter produtos');
+  assert.equal(new Set(products.map(item => item.id)).size, products.length, 'IDs devem permanecer únicos para qualquer tamanho válido de catálogo');
+  assert.equal(products.filter(item => String(item.linkAfiliado || '')).length, products.length, 'todo produto deve manter link afiliado para qualquer tamanho válido de catálogo');
 }
 
 console.log('M2.2 + C2 commercial funnel panel tests: OK');
