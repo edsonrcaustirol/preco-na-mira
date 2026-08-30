@@ -97,15 +97,18 @@ assert.equal(mixedBatch.summary.revisao, 1);
 
 const html = renderNewProductPage(CENTRAL_PRODUCTS_PROJECTION, 'fixtureNonce');
 for (const expected of [
-  '1. LINK', '2. ANÁLISE', '3. DADOS', '4. REVISÃO', '5. PR', '6. CI',
+  '1. LINK', '2. CONFERIR', '3. PUBLICAR',
   'AUTOMÁTICO', 'SUGERIDO', 'HUMANO', 'BLOQUEANTE', 'NÃO PUBLICADO',
-  'PODE AVANÇAR?', 'Cadastro em massa', 'ANALISAR LOTE', 'Resultado por item',
-  'ANÁLISE != PUBLICAÇÃO', 'PREPARAR PUBLICAÇÃO VIA PR',
+  'PODE PUBLICAR?', 'Cadastro em massa', 'ANALISAR LOTE', 'Resultado por item',
+  'ANÁLISE != PUBLICAÇÃO', 'PUBLICAR PRODUTO',
 ]) assert.match(html, new RegExp(expected));
 assert.match(html, /um link por linha/i);
-assert.match(html, /porta não padrão/);
-assert.match(html, /id="publish-product" class="publish" type="button" disabled>PREPARAR PUBLICAÇÃO VIA PR<\/button>/);
+assert.match(html, /impede cadastros duplicados/i);
+assert.match(html, /id="publish-product" class="publish" type="button" disabled>PUBLICAR PRODUTO<\/button>/);
 assert.match(html, /\/api\/new-product\/transactions/);
+assert.match(html, /setInterval\(refreshTransaction,2500\)/);
+assert.match(html, /PUBLICADO · produto disponível no site/);
+assert.match(html, /startsWith\('https:\/\/github\.com\/'\)/);
 assert.match(html, /overflow-x:hidden/);
 assert.match(html, /word-break:break-word|overflow-wrap:anywhere/);
 assert.match(html, /script nonce="fixtureNonce"/);
@@ -154,4 +157,5 @@ console.log(JSON.stringify({
   ownerChanged: false,
   mobileChanged: false,
   frontendSecrets: 0,
+  publicationStatusPollingAutomatic: true,
 }, null, 2));
