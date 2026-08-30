@@ -1,0 +1,82 @@
+name: Central Auto Merge Novo Produto
+
+on:
+  workflow_run:
+    workflows:
+      - Validar Preco na Mira
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: central-auto-merge-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  merge-new-product:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar escopo e publicar PR transacional
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const refs = context.payload.workflow_run.pull_requests || [];
+            if (!refs.length) {
+              core.info('Run sem PR associada; nada a publicar.');
+              return;
+            }
+
+            for (const ref of refs) {
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: ref.number,
+              });
+
+              if (pr.state !== 'open') {
+                core.info(`PR #${pr.number} já está fechada.`);
+                continue;
+              }
+              if (pr.base.ref !== 'main' || !pr.head.ref.startsWith('central/new-product-np-')) {
+                core.info(`PR #${pr.number} não é uma transação de novo produto da Central.`);
+                continue;
+              }
+
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                per_page: 100,
+              });
+              const names = files.map(file => file.filename).sort();
+              const productPages = names.filter(name => /^produto-[a-z0-9][a-z0-9-]*\.html$/.test(name));
+              const exactScope = names.length === 3
+                && names.includes('data/produtos-index.js')
+                && names.includes('data/produtos-mobile.js')
+                && productPages.length === 1;
+
+              if (!exactScope) {
+                core.setFailed(`PR #${pr.number} recusada: escopo transacional inesperado: ${names.join(', ')}`);
+                return;
+              }
+
+              const result = await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                sha: pr.head.sha,
+                merge_method: 'merge',
+                commit_title: `Merge PR #${pr.number} — publicar produto pela Central`,
+                commit_message: 'CI obrigatório aprovado e escopo transacional validado automaticamente.',
+              });
+
+              if (!result.data.merged) {
+                core.setFailed(`GitHub recusou o merge da PR #${pr.number}: ${result.data.message || 'motivo não informado'}`);
+                return;
+              }
+              core.info(`PR #${pr.number} publicada automaticamente.`);
+            }
