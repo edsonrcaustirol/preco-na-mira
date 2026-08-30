@@ -71,6 +71,8 @@ jobs:
           EXPECTED_PAGE="produto-${PRODUCT_ID}.html"
           mapfile -t FILES < <(git status --porcelain | sed -E 's/^.. //')
           test "${#FILES[@]}" -gt 0
+          echo "Arquivos preparados pelo executor O3:"
+          printf ' - %s\n' "${FILES[@]}"
           for file in "${FILES[@]}"; do
             case "$file" in
               data/produtos-index.js|data/produtos-mobile.js|"$EXPECTED_PAGE") ;;
