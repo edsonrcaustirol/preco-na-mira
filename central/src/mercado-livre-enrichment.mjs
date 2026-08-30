@@ -89,6 +89,46 @@ function inferCategory(name, node, html) {
   if (/notebook|monitor|placa de v[ií]deo|processador|ssd|mem[oó]ria/.test(n)) return 'Tecnologia';
   return '';
 }
+function propertySpecs(product, name, description) {
+  const specs = [];
+  const add = (label, value) => {
+    const l = text(label).replace(/:$/, ''); const v = text(value);
+    if (!l || !v) return;
+    const key = `${l.toLowerCase()}::${v.toLowerCase()}`;
+    if (!specs.some(item => `${item.label.toLowerCase()}::${item.valor.toLowerCase()}` === key)) specs.push({ label: l.slice(0, 64), valor: v.slice(0, 140) });
+  };
+  const additional = Array.isArray(product?.additionalProperty) ? product.additionalProperty : [];
+  for (const item of additional) add(item?.name || item?.propertyID, item?.value || item?.valueReference?.name);
+  add('Marca', typeof product?.brand === 'string' ? product.brand : product?.brand?.name);
+  const hay = `${name} ${description}`;
+  const patterns = [
+    ['Potência', /\b(\d{2,5})\s*W\b/i, m => `${m[1]} W`],
+    ['Voltagem', /\b(110|127|220|240)\s*V\b/i, m => `${m[1]} V`],
+    ['Capacidade', /\b(\d+(?:[.,]\d+)?)\s*(L|litros?|kg)\b/i, m => `${m[1]} ${m[2]}`],
+    ['Memória', /\b(\d+)\s*(GB|TB)\b/i, m => `${m[1]} ${m[2].toUpperCase()}`],
+    ['Tamanho', /\b(\d+(?:[.,]\d+)?)\s*(?:pol(?:egadas?)?|\")\b/i, m => `${m[1]} polegadas`],
+    ['Proteção', /\bIP\d{2}\b/i, m => m[0].toUpperCase()],
+    ['Pontos', /\b(\d{1,3})\s*pontos?\b/i, m => `${m[1]} pontos`],
+  ];
+  for (const [label, re, fmt] of patterns) { const m = hay.match(re); if (m) add(label, fmt(m)); }
+  if (/port[aá]til/i.test(hay)) add('Formato', 'Portátil');
+  if (/uso dom[eé]stico|dom[eé]stica/i.test(hay)) add('Uso', 'Doméstico');
+  return specs.slice(0, 12);
+}
+function buildAbout(name, description, category, specs) {
+  const base = description.replace(/\s+/g, ' ').trim();
+  const highlights = specs.filter(item => !/^Marca$/i.test(item.label)).slice(0, 3).map(item => `${item.label.toLowerCase()} de ${item.valor}`).join(', ');
+  const suffix = highlights ? ` Entre os dados identificados no anúncio estão ${highlights}.` : '';
+  return `${base}${suffix}`.slice(0, 650).trim();
+}
+function buildStrengths(specs, name) {
+  const out = specs.filter(item => !/^Marca$/i.test(item.label)).slice(0, 4).map(item => `${item.label}: ${item.valor}`);
+  if (/port[aá]til/i.test(name) && !out.some(v => /portátil/i.test(v))) out.push('Formato portátil para facilitar transporte e armazenamento');
+  return out.slice(0, 5);
+}
+function buildAttention() {
+  return ['Confirme a variante, voltagem e acessórios inclusos no anúncio antes da compra.', 'Preço, estoque, frete e garantia podem mudar e devem ser conferidos no Mercado Livre.'];
+}
 
 export async function enrichMercadoLivreProduct(rawUrl, options = {}) {
   const fetchImpl = options.fetchImpl || globalThis.fetch;
@@ -110,6 +150,10 @@ export async function enrichMercadoLivreProduct(rawUrl, options = {}) {
   const brand = inferBrand(name, product);
   const categoryHint = inferCategory(name, product, html);
   const description = cleanDescription(product?.description || meta(html, 'og:description') || meta(html, 'description'), name);
+  const especificacoes = propertySpecs(product, name, description);
+  const sobre = buildAbout(name, description, categoryHint, especificacoes);
+  const pontosFortes = buildStrengths(especificacoes, name);
+  const atencao = buildAttention();
   if (!name || !image) return { ok: false, code: 'PRODUCT_METADATA_INCOMPLETE', partial: { name, image, brand, categoryHint } };
-  return { ok: true, source: 'mercado-livre-page', originalUrl: original.href, resolvedUrl: current.href, data: { nome: name, marca: brand, categoriaHint: categoryHint, imagem: image, imagemAlt: name, resumo: description } };
+  return { ok: true, source: 'mercado-livre-page', originalUrl: original.href, resolvedUrl: current.href, data: { nome: name, marca: brand, categoriaHint: categoryHint, imagem: image, imagemAlt: name, resumo: description, sobre, especificacoes, pontosFortes, atencao } };
 }
