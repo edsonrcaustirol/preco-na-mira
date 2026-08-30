@@ -33,6 +33,23 @@ function atomicWrite(file, content) {
   fs.renameSync(temp, file);
 }
 
+function snapshotExistingProductPages(root) {
+  const pages = new Map();
+  for (const name of fs.readdirSync(root)) {
+    if (!/^produto-.+\.html$/i.test(name) || name === 'produto.html') continue;
+    pages.set(name, fs.readFileSync(path.join(root, name)));
+  }
+  return pages;
+}
+
+function restoreExistingProductPages(root, snapshot) {
+  for (const [name, content] of snapshot.entries()) {
+    const file = path.join(root, name);
+    const current = fs.existsSync(file) ? fs.readFileSync(file) : null;
+    if (current === null || !current.equals(content)) atomicWrite(file, content);
+  }
+}
+
 function normalizeInput(input = {}) {
   const keys = ['id', 'nome', 'marca', 'categoria', 'imagem', 'imagemAlt', 'linkAfiliado', 'loja', 'resumo', 'selo', 'oferta', 'destaque'];
   return Object.fromEntries(keys.filter(key => input[key] !== undefined).map(key => [key, input[key]]));
@@ -40,6 +57,7 @@ function normalizeInput(input = {}) {
 
 export function applyNewProductTransaction(root = ROOT, input = {}, options = {}) {
   const snapshot = readOwnerProducts(root);
+  const existingPages = snapshotExistingProductPages(root);
   const normalized = normalizeInput(input);
   const identityConflict = findIdentityConflict(normalized, snapshot.products);
   if (identityConflict) {
@@ -70,6 +88,11 @@ export function applyNewProductTransaction(root = ROOT, input = {}, options = {}
     ownerWritten = true;
     if (options.failBeforeSync) throw new Error('Falha transacional O3 simulada antes do sync.');
     const sync = synchronizeCatalog(root, options.syncOptions || {});
+
+    // O sincronizador completo também pode detectar drift em páginas antigas.
+    // O3 é uma transação de UM novo produto: páginas preexistentes ficam byte a byte intactas.
+    restoreExistingProductPages(root, existingPages);
+
     const page = path.join(root, `produto-${id}.html`);
     const mobile = path.join(root, 'data', 'produtos-mobile.js');
     if (!fs.existsSync(page)) throw new Error('derived-product-page-missing');
@@ -92,6 +115,7 @@ export function applyNewProductTransaction(root = ROOT, input = {}, options = {}
     if (ownerWritten) {
       try { atomicWrite(ownerFile, snapshot.source); } catch {}
       try { synchronizeCatalog(root); } catch {}
+      try { restoreExistingProductPages(root, existingPages); } catch {}
     }
     throw error;
   }
