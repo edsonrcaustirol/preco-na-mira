@@ -124,6 +124,6 @@ jobs:
             --head "$O3_BRANCH" \
             --title "O3 — Novo Produto: ${PRODUCT_ID}" \
             --body "Transação criada pela Central protegida. Owner único preservado; derivados gerados pelo E2; merge automático desativado; CI obrigatório."; then
-            git push origin --delete "$O3_BRANCH" || true
+            echo "PR automática indisponível. Branch validada preservada em ${O3_BRANCH} para recuperação governada."
             exit 1
           fi
