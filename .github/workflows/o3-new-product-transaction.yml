@@ -69,6 +69,18 @@ jobs:
           PRODUCT_ID="$(node -e "const p=JSON.parse(Buffer.from(process.env.PAYLOAD_B64,'base64').toString('utf8')); process.stdout.write(String(p.id||''))")"
           [[ "$PRODUCT_ID" =~ ^[a-z0-9][a-z0-9-]*$ ]]
           EXPECTED_PAGE="produto-${PRODUCT_ID}.html"
+
+          # O sincronizador completo pode detectar drift de metadados em páginas antigas.
+          # Uma transação de novo produto não deve carregar essas correções históricas.
+          # Reverte somente páginas de produto já versionadas e preserva o novo produto.
+          mapfile -t PREPARED < <(git status --porcelain | sed -E 's/^.. //')
+          for file in "${PREPARED[@]}"; do
+            if [[ "$file" == produto-*.html && "$file" != "$EXPECTED_PAGE" ]] && git ls-files --error-unmatch -- "$file" >/dev/null 2>&1; then
+              echo "Drift legado isolado da transação O3: $file"
+              git restore --worktree -- "$file"
+            fi
+          done
+
           mapfile -t FILES < <(git status --porcelain | sed -E 's/^.. //')
           test "${#FILES[@]}" -gt 0
           echo "Arquivos preparados pelo executor O3:"
@@ -123,7 +135,7 @@ jobs:
             --base main \
             --head "$O3_BRANCH" \
             --title "O3 — Novo Produto: ${PRODUCT_ID}" \
-            --body "Transação criada pela Central protegida. Owner único preservado; derivados gerados pelo E2; merge automático desativado; CI obrigatório."; then
+            --body "Transação criada pela Central protegida. Owner único preservado; derivados gerados pelo E2; CI obrigatório; merge automático permitido apenas após CI verde e validação estrita de escopo."; then
             echo "PR automática indisponível. Branch validada preservada em ${O3_BRANCH} para recuperação governada."
             exit 1
           fi
