@@ -79,8 +79,17 @@ jobs:
               *) echo "Arquivo fora do escopo O3: $file"; exit 1 ;;
             esac
           done
-          git add data/produtos-index.js data/produtos-mobile.js "$EXPECTED_PAGE"
-          git diff --cached --quiet && { echo "Nenhuma alteração transacional preparada."; exit 1; }
+          git add -- "${FILES[@]}"
+          mapfile -t STAGED < <(git diff --cached --name-only)
+          test "${#STAGED[@]}" -gt 0
+          echo "Arquivos efetivamente staged:"
+          printf ' - %s\n' "${STAGED[@]}"
+          PREPARED_SORTED="$(printf '%s\n' "${FILES[@]}" | sort)"
+          STAGED_SORTED="$(printf '%s\n' "${STAGED[@]}" | sort)"
+          if [[ "$PREPARED_SORTED" != "$STAGED_SORTED" ]]; then
+            echo "Diff staged diverge do conjunto preparado; recusando publicação."
+            exit 1
+          fi
 
       - name: Criar commit local antes dos gates
         shell: bash
