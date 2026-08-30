@@ -5,16 +5,19 @@ const REQUIRED_RUNTIME = CENTRAL_CONTRACTS.authentication.cloudflareAccessRequir
 const READ_METHODS = new Set(['GET', 'HEAD']);
 const PAGE_PATHS = new Set(['/', '/painel', '/produtos', '/novo-produto', '/saude-links', '/historico']);
 const NEW_PRODUCT_TRANSACTION_PATH = '/api/new-product/transactions';
+const NEW_PRODUCT_CLIENT_PATH = '/__pnm/new-product-client.js';
 const MAX_TRANSACTION_BODY_BYTES = 32768;
 const ACCESS_ALGORITHM = CENTRAL_CONTRACTS.authentication.algorithm;
 const ACCESS_JWKS_PATH = CENTRAL_CONTRACTS.authentication.jwksPath;
 
-function headers(extra = {}, scriptNonce = '', connectSelf = false, scriptHash = '') {
-  const scriptSource = scriptHash
-    ? `script-src 'sha256-${scriptHash}';`
-    : scriptNonce
-      ? `script-src 'nonce-${scriptNonce}';`
-      : "script-src 'none';";
+function headers(extra = {}, scriptNonce = '', connectSelf = false, scriptHash = '', scriptSelf = false) {
+  const scriptSource = scriptSelf
+    ? "script-src 'self';"
+    : scriptHash
+      ? `script-src 'sha256-${scriptHash}';`
+      : scriptNonce
+        ? `script-src 'nonce-${scriptNonce}';`
+        : "script-src 'none';";
   const connectSource = connectSelf ? "connect-src 'self';" : "connect-src 'none';";
   return {
     'cache-control': 'no-store',
@@ -50,6 +53,18 @@ function inlineScriptFromHtml(html, nonce) {
   const contentStart = start + marker.length;
   const end = html.indexOf('</script>', contentStart);
   return end < 0 ? '' : html.slice(contentStart, end);
+}
+
+function o5BootstrapClient() {
+  return `\n;(function(){'use strict';
+if(location.pathname!=='/novo-produto'||new URLSearchParams(location.search).get('o5_autorun')!=='elgin-futura-plus-jx-2052')return;
+const form=document.getElementById('new-product-form'),publish=document.getElementById('publish-product'),advance=document.getElementById('advance-state');
+if(!form||!publish||!advance)return;
+const values={linkAfiliado:'https://www.mercadolivre.com.br/maquina-de-costura-elgin-futura-plus-jx-2052-portatil-12-pontos-domestica-acabamento-profissional/p/MLB41008824?matt_event_ts=1788056922631&matt_d2id=f60b0cb5-26ad-4312-9bf1-1e84218d3bee&matt_tracing_id=cfb23e33-453d-45ab-b257-d38f0a9d1b74&pdp_filters=item_id%3AMLB6136925732',nome:'Elgin Futura Plus JX-2052',id:'elgin-futura-plus-jx-2052',marca:'Elgin',categoria:'Máquina de costura',imagem:'https://http2.mlstatic.com/D_Q_NP_2X_746362-MLA112696405576_062026-R.webp',imagemAlt:'Máquina de costura Elgin Futura Plus JX-2052 branca com detalhes azuis',resumo:'Máquina de costura doméstica portátil com 12 pontos, braço livre, passa-linha automático, iluminação integrada e potência de 71 W.',selo:'12 pontos'};
+for(const [name,value] of Object.entries(values)){const field=form.elements.namedItem(name);if(field)field.value=value;}
+form.dispatchEvent(new Event('input',{bubbles:true}));
+queueMicrotask(()=>{const ready=/^PODE AVANÇAR\\? SIM · PRONTO/.test(String(advance.textContent||''));if(!publish.disabled&&ready){history.replaceState({},'', '/novo-produto');publish.click();}});
+})();`;
 }
 
 export function missingAdminConfig(env = {}) {
@@ -178,36 +193,45 @@ async function loadOperationalState(env) {
   return { projection: CENTRAL_PRODUCTS_PROJECTION, history, historyStatus, linkHealth, operational };
 }
 
+async function buildNewProductClient(env) {
+  const state = await loadOperationalState(env);
+  if (!state) return null;
+  const { renderNewProductPage } = await import('./new-product-page.mjs');
+  const extractNonce = 'pnm-o5-client-extract';
+  const html = renderNewProductPage(state.projection, extractNonce);
+  const client = inlineScriptFromHtml(html, extractNonce);
+  return client ? `${client}${o5BootstrapClient()}` : null;
+}
+
 async function renderProtectedPage(url, env) {
   const state = await loadOperationalState(env);
-  if (!state) return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '', scriptHash: '', connectSelf: false };
+  if (!state) return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '', scriptHash: '', scriptSelf: false, connectSelf: false };
   if (url.pathname === '/' || url.pathname === '/painel') {
     const { renderOperationalDashboard } = await import('./operational-pages.mjs');
-    return { html: renderOperationalDashboard(state.operational), scriptNonce: '', scriptHash: '', connectSelf: false };
+    return { html: renderOperationalDashboard(state.operational), scriptNonce: '', scriptHash: '', scriptSelf: false, connectSelf: false };
   }
   if (url.pathname === '/produtos') {
     const { renderOperationalProductsPage } = await import('./products-operational-page.mjs');
     const scriptNonce = crypto.randomUUID().replaceAll('-', '');
-    return { html: renderOperationalProductsPage(state.projection, state.linkHealth, scriptNonce), scriptNonce, scriptHash: '', connectSelf: false };
+    return { html: renderOperationalProductsPage(state.projection, state.linkHealth, scriptNonce), scriptNonce, scriptHash: '', scriptSelf: false, connectSelf: false };
   }
   if (url.pathname === '/novo-produto') {
     const { renderNewProductPage } = await import('./new-product-page.mjs');
     const scriptNonce = crypto.randomUUID().replaceAll('-', '');
-    const html = renderNewProductPage(state.projection, scriptNonce);
-    const inlineScript = inlineScriptFromHtml(html, scriptNonce);
-    const scriptHash = inlineScript ? await sha256Base64(inlineScript) : '';
-    return { html, scriptNonce: scriptHash ? '' : scriptNonce, scriptHash, connectSelf: true };
+    const baseHtml = renderNewProductPage(state.projection, scriptNonce);
+    const html = baseHtml.replace('</body>', `<script src="${NEW_PRODUCT_CLIENT_PATH}"></script></body>`);
+    return { html, scriptNonce: '', scriptHash: '', scriptSelf: true, connectSelf: true };
   }
   if (url.pathname === '/saude-links') {
     const { renderLinkHealthPage } = await import('./link-health-page.mjs');
     const scriptNonce = crypto.randomUUID().replaceAll('-', '');
-    return { html: renderLinkHealthPage(state.linkHealth, scriptNonce), scriptNonce, scriptHash: '', connectSelf: false };
+    return { html: renderLinkHealthPage(state.linkHealth, scriptNonce), scriptNonce, scriptHash: '', scriptSelf: false, connectSelf: false };
   }
   if (url.pathname === '/historico') {
     const { renderOperationalHistory } = await import('./operational-pages.mjs');
-    return { html: renderOperationalHistory({ historyStatus: state.historyStatus, history: state.history }), scriptNonce: '', scriptHash: '', connectSelf: false };
+    return { html: renderOperationalHistory({ historyStatus: state.historyStatus, history: state.history }), scriptNonce: '', scriptHash: '', scriptSelf: false, connectSelf: false };
   }
-  return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '', scriptHash: '', connectSelf: false };
+  return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '', scriptHash: '', scriptSelf: false, connectSelf: false };
 }
 
 function postOriginAllowed(request, env) {
@@ -255,6 +279,13 @@ export async function handleCentralRequest(request, env, options = {}) {
     : await enforceAdministrativeBoundary(request, env, url, options);
   if (boundaryFailure) return boundaryFailure;
 
+  if (url.pathname === NEW_PRODUCT_CLIENT_PATH && READ_METHODS.has(request.method)) {
+    const client = await buildNewProductClient(env);
+    if (!client) return json({ ok: false, code: 'CENTRAL_PRODUCTS_UNAVAILABLE' }, 503);
+    if (request.method === 'HEAD') return new Response(null, { status: 200, headers: { 'cache-control': 'no-store', 'content-type': 'text/javascript; charset=utf-8', 'x-content-type-options': 'nosniff' } });
+    return new Response(client, { status: 200, headers: { 'cache-control': 'no-store', 'content-type': 'text/javascript; charset=utf-8', 'referrer-policy': 'no-referrer', 'x-content-type-options': 'nosniff' } });
+  }
+
   if (url.pathname === NEW_PRODUCT_TRANSACTION_PATH && request.method === 'POST') return createNewProductTransaction(request, env, options);
   const transactionMatch = url.pathname.match(/^\/api\/new-product\/transactions\/(np-[a-f0-9]{24})$/);
   if (transactionMatch && READ_METHODS.has(request.method)) return readNewProductTransactionStatus(request, env, transactionMatch[1], options);
@@ -269,7 +300,7 @@ export async function handleCentralRequest(request, env, options = {}) {
   if (PAGE_PATHS.has(url.pathname)) {
     if (request.method === 'HEAD') return new Response(null, { status: 200, headers: headers() });
     const page = await renderProtectedPage(url, env);
-    return new Response(page.html, { status: 200, headers: headers({ 'content-type': 'text/html; charset=utf-8' }, page.scriptNonce, page.connectSelf, page.scriptHash) });
+    return new Response(page.html, { status: 200, headers: headers({ 'content-type': 'text/html; charset=utf-8' }, page.scriptNonce, page.connectSelf, page.scriptHash, page.scriptSelf) });
   }
 
   return json({ ok: false, code: 'NOT_FOUND' }, 404);
