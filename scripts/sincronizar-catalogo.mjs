@@ -51,6 +51,12 @@ function description(product) {
   return raw.length > 155 ? `${raw.slice(0, 152).trimEnd()}…` : raw;
 }
 
+function publicImageUrl(value) {
+  const image = String(value ?? '').trim();
+  if (/^https?:\/\//i.test(image)) return image;
+  return `${ORIGIN}/${image.replace(/^\/+/, '')}`;
+}
+
 function productSchema(product) {
   const canonical = `${ORIGIN}/produto-${product.id}`;
   return {
@@ -61,7 +67,7 @@ function productSchema(product) {
         '@id': `${canonical}#product`,
         name: product.nome,
         description: description(product),
-        image: [`${ORIGIN}/${String(product.imagem).replace(/^\/+/, '')}`],
+        image: [publicImageUrl(product.imagem)],
         brand: { '@type': 'Brand', name: product.marca },
         category: product.categoria,
         additionalProperty: [],
@@ -82,6 +88,7 @@ function productSchema(product) {
 function renderProductPage(product) {
   const canonical = `${ORIGIN}/produto-${product.id}`;
   const desc = description(product);
+  const imageUrl = publicImageUrl(product.imagem);
   const schema = JSON.stringify(productSchema(product)).replace(/</g, '\\u003c');
   const type = esc(product.tipoProduto || '');
   const callout = esc(product.chamada || product.resumo);
@@ -100,12 +107,12 @@ function renderProductPage(product) {
 <meta content="${esc(product.nome)} — Preço na Mira" property="og:title"/>
 <meta content="${esc(desc)}" property="og:description"/>
 <meta property="og:url" content="${canonical}"/>
-<meta content="${ORIGIN}/${esc(String(product.imagem).replace(/^\/+/, ''))}" property="og:image"/>
+<meta content="${esc(imageUrl)}" property="og:image"/>
 <meta content="${esc(product.imagemAlt)}" property="og:image:alt"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta content="${esc(product.nome)} — Preço na Mira" name="twitter:title"/>
 <meta content="${esc(desc)}" name="twitter:description"/>
-<meta content="${ORIGIN}/${esc(String(product.imagem).replace(/^\/+/, ''))}" name="twitter:image"/>
+<meta content="${esc(imageUrl)}" name="twitter:image"/>
 <meta content="#070914" name="theme-color"/>
 <link href="assets/favicon-pnm.png" rel="icon" type="image/png"/>
 <link href="assets/pnm-core.css" rel="stylesheet"/>
@@ -140,6 +147,7 @@ function replaceMeta(html, re, replacement) {
 function syncExistingPage(html, product) {
   const canonical = `${ORIGIN}/produto-${product.id}`;
   const desc = description(product);
+  const imageUrl = publicImageUrl(product.imagem);
   const schemaTag = `<script data-pnm-jsonld="product" type="application/ld+json">${JSON.stringify(productSchema(product)).replace(/</g, '\\u003c')}</script>`;
   let next = html;
 
@@ -158,6 +166,8 @@ function syncExistingPage(html, product) {
   next = next.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, `<title>${esc(product.nome)} — Preço na Mira</title>`);
   next = replaceMeta(next, /<meta\b(?=[^>]*\bname=(?:"description"|'description'))[^>]*>/i, `<meta content="${esc(desc)}" name="description"/>`);
   next = replaceMeta(next, /<link\b(?=[^>]*\brel=(?:"canonical"|'canonical'))[^>]*>/i, `<link rel="canonical" href="${canonical}"/>`);
+  next = replaceMeta(next, /<meta\b(?=[^>]*\bproperty=(?:"og:image"|'og:image'))[^>]*>/i, `<meta content="${esc(imageUrl)}" property="og:image"/>`);
+  next = replaceMeta(next, /<meta\b(?=[^>]*\bname=(?:"twitter:image"|'twitter:image'))[^>]*>/i, `<meta content="${esc(imageUrl)}" name="twitter:image"/>`);
 
   const schemaRe = /<script\b[^>]*\bdata-pnm-jsonld=(?:"product"|'product')[^>]*>[\s\S]*?<\/script>/i;
   next = schemaRe.test(next) ? next.replace(schemaRe, schemaTag) : next.replace(/<\/head>/i, `${schemaTag}</head>`);
