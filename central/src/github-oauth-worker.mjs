@@ -54,12 +54,18 @@ function originAllowed(request, env) {
   return String(request.headers.get('origin') || '').trim() === `https://${expectedHost(env)}`;
 }
 
+function repairNewProductClientSource(source) {
+  return String(source || '').replace(
+    "if(payload.prUrl&&/^https://github.com//.test(payload.prUrl))",
+    "if(payload.prUrl&&String(payload.prUrl).startsWith('https://github.com/'))",
+  );
+}
+
 function linkAutofillClient() {
   return `\n;(function(){'use strict';
 if(location.pathname!=='/novo-produto')return;
 const form=document.getElementById('new-product-form');if(!form)return;
 const link=form.elements.namedItem('linkAfiliado'),status=document.getElementById('analysis-status');if(!link||!status)return;
-const fields=['nome','id','marca','categoria','imagem','imagemAlt','resumo'];
 const categories=[...document.querySelectorAll('#category-list option')].map(x=>x.value).filter(Boolean);
 const norm=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 const slug=v=>norm(v).replace(/\\s+/g,'-').slice(0,96).replace(/^-+|-+$/g,'');
@@ -141,7 +147,7 @@ export async function handleGithubOauthCentralRequest(request, env, options = {}
   if (url.pathname === NEW_PRODUCT_CLIENT_PATH && request.method === 'GET') {
     const base = await handleCentralRequest(request, env, { ...options, skipAdministrativeBoundary: true, githubIdentity: auth.identity });
     if (!base.ok) return base;
-    const source = await base.text();
+    const source = repairNewProductClientSource(await base.text());
     return new Response(`${source}${linkAutofillClient()}`, { status: 200, headers: { 'cache-control': 'no-store', 'content-type': 'text/javascript; charset=utf-8', 'referrer-policy': 'no-referrer', 'x-content-type-options': 'nosniff' } });
   }
 
