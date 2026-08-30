@@ -13,6 +13,7 @@ export function renderNewProductPage(projection, nonce) {
   const analyzerSource = analyzeNewProductInput.toString();
   const batchAnalyzerSource = analyzeNewProductBatch.toString();
   const script = `(function(){'use strict';
+const __name=(target)=>target;
 const analyzeNewProductInput=${analyzerSource};
 const analyzeNewProductBatch=${batchAnalyzerSource};
 const catalog=${safeJson(catalog)};
