@@ -9,8 +9,12 @@ const MAX_TRANSACTION_BODY_BYTES = 32768;
 const ACCESS_ALGORITHM = CENTRAL_CONTRACTS.authentication.algorithm;
 const ACCESS_JWKS_PATH = CENTRAL_CONTRACTS.authentication.jwksPath;
 
-function headers(extra = {}, scriptNonce = '', connectSelf = false) {
-  const scriptSource = scriptNonce ? `script-src 'nonce-${scriptNonce}';` : "script-src 'none';";
+function headers(extra = {}, scriptNonce = '', connectSelf = false, scriptHash = '') {
+  const scriptSource = scriptHash
+    ? `script-src 'sha256-${scriptHash}';`
+    : scriptNonce
+      ? `script-src 'nonce-${scriptNonce}';`
+      : "script-src 'none';";
   const connectSource = connectSelf ? "connect-src 'self';" : "connect-src 'none';";
   return {
     'cache-control': 'no-store',
@@ -26,6 +30,26 @@ function json(payload, status = 200) {
     status,
     headers: headers({ 'content-type': 'application/json; charset=utf-8' }),
   });
+}
+
+function bytesToBase64(bytes) {
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
+}
+
+async function sha256Base64(value) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return bytesToBase64(new Uint8Array(digest));
+}
+
+function inlineScriptFromHtml(html, nonce) {
+  const marker = `<script nonce="${nonce}">`;
+  const start = html.indexOf(marker);
+  if (start < 0) return '';
+  const contentStart = start + marker.length;
+  const end = html.indexOf('</script>', contentStart);
+  return end < 0 ? '' : html.slice(contentStart, end);
 }
 
 export function missingAdminConfig(env = {}) {
@@ -156,31 +180,34 @@ async function loadOperationalState(env) {
 
 async function renderProtectedPage(url, env) {
   const state = await loadOperationalState(env);
-  if (!state) return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '', connectSelf: false };
+  if (!state) return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '', scriptHash: '', connectSelf: false };
   if (url.pathname === '/' || url.pathname === '/painel') {
     const { renderOperationalDashboard } = await import('./operational-pages.mjs');
-    return { html: renderOperationalDashboard(state.operational), scriptNonce: '', connectSelf: false };
+    return { html: renderOperationalDashboard(state.operational), scriptNonce: '', scriptHash: '', connectSelf: false };
   }
   if (url.pathname === '/produtos') {
     const { renderOperationalProductsPage } = await import('./products-operational-page.mjs');
     const scriptNonce = crypto.randomUUID().replaceAll('-', '');
-    return { html: renderOperationalProductsPage(state.projection, state.linkHealth, scriptNonce), scriptNonce, connectSelf: false };
+    return { html: renderOperationalProductsPage(state.projection, state.linkHealth, scriptNonce), scriptNonce, scriptHash: '', connectSelf: false };
   }
   if (url.pathname === '/novo-produto') {
     const { renderNewProductPage } = await import('./new-product-page.mjs');
     const scriptNonce = crypto.randomUUID().replaceAll('-', '');
-    return { html: renderNewProductPage(state.projection, scriptNonce), scriptNonce, connectSelf: true };
+    const html = renderNewProductPage(state.projection, scriptNonce);
+    const inlineScript = inlineScriptFromHtml(html, scriptNonce);
+    const scriptHash = inlineScript ? await sha256Base64(inlineScript) : '';
+    return { html, scriptNonce: scriptHash ? '' : scriptNonce, scriptHash, connectSelf: true };
   }
   if (url.pathname === '/saude-links') {
     const { renderLinkHealthPage } = await import('./link-health-page.mjs');
     const scriptNonce = crypto.randomUUID().replaceAll('-', '');
-    return { html: renderLinkHealthPage(state.linkHealth, scriptNonce), scriptNonce, connectSelf: false };
+    return { html: renderLinkHealthPage(state.linkHealth, scriptNonce), scriptNonce, scriptHash: '', connectSelf: false };
   }
   if (url.pathname === '/historico') {
     const { renderOperationalHistory } = await import('./operational-pages.mjs');
-    return { html: renderOperationalHistory({ historyStatus: state.historyStatus, history: state.history }), scriptNonce: '', connectSelf: false };
+    return { html: renderOperationalHistory({ historyStatus: state.historyStatus, history: state.history }), scriptNonce: '', scriptHash: '', connectSelf: false };
   }
-  return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '', connectSelf: false };
+  return { html: renderCentralShell({ pathname: url.pathname }), scriptNonce: '', scriptHash: '', connectSelf: false };
 }
 
 function postOriginAllowed(request, env) {
@@ -242,7 +269,7 @@ export async function handleCentralRequest(request, env, options = {}) {
   if (PAGE_PATHS.has(url.pathname)) {
     if (request.method === 'HEAD') return new Response(null, { status: 200, headers: headers() });
     const page = await renderProtectedPage(url, env);
-    return new Response(page.html, { status: 200, headers: headers({ 'content-type': 'text/html; charset=utf-8' }, page.scriptNonce, page.connectSelf) });
+    return new Response(page.html, { status: 200, headers: headers({ 'content-type': 'text/html; charset=utf-8' }, page.scriptNonce, page.connectSelf, page.scriptHash) });
   }
 
   return json({ ok: false, code: 'NOT_FOUND' }, 404);
