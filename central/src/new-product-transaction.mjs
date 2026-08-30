@@ -191,6 +191,48 @@ export async function dispatchNewProductTransaction({ env = {}, input = {}, prod
   };
 }
 
+async function findPullRequest(base, head, headers, fetchImpl) {
+  const response = await fetchImpl(`${base}/pulls?state=all&head=${encodeURIComponent(head)}&per_page=1`, { headers });
+  if (!response?.ok) return { ok: false, status: Number(response?.status) || null, pr: null };
+  const pulls = await response.json();
+  return { ok: true, status: response.status, pr: Array.isArray(pulls) ? pulls[0] || null : null };
+}
+
+async function recoverMissingPullRequest({ base, owner, branch, headers, fetchImpl, transactionId }) {
+  let branchResponse;
+  try { branchResponse = await fetchImpl(`${base}/branches/${encodeURIComponent(branch)}`, { headers }); }
+  catch { return { state: 'PREPARANDO PUBLICAÇÃO', recovered: false }; }
+  if (branchResponse?.status === 404) return { state: 'PREPARANDO PUBLICAÇÃO', recovered: false };
+  if (!branchResponse?.ok) return { state: 'BRANCH CRIADA · PR PENDENTE', recovered: false, code: 'BRANCH_STATUS_FAILED', githubStatus: Number(branchResponse?.status) || null };
+
+  const branchPayload = await branchResponse.json();
+  const headSha = text(branchPayload?.commit?.sha);
+  let createResponse;
+  try {
+    createResponse = await fetchImpl(`${base}/pulls`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        title: `O3 — Novo Produto: ${transactionId}`,
+        head: branch,
+        base: O3_EXPECTED_BASE_BRANCH,
+        body: `Transação ${transactionId} criada pela Central protegida. Branch validada pelo executor O3; merge automático desativado; CI obrigatório.`,
+      }),
+    });
+  } catch {
+    return { state: 'BRANCH CRIADA · PR PENDENTE', recovered: false, code: 'PR_RECOVERY_UNAVAILABLE', headSha };
+  }
+  if (createResponse?.status === 201) {
+    const pr = await createResponse.json();
+    return { state: 'PR CRIADA', recovered: true, pr, headSha };
+  }
+  if (createResponse?.status === 422) {
+    const retry = await findPullRequest(base, `${owner}:${branch}`, headers, fetchImpl);
+    if (retry.ok && retry.pr) return { state: 'PR CRIADA', recovered: true, pr: retry.pr, headSha };
+  }
+  return { state: 'BRANCH CRIADA · PR PENDENTE', recovered: false, code: 'PR_CREATION_BLOCKED', githubStatus: Number(createResponse?.status) || null, headSha };
+}
+
 export async function getNewProductTransactionStatus({ env = {}, transactionId, fetchImpl = globalThis.fetch } = {}) {
   const gate = publicationGate(env);
   if (!gate.enabled) return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'PUBLICATION_GATE_CLOSED', state: 'DADOS PENDENTES' };
@@ -200,13 +242,29 @@ export async function getNewProductTransactionStatus({ env = {}, transactionId, 
   const base = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
   const headers = githubHeaders(env.PNM_GITHUB_TOKEN);
   const head = `${owner}:${branch}`;
-  let pullResponse;
-  try { pullResponse = await fetchImpl(`${base}/pulls?state=all&head=${encodeURIComponent(head)}&per_page=1`, { headers }); }
+
+  let pullLookup;
+  try { pullLookup = await findPullRequest(base, head, headers, fetchImpl); }
   catch { return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_BACKEND_UNAVAILABLE', state: 'FALHOU' }; }
-  if (!pullResponse?.ok) return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_STATUS_FAILED', state: 'FALHOU', githubStatus: Number(pullResponse?.status) || null };
-  const pulls = await pullResponse.json();
-  const pr = Array.isArray(pulls) ? pulls[0] : null;
-  if (!pr) return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PREPARANDO PUBLICAÇÃO', transactionId, branch };
+  if (!pullLookup.ok) return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, code: 'GITHUB_STATUS_FAILED', state: 'FALHOU', githubStatus: pullLookup.status };
+
+  let pr = pullLookup.pr;
+  if (!pr) {
+    const recovery = await recoverMissingPullRequest({ base, owner, branch, headers, fetchImpl, transactionId });
+    if (!recovery.recovered || !recovery.pr) {
+      return {
+        ok: recovery.state === 'PREPARANDO PUBLICAÇÃO',
+        contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT,
+        state: recovery.state,
+        transactionId,
+        branch,
+        ...(recovery.code ? { code: recovery.code } : {}),
+        ...(recovery.githubStatus ? { githubStatus: recovery.githubStatus } : {}),
+      };
+    }
+    pr = recovery.pr;
+  }
+
   if (pr.merged_at) return { ok: true, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'PUBLICADO', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
   if (pr.state === 'closed') return { ok: false, contract: CENTRAL_NEW_PRODUCT_TRANSACTION_CONTRACT, state: 'FALHOU', code: 'PR_CLOSED_WITHOUT_MERGE', transactionId, branch, prNumber: pr.number, prUrl: pr.html_url };
   const headSha = text(pr?.head?.sha);
