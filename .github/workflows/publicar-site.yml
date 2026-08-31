@@ -36,6 +36,9 @@ jobs:
       - name: Instalar ferramentas travadas
         run: npm ci
 
+      - name: Validar gestão de produtos da Central
+        run: node scripts/test-o8-product-management.mjs
+
       - name: Auditar e validar pacote do Cloudflare
         run: npm run check
 
