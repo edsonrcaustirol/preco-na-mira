@@ -22,14 +22,23 @@ export function parseCanonicalProducts(source) {
   return products;
 }
 
+export function fingerprintAffiliateLink(value) {
+  const link = String(value || '').trim();
+  return link ? `sha256:${crypto.createHash('sha256').update(link, 'utf8').digest('hex')}` : null;
+}
+
 export function buildCentralProductsProjection(source) {
   const canonicalProducts = parseCanonicalProducts(source);
-  const products = canonicalProducts.map(selectCentralProductFields);
+  const products = canonicalProducts.map(product => {
+    const selected = selectCentralProductFields(product);
+    return { ...selected, linkFingerprint: fingerprintAffiliateLink(selected.linkAfiliado) };
+  });
   const ids = products.map(product => String(product.id || ''));
   if (ids.some(id => !id)) throw new Error('Produto sem id no catálogo canônico');
   if (new Set(ids).size !== ids.length) throw new Error('IDs duplicados no catálogo canônico');
   if (products.some(product => !String(product.nome || '').trim())) throw new Error('Produto sem nome no catálogo canônico');
   if (products.some(product => !String(product.linkAfiliado || '').trim())) throw new Error('Produto sem link afiliado no catálogo canônico');
+  if (products.some(product => !String(product.linkFingerprint || '').trim())) throw new Error('Produto sem fingerprint do link afiliado');
 
   return {
     contract: CENTRAL_PRODUCTS_CONTRACT,
