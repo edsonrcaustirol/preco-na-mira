@@ -2,28 +2,33 @@ import { PART_1 } from './generated/affiliate-history-snapshot-1.mjs';
 import { PART_2 } from './generated/affiliate-history-snapshot-2.mjs';
 import { PART_3 } from './generated/affiliate-history-snapshot-3.mjs';
 import { PART_4 } from './generated/affiliate-history-snapshot-4.mjs';
+import { SNAPSHOT_META } from './generated/affiliate-history-snapshot-meta.mjs';
 
 const CLASSES = Object.freeze(['CORRETO','PROVÁVEL','DIVERGENTE','ANÚNCIO_INDISPONÍVEL','DESTINO_GENÉRICO','PROBLEMA_DE_LINK','NÃO_COMPROVÁVEL']);
 const RUN = Object.freeze({
-  run_id:'33294484400-1',
-  trigger:'schedule',
-  scope:'FULL',
-  source_sha:'af24f5477a89ed048e5f5f3c47da45aef45ef4c9',
-  started_at:'2026-08-30T05:20:54.489Z',
-  finished_at:'2026-08-30T05:25:05.196Z',
-  status:'SUCCESS',
-  totals_json:JSON.stringify({TOTAL:596,CORRETOS:308,PROVAVEIS:123,DIVERGENTES:32,INDISPONIVEIS:23,DESTINO_GENERICO:0,PROBLEMAS_DE_LINK:1,NAO_COMPROVAVEIS:109,SAUDAVEIS:431,PRECISAM_ATENCAO:56}),
-  metadata_json:JSON.stringify({monitorContract:'pnm.affiliate-integrity-monitor/v1',evaluationReason:'COMPLETE_CONTRACT_RESULT_SET',source:'github-actions-versioned-snapshot'}),
+  run_id:SNAPSHOT_META.run_id,
+  trigger:SNAPSHOT_META.trigger,
+  scope:SNAPSHOT_META.scope,
+  source_sha:SNAPSHOT_META.source_sha,
+  started_at:SNAPSHOT_META.started_at,
+  finished_at:SNAPSHOT_META.finished_at,
+  status:SNAPSHOT_META.status,
+  totals_json:JSON.stringify(SNAPSHOT_META.totals || {}),
+  metadata_json:JSON.stringify(SNAPSHOT_META.metadata || {}),
 });
 
+// Correção restrita ao seed histórico inicial. O gerador automático produz o ID correto
+// e, quando o snapshot for renovado, a linha inválida deixa de existir naturalmente.
 const ERRONEOUS_SEED_ID = 'rejunte-epoxi-super-facil-1kg-quartzolit-1kg-varias-cores';
 const CORRECTIONS = Object.freeze([
   ['rejunte-epoxi-super-facil-1kg-quartzolit-varias-cores','sha256:926b751a9afe20151e8861ebf53c7f04a964b51849c89e59e49b48561fe6f875',0],
 ]);
 
-const rows = [...PART_1,...PART_2,...PART_3,...PART_4]
+const rawRows = [...PART_1,...PART_2,...PART_3,...PART_4];
+const seedNeedsCorrection = rawRows.some(([productId]) => productId === ERRONEOUS_SEED_ID);
+const rows = rawRows
   .filter(([productId]) => productId !== ERRONEOUS_SEED_ID)
-  .concat(CORRECTIONS);
+  .concat(seedNeedsCorrection ? CORRECTIONS : []);
 const results = rows.map(([product_id,link_fingerprint,classIndex]) => Object.freeze({
   run_id:RUN.run_id,
   product_id,
