@@ -47,7 +47,7 @@ function assertOfficialContract() {
 }
 
 function assertEmptyReadModel() {
-  const model = createEmptyCentralLinkHealthReadModel();
+  const model = createEmptyCentralLinkHealthReadModel({ historyStatus: 'available' });
   assert.equal(model.contract, 'pnm.central-link-health/v1');
   assert.equal(model.sourceContract, 'pnm.affiliate-integrity/v1');
   assert.equal(model.availability, 'none');
