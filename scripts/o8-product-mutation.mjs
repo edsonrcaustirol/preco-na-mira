@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { synchronizeCatalog } from './sincronizar-catalogo.mjs';
+const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),OWNER='data/produtos-index.js';
+const text=v=>String(v??'').trim();
+function snapshotOwner(root=ROOT){const file=path.join(root,OWNER),source=fs.readFileSync(file,'utf8'),start=source.indexOf('['),end=source.lastIndexOf(']');if(start<0||end<=start)throw new Error('owner-invalid');return{file,source,start,end,products:JSON.parse(source.slice(start,end+1))}}
+function writeAtomic(file,content){const temp=`${file}.o8-${process.pid}-${Math.random().toString(16).slice(2)}`;fs.writeFileSync(temp,content);fs.renameSync(temp,file)}
+function replaceOwner(s,products){return `${s.source.slice(0,s.start)}${JSON.stringify(products)}${s.source.slice(s.end+1)}`}
+function pageSnapshots(root){const m=new Map();for(const n of fs.readdirSync(root))if(/^produto-.+\.html$/i.test(n)&&n!=='produto.html')m.set(n,fs.readFileSync(path.join(root,n)));return m}
+function restoreUnrelated(root,snapshot,target){for(const[n,c]of snapshot){if(n===target)continue;const f=path.join(root,n),now=fs.existsSync(f)?fs.readFileSync(f):null;if(now===null||!now.equals(c))writeAtomic(f,c)}}
+function ensureUnique(products,index,next){for(let i=0;i<products.length;i++){if(i===index)continue;if(text(products[i]?.id)===text(next.id))throw new Error('duplicate-id');if(text(products[i]?.linkAfiliado)===text(next.linkAfiliado))throw new Error('duplicate-affiliate-link')}}
+export function applyProductMutation(root=ROOT,payload={}){const s=snapshotOwner(root),pages=pageSnapshots(root),id=text(payload.productId),index=s.products.findIndex(p=>text(p?.id)===id);if(index<0)throw new Error('product-not-found');const target=`produto-${id}.html`;let nextProducts;
+if(payload.action==='edit'){const next={...s.products[index],...(payload.product||{}),id};for(const k of ['nome','marca','categoria','imagem','imagemAlt','linkAfiliado','loja','resumo'])if(!text(next[k]))throw new Error(`missing-${k}`);ensureUnique(s.products,index,next);nextProducts=s.products.slice();nextProducts[index]=next;}else if(payload.action==='delete'){if(text(payload.confirmId)!==id)throw new Error('delete-confirmation-required');nextProducts=s.products.filter((_,i)=>i!==index);}else throw new Error('invalid-action');
+try{writeAtomic(s.file,replaceOwner(s,nextProducts));const sync=synchronizeCatalog(root);restoreUnrelated(root,pages,target);const final=snapshotOwner(root).products;if(payload.action==='edit'&&!final.some(p=>text(p.id)===id))throw new Error('edit-postcondition-failed');if(payload.action==='delete'&&final.some(p=>text(p.id)===id))throw new Error('delete-postcondition-failed');return{contract:'pnm.central-product-mutation/v1',state:'PREPARADO',action:payload.action,productId:id,ownerBefore:s.products.length,ownerAfter:final.length,mobileAfter:sync.mobile,pagesAfter:sync.pages,changedScope:[OWNER,'data/produtos-mobile.js',target]};}catch(e){try{writeAtomic(s.file,s.source);synchronizeCatalog(root);for(const[n,c]of pages)writeAtomic(path.join(root,n),c)}catch{}throw e}}
+function arg(n){const i=process.argv.indexOf(n);return i>=0?process.argv[i+1]:null}
+const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);if(isMain){const encoded=arg('--payload-b64')||process.env.PNM_O8_PAYLOAD_B64;if(!encoded)throw new Error('payload-required');console.log(JSON.stringify(applyProductMutation(process.cwd(),JSON.parse(Buffer.from(encoded,'base64').toString('utf8'))),null,2));}
