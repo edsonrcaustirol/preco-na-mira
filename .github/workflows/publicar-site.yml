@@ -8,6 +8,7 @@ on:
       - main
       - 'central/new-product-np-*'
       - 'central/product-mutation-pm-*'
+      - 'central/affiliate-health-*'
   workflow_dispatch:
 
 permissions:
@@ -38,6 +39,9 @@ jobs:
 
       - name: Validar gestão de produtos da Central
         run: node scripts/test-o8-product-management.mjs
+
+      - name: Validar histórico operacional da Central
+        run: node scripts/test-o8-1-central-history-snapshot.mjs
 
       - name: Auditar e validar pacote do Cloudflare
         run: npm run check
