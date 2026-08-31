@@ -4,7 +4,7 @@ import { dispatchProductMutation, getProductMutationStatus, productMutationBranc
 import { renderOperationalProductsPage } from '../central/src/products-operational-page.mjs';
 
 const product={id:'fixture-produto',nome:'Produto Fixture',marca:'Fixture',categoria:'Tecnologia',imagem:'https://example.com/p.webp',imagemAlt:'Produto Fixture',linkAfiliado:'https://meli.la/fixture',loja:'Mercado Livre',resumo:'Resumo factual.',oferta:false,destaque:false};
-const env={PNM_GITHUB_REPOSITORY:'edsonrcaustirol/preco-na-mira',PNM_GITHUB_BASE_BRANCH:'main',PNM_GITHUB_TOKEN:'fixture-token'};
+const env={PNM_GITHUB_REPOSITORY:'edsonrcaustirol/preco-na-mira',PNM_GITHUB_BASE_BRANCH:'main',PNM_GITHUB_TOKEN:'fixture'};
 
 const noConfirm=await dispatchProductMutation({env,products:[product],productId:product.id,action:'delete',confirmId:'errado',fetchImpl:async()=>{throw new Error('não deve chamar rede')}});
 assert.equal(noConfirm.ok,false);
