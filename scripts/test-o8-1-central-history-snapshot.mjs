@@ -20,14 +20,15 @@ assert.match(canonical, /^const\s+PRODUTOS\s*=/);
 const generated = generateCentralProducts();
 assert.equal(generated.total, 601);
 
-const [{ CENTRAL_PRODUCTS_PROJECTION }, { createEmptyCentralLinkHealthReadModel }, { buildCentralOperationalReadModel }, { renderOperationalHistory }] = await Promise.all([
+const [{ CENTRAL_PRODUCTS_PROJECTION, CENTRAL_PRODUCT_LINK_FINGERPRINTS }, { createEmptyCentralLinkHealthReadModel }, { buildCentralOperationalReadModel }, { renderOperationalHistory }] = await Promise.all([
   import(`../central/src/generated/products.mjs?o81=${Date.now()}`),
   import(`../central/src/link-health.mjs?o81=${Date.now()}`),
   import('../central/src/operational-read-model.mjs'),
   import('../central/src/operational-pages.mjs'),
 ]);
 assert.equal(CENTRAL_PRODUCTS_PROJECTION.products.length, 601);
-assert.equal(CENTRAL_PRODUCTS_PROJECTION.products.every(product => /^sha256:[0-9a-f]{64}$/.test(String(product.linkFingerprint || ''))), true);
+assert.equal(Object.keys(CENTRAL_PRODUCT_LINK_FINGERPRINTS).length, 601);
+assert.equal(CENTRAL_PRODUCTS_PROJECTION.products.every(product => /^sha256:[0-9a-f]{64}$/.test(String(CENTRAL_PRODUCT_LINK_FINGERPRINTS[product.id] || ''))), true);
 
 const linkHealth = createEmptyCentralLinkHealthReadModel({ historyStatus: 'unbound' });
 assert.equal(linkHealth.availability, 'available');
