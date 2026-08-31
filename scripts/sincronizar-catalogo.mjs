@@ -47,7 +47,10 @@ function projectMobile(products) {
 }
 
 function description(product) {
-  const raw = `${product.nome}. ${product.resumo || product.chamada || product.categoria}`.replace(/\s+/g, ' ').trim();
+  const name = String(product.nome || '').replace(/\s+/g, ' ').trim();
+  const detail = String(product.resumo || product.chamada || product.categoria || '').replace(/\s+/g, ' ').trim();
+  const normalized = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const raw = detail && normalized(detail).startsWith(normalized(name)) ? detail : `${name}. ${detail}`.replace(/\s+/g, ' ').trim();
   return raw.length > 155 ? `${raw.slice(0, 152).trimEnd()}…` : raw;
 }
 
