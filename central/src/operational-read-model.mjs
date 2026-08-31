@@ -1,4 +1,5 @@
 import { CENTRAL_CONTRACTS } from './contracts.mjs';
+import { CENTRAL_AFFILIATE_HISTORY_SNAPSHOT } from './affiliate-history-snapshot.mjs';
 
 export const CENTRAL_OPERATIONAL_CONTRACT = 'pnm.central-operational/v1';
 
@@ -25,10 +26,14 @@ export function buildCentralOperationalReadModel({ projection, history = null, h
     throw new Error('invalid-central-operational-projection');
   }
   const persistedRuns = Array.isArray(history?.recentRuns) ? history.recentRuns.map(run) : [];
-  const snapshotRun = run(linkHealth?.run);
-  const recentRuns = persistedRuns.length ? persistedRuns : (snapshotRun ? [snapshotRun] : []);
-  const latestHealthyFull = run(history?.latestHealthyFull) || run(linkHealth?.referenceFull);
-  const latestRun = recentRuns[0] || null;
+  const snapshotRuns = historyStatus !== 'available' && Array.isArray(CENTRAL_AFFILIATE_HISTORY_SNAPSHOT?.recentRuns)
+    ? CENTRAL_AFFILIATE_HISTORY_SNAPSHOT.recentRuns.map(run)
+    : [];
+  const recentRuns = persistedRuns.length ? persistedRuns : snapshotRuns;
+  const latestHealthyFull = run(history?.latestHealthyFull)
+    || (historyStatus !== 'available' ? run(CENTRAL_AFFILIATE_HISTORY_SNAPSHOT?.latestHealthyFull) : null)
+    || run(linkHealth?.referenceFull);
+  const latestRun = recentRuns[0] || run(linkHealth?.run) || null;
   const summary = linkHealth?.summary || null;
   const coverage = linkHealth?.coverage || null;
   const operationalHistoryAvailable = historyStatus === 'available' || linkHealth?.availability === 'available';
