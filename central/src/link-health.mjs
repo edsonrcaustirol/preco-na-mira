@@ -1,5 +1,5 @@
 import { CENTRAL_CONTRACTS } from './contracts.mjs';
-import { CENTRAL_PRODUCTS_PROJECTION } from './generated/products.mjs';
+import { CENTRAL_PRODUCTS_PROJECTION, CENTRAL_PRODUCT_LINK_FINGERPRINTS } from './generated/products.mjs';
 import { CENTRAL_AFFILIATE_HISTORY_SNAPSHOT } from './affiliate-history-snapshot.mjs';
 
 export const CENTRAL_LINK_HEALTH_CONTRACT = CENTRAL_CONTRACTS.affiliateIntegrity.centralReadModelContract;
@@ -90,7 +90,7 @@ function snapshotReadModel(historyStatus) {
   for (const product of products) {
     const row = rows.get(String(product.id || ''));
     if (!row) continue;
-    const currentFingerprint = optionalText(product.linkFingerprint);
+    const currentFingerprint = optionalText(CENTRAL_PRODUCT_LINK_FINGERPRINTS?.[product.id]);
     const auditedFingerprint = optionalText(row.link_fingerprint);
     if (currentFingerprint && auditedFingerprint && currentFingerprint === auditedFingerprint) {
       currentResults.push(normalizeResult({ ...row, audited_link: product.linkAfiliado }));
