@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const HISTORY_CONTRACT = 'pnm.central-history/v1';
 const CLASSIFICATIONS = Object.freeze(['CORRETO','PROVÁVEL','DIVERGENTE','ANÚNCIO_INDISPONÍVEL','DESTINO_GENÉRICO','PROBLEMA_DE_LINK','NÃO_COMPROVÁVEL']);
@@ -87,7 +88,7 @@ export async function buildAffiliateHealthSnapshot({ runId = process.env.GITHUB_
   return manifest;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(process.argv[1])) {
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   buildAffiliateHealthSnapshot().then(manifest => {
     console.log(JSON.stringify({snapshot:'PASS',...manifest},null,2));
   }).catch(error => {
