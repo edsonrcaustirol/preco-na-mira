@@ -84,7 +84,7 @@ function assertWorkflow() {
   assert.match(workflow, /^  schedule:$/m, 'schedule da L2.4F deve reutilizar o executor L2.4C');
   assert.match(workflow, /type: choice/);
   for (const scope of EXECUTOR_SCOPES) assert.match(workflow, new RegExp(`^          - ${scope}$`, 'm'));
-  assert.match(workflow, /^permissions:\n  contents: read$/m);
+  assert.match(workflow, /^permissions:\n  contents: write\n  pull-requests: write$/m);
   assert.match(workflow, /cancel-in-progress: false/);
   assert.match(workflow, /run: node scripts\/run-affiliate-integrity-workflow\.mjs/);
   assert.match(workflow, /uses: actions\/upload-artifact@v4/);
