@@ -29,16 +29,12 @@ export function fingerprintAffiliateLink(value) {
 
 export function buildCentralProductsProjection(source) {
   const canonicalProducts = parseCanonicalProducts(source);
-  const products = canonicalProducts.map(product => {
-    const selected = selectCentralProductFields(product);
-    return { ...selected, linkFingerprint: fingerprintAffiliateLink(selected.linkAfiliado) };
-  });
+  const products = canonicalProducts.map(selectCentralProductFields);
   const ids = products.map(product => String(product.id || ''));
   if (ids.some(id => !id)) throw new Error('Produto sem id no catálogo canônico');
   if (new Set(ids).size !== ids.length) throw new Error('IDs duplicados no catálogo canônico');
   if (products.some(product => !String(product.nome || '').trim())) throw new Error('Produto sem nome no catálogo canônico');
   if (products.some(product => !String(product.linkAfiliado || '').trim())) throw new Error('Produto sem link afiliado no catálogo canônico');
-  if (products.some(product => !String(product.linkFingerprint || '').trim())) throw new Error('Produto sem fingerprint do link afiliado');
 
   return {
     contract: CENTRAL_PRODUCTS_CONTRACT,
@@ -49,8 +45,13 @@ export function buildCentralProductsProjection(source) {
   };
 }
 
+export function buildAffiliateLinkFingerprints(projection) {
+  return Object.fromEntries(projection.products.map(product => [product.id, fingerprintAffiliateLink(product.linkAfiliado)]));
+}
+
 export function renderCentralProductsModule(projection) {
-  return `// ARQUIVO GERADO — NÃO EDITAR MANUALMENTE.\n// Fonte única: ${CENTRAL_PRODUCTS_SOURCE}\nconst projection = ${JSON.stringify(projection)};\n\nfunction deepFreeze(value) {\n  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;\n  for (const nested of Object.values(value)) deepFreeze(nested);\n  return Object.freeze(value);\n}\n\nexport const CENTRAL_PRODUCTS_PROJECTION = deepFreeze(projection);\n`;
+  const linkFingerprints = buildAffiliateLinkFingerprints(projection);
+  return `// ARQUIVO GERADO — NÃO EDITAR MANUALMENTE.\n// Fonte única: ${CENTRAL_PRODUCTS_SOURCE}\nconst projection = ${JSON.stringify(projection)};\nconst linkFingerprints = ${JSON.stringify(linkFingerprints)};\n\nfunction deepFreeze(value) {\n  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;\n  for (const nested of Object.values(value)) deepFreeze(nested);\n  return Object.freeze(value);\n}\n\nexport const CENTRAL_PRODUCTS_PROJECTION = deepFreeze(projection);\nexport const CENTRAL_PRODUCT_LINK_FINGERPRINTS = deepFreeze(linkFingerprints);\n`;
 }
 
 export function generateCentralProducts({ sourcePath = CENTRAL_PRODUCTS_OWNER, outputPath = CENTRAL_PRODUCTS_OUTPUT } = {}) {
