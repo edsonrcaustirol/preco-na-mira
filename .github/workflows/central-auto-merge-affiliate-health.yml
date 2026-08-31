@@ -1,0 +1,77 @@
+name: Central Auto Merge Affiliate Health
+
+on:
+  workflow_run:
+    workflows:
+      - Validar Preco na Mira
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: central-auto-merge-affiliate-health-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  merge-affiliate-health:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar escopo e publicar snapshot
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const branch = run.head_branch || '';
+            if (!branch.startsWith('central/affiliate-health-')) {
+              core.info('Run não pertence ao snapshot de saúde dos links.');
+              return;
+            }
+            const pulls = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${branch}`,
+              per_page: 100,
+            });
+            if (!pulls.length) {
+              core.info(`Nenhuma PR aberta encontrada para ${branch}.`);
+              return;
+            }
+            const pr = pulls[0];
+            if (pr.base.ref !== 'main' || pr.head.sha !== run.head_sha) {
+              core.setFailed(`PR #${pr.number} não corresponde exatamente ao SHA validado.`);
+              return;
+            }
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+            const names = files.map(f => f.filename).sort();
+            const allowed = [
+              'central/src/generated/affiliate-history-snapshot-1.mjs',
+              'central/src/generated/affiliate-history-snapshot-2.mjs',
+              'central/src/generated/affiliate-history-snapshot-3.mjs',
+              'central/src/generated/affiliate-history-snapshot-4.mjs',
+              'central/src/generated/affiliate-history-snapshot-meta.mjs',
+            ].sort();
+            const exactScope = names.length === allowed.length && names.every((name, index) => name === allowed[index]);
+            if (!exactScope) {
+              core.setFailed(`Escopo recusado: ${names.join(', ')}`);
+              return;
+            }
+            const result = await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              sha: pr.head.sha,
+              merge_method: 'merge',
+              commit_title: `Merge PR #${pr.number} — atualizar saúde dos links`,
+              commit_message: 'CI aprovado e escopo do snapshot de auditoria validado automaticamente.',
+            });
+            if (!result.data.merged) core.setFailed(result.data.message || 'Merge recusado pelo GitHub.');

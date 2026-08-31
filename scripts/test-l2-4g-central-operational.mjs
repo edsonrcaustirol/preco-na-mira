@@ -20,7 +20,7 @@ if (!fs.existsSync(generatedPath)) {
 const { CENTRAL_PRODUCTS_PROJECTION } = await import('../central/src/generated/products.mjs');
 const expectedTotal = CENTRAL_PRODUCTS_PROJECTION.total;
 
-const emptyHealth = createEmptyCentralLinkHealthReadModel({ historyStatus: 'unbound', coverage: { productsTotal: CENTRAL_PRODUCTS_PROJECTION.total, currentResults: 0, staleResults: 0, notAudited: CENTRAL_PRODUCTS_PROJECTION.total } });
+const emptyHealth = createEmptyCentralLinkHealthReadModel({ historyStatus: 'available', coverage: { productsTotal: CENTRAL_PRODUCTS_PROJECTION.total, currentResults: 0, staleResults: 0, notAudited: CENTRAL_PRODUCTS_PROJECTION.total } });
 const emptyOperational = buildCentralOperationalReadModel({ projection: CENTRAL_PRODUCTS_PROJECTION, history: null, historyStatus: 'unbound', linkHealth: emptyHealth });
 assert.equal(emptyOperational.catalog.total, expectedTotal);
 assert.equal(emptyOperational.catalog.owner, 'data/produtos-index.js');

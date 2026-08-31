@@ -1,5 +1,6 @@
 import { CENTRAL_AREAS, CENTRAL_CONTRACTS } from './contracts.mjs';
 import { CENTRAL_OPERATIONAL_CONTRACT } from './operational-read-model.mjs';
+import { CENTRAL_AFFILIATE_HISTORY_SNAPSHOT } from './affiliate-history-snapshot.mjs';
 
 const PATHS = Object.freeze({ painel: '/painel', produtos: '/produtos', 'novo-produto': '/novo-produto', 'saude-links': '/saude-links', historico: '/historico' });
 const COMMERCIAL_PANEL_URL = 'https://preconamira.com.br/__pnm/commercial';
@@ -33,17 +34,20 @@ function shell(active, title, subtitle, body) {
 
 export function renderOperationalDashboard(model) {
   if (!model || model.contract !== CENTRAL_OPERATIONAL_CONTRACT) throw new Error('invalid-central-operational-model');
-  const historyReady = model.history.status === 'available';
+  const historyReady = model.history.status === 'available' || model.history.status === 'snapshot';
+  const snapshotMode = model.history.status === 'snapshot';
   const latest = model.history.latestRun;
   const healthy = model.history.latestHealthyFull;
   const degraded = latest && latest.status !== 'SUCCESS';
-  const notice = historyReady ? '' : `<div class="notice"><strong>Histórico remoto ainda não provisionado.</strong><br>O catálogo real continua disponível, mas métricas de auditoria não são inventadas.</div>`;
+  const notice = snapshotMode
+    ? `<div class="notice"><strong>Histórico operacional disponível por snapshot auditado.</strong><br>O D1 remoto ainda não está provisionado; a Central usa o último resultado real versionado do auditor e invalida resultados quando o fingerprint do link muda.</div>`
+    : historyReady ? '' : `<div class="notice"><strong>Histórico remoto ainda não provisionado.</strong><br>O catálogo real continua disponível, mas métricas de auditoria não são inventadas.</div>`;
   const body = `<div class="status"><span class="pill">Central somente leitura</span><span class="pill">Owner único: ${escapeHtml(model.catalog.owner)}</span><span class="pill">Monitor configurado: ${model.monitor.configured ? 'SIM' : 'NÃO'}</span><span class="pill">D1 remoto: ${model.history.remoteProvisioned ? 'PROVISIONADO' : 'NÃO PROVISIONADO'}</span></div>${notice}<section class="metrics"><div class="metric"><span>PRODUTOS</span><strong>${model.catalog.total}</strong></div><div class="metric"><span>PRECISA DE ATENÇÃO</span><strong>${value(model.health.attention)}</strong></div><div class="metric"><span>NÃO_COMPROVÁVEL</span><strong>${value(model.health.nonVerifiable)}</strong></div><div class="metric"><span>AUDITORIA ATUAL</span><strong>${value(model.health.currentResults)}</strong></div></section><section class="grid"><div class="panel"><h2>Catálogo</h2><div class="row"><span>Estado</span><strong>Read-only</strong></div><div class="row"><span>Fonte</span><strong>${escapeHtml(model.catalog.source)}</strong></div><div class="row"><span>Total</span><strong>${model.catalog.total}</strong></div></div><div class="panel"><h2>Monitor</h2><div class="row"><span>Agenda</span><strong>${escapeHtml(model.monitor.schedule || '—')}</strong></div><div class="row"><span>Cadência</span><strong>domingo/quarta · 3/4 dias</strong></div><div class="row"><span>Execução agendada observada</span><strong>${model.monitor.observedScheduledRun ? 'SIM' : 'NÃO COMPROVADA'}</strong></div></div><div class="panel"><h2>Última execução</h2><div class="row"><span>Status</span><strong class="${statusClass(latest?.status)}">${escapeHtml(latest?.status || '—')}</strong></div><div class="row"><span>Escopo</span><strong>${escapeHtml(latest?.scope || '—')}</strong></div><div class="row"><span>Finalizada</span><strong>${date(latest?.finishedAt)}</strong></div>${degraded ? '<div class="notice">A execução mais recente está degradada/falhou; ela não substitui silenciosamente a última FULL saudável.</div>' : ''}</div><div class="panel"><h2>Última FULL saudável</h2><div class="row"><span>Run</span><strong>${escapeHtml(healthy?.runId || '—')}</strong></div><div class="row"><span>Status</span><strong class="${statusClass(healthy?.status)}">${escapeHtml(healthy?.status || '—')}</strong></div><div class="row"><span>Finalizada</span><strong>${date(healthy?.finishedAt)}</strong></div></div><div class="panel"><h2>Painel Comercial</h2><p class="muted">C2 já existente no site público administrativo. A Central apenas navega para ele; Analytics Engine e credenciais não são duplicados aqui.</p><a class="panel-link" href="${COMMERCIAL_PANEL_URL}" target="_blank" rel="noopener noreferrer">Abrir Painel Comercial ↗</a></div></section>`;
   return shell('painel', 'Painel', 'Estado operacional consolidado sem exposição administrativa e sem números inventados.', body);
 }
 
 function runCard(item) {
-  return `<article class="run"><strong class="technical">${escapeHtml(item.runId || '—')}</strong><span>${escapeHtml(item.scope || '—')}</span><span class="${statusClass(item.status)}">${escapeHtml(item.status || '—')}</span><span>${date(item.finishedAt || item.startedAt)}</span></article>`;
+  return `<article class="run"><strong class="technical">${escapeHtml(item.runId || item.run_id || '—')}</strong><span>${escapeHtml(item.scope || '—')}</span><span class="${statusClass(item.status)}">${escapeHtml(item.status || '—')}</span><span>${date(item.finishedAt || item.finished_at || item.startedAt || item.started_at)}</span></article>`;
 }
 
 function eventCard(item) {
@@ -55,12 +59,17 @@ function resultCard(item) {
 }
 
 export function renderOperationalHistory({ historyStatus = 'unbound', history = null } = {}) {
-  const available = historyStatus === 'available' && history;
-  const runs = available && Array.isArray(history.recentRuns) ? history.recentRuns : [];
-  const events = available && Array.isArray(history.events) ? history.events : [];
-  const results = available && Array.isArray(history.results) ? history.results : [];
-  const healthy = available ? history.latestHealthyFull : null;
-  const notice = available ? '' : `<div class="notice"><strong>Histórico remoto ainda não provisionado.</strong><br>Schema e regras estão versionados, mas nenhum D1 remoto é presumido como operacional.</div>`;
-  const body = `<div class="status"><span class="pill">Somente leitura</span><span class="pill">Contrato: ${escapeHtml(CENTRAL_CONTRACTS.d1.historyContract)}</span><span class="pill">D1 remoto: ${CENTRAL_CONTRACTS.d1.remoteProvisioned ? 'PROVISIONADO' : 'NÃO PROVISIONADO'}</span></div>${notice}<section class="metrics"><div class="metric"><span>RUNS RECENTES</span><strong>${available ? runs.length : '—'}</strong></div><div class="metric"><span>RESULTADOS</span><strong>${available ? results.length : '—'}</strong></div><div class="metric"><span>EVENTOS</span><strong>${available ? events.length : '—'}</strong></div><div class="metric"><span>ÚLTIMA FULL SAUDÁVEL</span><strong>${healthy ? 'SUCCESS' : '—'}</strong></div></section><section class="section panel"><h2>Execuções</h2>${runs.length ? `<div class="run-list">${runs.map(runCard).join('')}</div>` : '<p class="muted">Nenhuma execução persistida disponível.</p>'}</section><section class="section panel"><h2>Resultados recentes</h2>${results.length ? `<div class="result-list">${results.slice(0, 100).map(resultCard).join('')}</div>` : '<p class="muted">Nenhum resultado persistido disponível.</p>'}</section><section class="section panel"><h2>Eventos factuais</h2>${events.length ? `<div class="event-list">${events.slice(0, 100).map(eventCard).join('')}</div>` : '<p class="muted">Nenhum evento persistido disponível.</p>'}</section><p class="muted section">Detalhes técnicos são mostrados por run/SHA quando existem; JSON cru não é a experiência principal.</p>`;
+  const remoteAvailable = historyStatus === 'available' && history;
+  const snapshotAvailable = !remoteAvailable && CENTRAL_AFFILIATE_HISTORY_SNAPSHOT?.latestHealthyFull;
+  const effectiveHistory = remoteAvailable ? history : snapshotAvailable ? CENTRAL_AFFILIATE_HISTORY_SNAPSHOT : null;
+  const available = Boolean(effectiveHistory);
+  const runs = available && Array.isArray(effectiveHistory.recentRuns) ? effectiveHistory.recentRuns : [];
+  const events = available && Array.isArray(effectiveHistory.events) ? effectiveHistory.events : [];
+  const results = available && Array.isArray(effectiveHistory.results) ? effectiveHistory.results : [];
+  const healthy = available ? effectiveHistory.latestHealthyFull : null;
+  const notice = snapshotAvailable
+    ? `<div class="notice"><strong>Histórico real disponível por snapshot versionado.</strong><br>Fonte: auditor oficial no GitHub Actions. O D1 remoto continua não provisionado e não é apresentado como ativo.</div>`
+    : available ? '' : `<div class="notice"><strong>Histórico remoto ainda não provisionado.</strong><br>Schema e regras estão versionados, mas nenhum D1 remoto é presumido como operacional.</div>`;
+  const body = `<div class="status"><span class="pill">Somente leitura</span><span class="pill">Contrato: ${escapeHtml(CENTRAL_CONTRACTS.d1.historyContract)}</span><span class="pill">Fonte atual: ${snapshotAvailable ? 'SNAPSHOT AUDITADO' : remoteAvailable ? 'D1' : 'INDISPONÍVEL'}</span><span class="pill">D1 remoto: ${CENTRAL_CONTRACTS.d1.remoteProvisioned ? 'PROVISIONADO' : 'NÃO PROVISIONADO'}</span></div>${notice}<section class="metrics"><div class="metric"><span>RUNS RECENTES</span><strong>${available ? runs.length : '—'}</strong></div><div class="metric"><span>RESULTADOS</span><strong>${available ? results.length : '—'}</strong></div><div class="metric"><span>EVENTOS</span><strong>${available ? events.length : '—'}</strong></div><div class="metric"><span>ÚLTIMA FULL SAUDÁVEL</span><strong>${healthy ? 'SUCCESS' : '—'}</strong></div></section><section class="section panel"><h2>Execuções</h2>${runs.length ? `<div class="run-list">${runs.map(runCard).join('')}</div>` : '<p class="muted">Nenhuma execução persistida disponível.</p>'}</section><section class="section panel"><h2>Resultados recentes</h2>${results.length ? `<div class="result-list">${results.slice(0, 100).map(resultCard).join('')}</div>` : '<p class="muted">Nenhum resultado persistido disponível.</p>'}</section><section class="section panel"><h2>Eventos factuais</h2>${events.length ? `<div class="event-list">${events.slice(0, 100).map(eventCard).join('')}</div>` : '<p class="muted">Nenhum evento persistido disponível.</p>'}</section><p class="muted section">Detalhes técnicos são mostrados por run/SHA quando existem; JSON cru não é a experiência principal.</p>`;
   return shell('historico', 'Histórico', 'Runs, resultados e eventos factuais do monitor, sem transformar D1 em catálogo.', body);
 }

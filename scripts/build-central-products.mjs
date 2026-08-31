@@ -22,6 +22,11 @@ export function parseCanonicalProducts(source) {
   return products;
 }
 
+export function fingerprintAffiliateLink(value) {
+  const link = String(value || '').trim();
+  return link ? `sha256:${crypto.createHash('sha256').update(link, 'utf8').digest('hex')}` : null;
+}
+
 export function buildCentralProductsProjection(source) {
   const canonicalProducts = parseCanonicalProducts(source);
   const products = canonicalProducts.map(selectCentralProductFields);
@@ -40,8 +45,13 @@ export function buildCentralProductsProjection(source) {
   };
 }
 
+export function buildAffiliateLinkFingerprints(projection) {
+  return Object.fromEntries(projection.products.map(product => [product.id, fingerprintAffiliateLink(product.linkAfiliado)]));
+}
+
 export function renderCentralProductsModule(projection) {
-  return `// ARQUIVO GERADO — NÃO EDITAR MANUALMENTE.\n// Fonte única: ${CENTRAL_PRODUCTS_SOURCE}\nconst projection = ${JSON.stringify(projection)};\n\nfunction deepFreeze(value) {\n  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;\n  for (const nested of Object.values(value)) deepFreeze(nested);\n  return Object.freeze(value);\n}\n\nexport const CENTRAL_PRODUCTS_PROJECTION = deepFreeze(projection);\n`;
+  const linkFingerprints = buildAffiliateLinkFingerprints(projection);
+  return `// ARQUIVO GERADO — NÃO EDITAR MANUALMENTE.\n// Fonte única: ${CENTRAL_PRODUCTS_SOURCE}\nconst projection = ${JSON.stringify(projection)};\nconst linkFingerprints = ${JSON.stringify(linkFingerprints)};\n\nfunction deepFreeze(value) {\n  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;\n  for (const nested of Object.values(value)) deepFreeze(nested);\n  return Object.freeze(value);\n}\n\nexport const CENTRAL_PRODUCTS_PROJECTION = deepFreeze(projection);\nexport const CENTRAL_PRODUCT_LINK_FINGERPRINTS = deepFreeze(linkFingerprints);\n`;
 }
 
 export function generateCentralProducts({ sourcePath = CENTRAL_PRODUCTS_OWNER, outputPath = CENTRAL_PRODUCTS_OUTPUT } = {}) {

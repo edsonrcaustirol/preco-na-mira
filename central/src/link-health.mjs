@@ -1,4 +1,6 @@
 import { CENTRAL_CONTRACTS } from './contracts.mjs';
+import { CENTRAL_PRODUCTS_PROJECTION, CENTRAL_PRODUCT_LINK_FINGERPRINTS } from './generated/products.mjs';
+import { CENTRAL_AFFILIATE_HISTORY_SNAPSHOT } from './affiliate-history-snapshot.mjs';
 
 export const CENTRAL_LINK_HEALTH_CONTRACT = CENTRAL_CONTRACTS.affiliateIntegrity.centralReadModelContract;
 export const AFFILIATE_INTEGRITY_CONTRACT = CENTRAL_CONTRACTS.affiliateIntegrity.contract;
@@ -80,12 +82,58 @@ function normalizeCoverage(coverage) {
   };
 }
 
+function snapshotReadModel(historyStatus) {
+  const products = CENTRAL_PRODUCTS_PROJECTION.products || [];
+  const rows = new Map((CENTRAL_AFFILIATE_HISTORY_SNAPSHOT.results || []).map(row => [String(row.product_id || ''), row]));
+  const currentResults = [];
+  const staleResults = [];
+  for (const product of products) {
+    const row = rows.get(String(product.id || ''));
+    if (!row) continue;
+    const currentFingerprint = optionalText(CENTRAL_PRODUCT_LINK_FINGERPRINTS?.[product.id]);
+    const auditedFingerprint = optionalText(row.link_fingerprint);
+    if (currentFingerprint && auditedFingerprint && currentFingerprint === auditedFingerprint) {
+      currentResults.push(normalizeResult({ ...row, audited_link: product.linkAfiliado }));
+    } else {
+      staleResults.push(Object.freeze({
+        productId: String(product.id || ''),
+        reason: 'O link atual difere do link da última auditoria; o resultado anterior foi invalidado.',
+        checkedAt: optionalText(row.checked_at),
+        runId: optionalText(row.run_id),
+      }));
+    }
+  }
+  const latest = CENTRAL_AFFILIATE_HISTORY_SNAPSHOT.recentRuns?.[0] || CENTRAL_AFFILIATE_HISTORY_SNAPSHOT.latestHealthyFull || null;
+  const auditedIds = new Set([...currentResults.map(item => item.productId), ...staleResults.map(item => item.productId)]);
+  return deepFreeze({
+    contract: CENTRAL_LINK_HEALTH_CONTRACT,
+    sourceContract: AFFILIATE_INTEGRITY_CONTRACT,
+    availability: latest ? 'available' : 'none',
+    defaultView: 'attention',
+    historyStatus: latest ? 'snapshot' : historyStatus,
+    referenceFull: normalizeRun(CENTRAL_AFFILIATE_HISTORY_SNAPSHOT.latestHealthyFull),
+    coverage: normalizeCoverage({
+      productsTotal: products.length,
+      currentResults: currentResults.length,
+      staleResults: staleResults.length,
+      notAudited: Math.max(0, products.length - auditedIds.size),
+    }),
+    run: normalizeRun(latest),
+    summary: latest ? summarize(currentResults) : null,
+    staleResults,
+    results: currentResults,
+  });
+}
+
 export function createEmptyCentralLinkHealthReadModel({
   historyStatus = 'unbound',
   referenceFull = null,
   coverage = null,
   staleResults = [],
 } = {}) {
+  if (historyStatus !== 'available' && CENTRAL_AFFILIATE_HISTORY_SNAPSHOT?.latestHealthyFull) {
+    return snapshotReadModel(historyStatus);
+  }
   return deepFreeze({
     contract: CENTRAL_LINK_HEALTH_CONTRACT,
     sourceContract: AFFILIATE_INTEGRITY_CONTRACT,

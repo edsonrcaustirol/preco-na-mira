@@ -1,4 +1,5 @@
 import { CENTRAL_CONTRACTS } from './contracts.mjs';
+import { CENTRAL_AFFILIATE_HISTORY_SNAPSHOT } from './affiliate-history-snapshot.mjs';
 
 export const CENTRAL_OPERATIONAL_CONTRACT = 'pnm.central-operational/v1';
 
@@ -24,12 +25,19 @@ export function buildCentralOperationalReadModel({ projection, history = null, h
   if (!projection || projection.contract !== CENTRAL_CONTRACTS.catalog.projection.contract || !Array.isArray(projection.products)) {
     throw new Error('invalid-central-operational-projection');
   }
-  const recentRuns = Array.isArray(history?.recentRuns) ? history.recentRuns.map(run) : [];
-  const latestHealthyFull = run(history?.latestHealthyFull);
-  const latestRun = recentRuns[0] || null;
+  const persistedRuns = Array.isArray(history?.recentRuns) ? history.recentRuns.map(run) : [];
+  const snapshotRuns = historyStatus !== 'available' && Array.isArray(CENTRAL_AFFILIATE_HISTORY_SNAPSHOT?.recentRuns)
+    ? CENTRAL_AFFILIATE_HISTORY_SNAPSHOT.recentRuns.map(run)
+    : [];
+  const recentRuns = persistedRuns.length ? persistedRuns : snapshotRuns;
+  const latestHealthyFull = run(history?.latestHealthyFull)
+    || (historyStatus !== 'available' ? run(CENTRAL_AFFILIATE_HISTORY_SNAPSHOT?.latestHealthyFull) : null)
+    || run(linkHealth?.referenceFull);
+  const latestRun = recentRuns[0] || run(linkHealth?.run) || null;
   const summary = linkHealth?.summary || null;
   const coverage = linkHealth?.coverage || null;
-  const historyAvailable = historyStatus === 'available';
+  const operationalHistoryAvailable = historyStatus === 'available' || linkHealth?.availability === 'available';
+  const effectiveHistoryStatus = historyStatus === 'available' ? 'available' : linkHealth?.historyStatus === 'snapshot' ? 'snapshot' : historyStatus;
   return Object.freeze({
     contract: CENTRAL_OPERATIONAL_CONTRACT,
     catalog: Object.freeze({
@@ -40,28 +48,30 @@ export function buildCentralOperationalReadModel({ projection, history = null, h
       readOnly: true,
     }),
     history: Object.freeze({
-      status: historyStatus,
+      status: effectiveHistoryStatus,
       remoteProvisioned: CENTRAL_CONTRACTS.d1.remoteProvisioned === true,
       latestRun,
       latestHealthyFull,
       recentRuns: Object.freeze(recentRuns),
-      resultCount: historyAvailable && Array.isArray(history?.results) ? history.results.length : null,
-      eventCount: historyAvailable && Array.isArray(history?.events) ? history.events.length : null,
+      resultCount: historyStatus === 'available' && Array.isArray(history?.results)
+        ? history.results.length
+        : Number.isFinite(coverage?.currentResults) ? coverage.currentResults : null,
+      eventCount: historyStatus === 'available' && Array.isArray(history?.events) ? history.events.length : 0,
     }),
     monitor: Object.freeze({
       configured: CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduled === true,
       schedule: CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduleCron || null,
       scheduleSemantics: CENTRAL_CONTRACTS.affiliateIntegrity.executor.scheduleSemantics || null,
       concurrency: CENTRAL_CONTRACTS.affiliateIntegrity.executor.concurrency || null,
-      observedScheduledRun: historyAvailable && recentRuns.some(item => item?.trigger === 'schedule'),
+      observedScheduledRun: operationalHistoryAvailable && recentRuns.some(item => item?.trigger === 'schedule'),
     }),
     health: Object.freeze({
-      available: historyAvailable && linkHealth?.availability === 'available',
-      attention: historyAvailable && Number.isFinite(summary?.attention) ? summary.attention : null,
-      nonVerifiable: historyAvailable && Number.isFinite(summary?.nonVerifiable) ? summary.nonVerifiable : null,
-      currentResults: historyAvailable && Number.isFinite(coverage?.currentResults) ? coverage.currentResults : null,
-      staleResults: historyAvailable && Number.isFinite(coverage?.staleResults) ? coverage.staleResults : null,
-      notAudited: historyAvailable && Number.isFinite(coverage?.notAudited) ? coverage.notAudited : null,
+      available: operationalHistoryAvailable && linkHealth?.availability === 'available',
+      attention: operationalHistoryAvailable && Number.isFinite(summary?.attention) ? summary.attention : null,
+      nonVerifiable: operationalHistoryAvailable && Number.isFinite(summary?.nonVerifiable) ? summary.nonVerifiable : null,
+      currentResults: operationalHistoryAvailable && Number.isFinite(coverage?.currentResults) ? coverage.currentResults : null,
+      staleResults: operationalHistoryAvailable && Number.isFinite(coverage?.staleResults) ? coverage.staleResults : null,
+      notAudited: operationalHistoryAvailable && Number.isFinite(coverage?.notAudited) ? coverage.notAudited : null,
     }),
   });
 }
