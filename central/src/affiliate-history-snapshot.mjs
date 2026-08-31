@@ -16,11 +16,14 @@ const RUN = Object.freeze({
   metadata_json:JSON.stringify({monitorContract:'pnm.affiliate-integrity-monitor/v1',evaluationReason:'COMPLETE_CONTRACT_RESULT_SET',source:'github-actions-versioned-snapshot'}),
 });
 
+const ERRONEOUS_SEED_ID = 'rejunte-epoxi-super-facil-1kg-quartzolit-1kg-varias-cores';
 const CORRECTIONS = Object.freeze([
   ['rejunte-epoxi-super-facil-1kg-quartzolit-varias-cores','sha256:926b751a9afe20151e8861ebf53c7f04a964b51849c89e59e49b48561fe6f875',0],
 ]);
 
-const rows = [...PART_1,...PART_2,...PART_3,...PART_4,...CORRECTIONS];
+const rows = [...PART_1,...PART_2,...PART_3,...PART_4]
+  .filter(([productId]) => productId !== ERRONEOUS_SEED_ID)
+  .concat(CORRECTIONS);
 const results = rows.map(([product_id,link_fingerprint,classIndex]) => Object.freeze({
   run_id:RUN.run_id,
   product_id,
