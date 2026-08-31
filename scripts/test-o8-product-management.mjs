@@ -25,7 +25,8 @@ assert.equal(merged.state,'PUBLICADO');
 
 const projection={products:[product]};
 const html=renderOperationalProductsPage(projection,{historyStatus:'unbound',byProduct:{}},'fixtureNonce');
-for(const expected of ['Ver detalhes','SALVAR ALTERAÇÕES','EXCLUIR PRODUTO','delete-confirm','/api/products/','/api/product-transactions/','Digite exatamente o ID do produto para confirmar','Resultado atual compatível com o link atual']) assert.match(html,new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+for(const expected of ['Ver detalhes','SALVAR ALTERAÇÕES','EXCLUIR PRODUTO','delete-confirm','/api/products/','Digite exatamente o ID do produto para confirmar','Resultado atual compatível com o link atual']) assert.match(html,new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+assert.match(html,/poll\(p\.statusPath\)/);
 assert.match(html,/script nonce="fixtureNonce"/);
 assert.match(html,/overflow-x:hidden/);
 assert.doesNotMatch(html,/PNM_GITHUB_TOKEN|Bearer /);
