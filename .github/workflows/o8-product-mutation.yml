@@ -1,0 +1,99 @@
+name: O8 Product Mutation Transaction
+
+on:
+  workflow_dispatch:
+    inputs:
+      transaction_id:
+        required: true
+        type: string
+      action:
+        required: true
+        type: string
+      product_id:
+        required: true
+        type: string
+      payload_b64:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: o8-product-mutation-${{ inputs.product_id }}
+  cancel-in-progress: false
+
+jobs:
+  transact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar main com histórico
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar ferramentas travadas
+        run: npm ci
+
+      - name: Validar entrada
+        shell: bash
+        run: |
+          [[ "${{ inputs.transaction_id }}" =~ ^pm-[a-f0-9]{24}$ ]]
+          [[ "${{ inputs.action }}" =~ ^(edit|delete)$ ]]
+          [[ "${{ inputs.product_id }}" =~ ^[a-z0-9][a-z0-9-]*$ ]]
+
+      - name: Preparar mutação local
+        env:
+          PNM_O8_PAYLOAD_B64: ${{ inputs.payload_b64 }}
+        run: node scripts/o8-product-mutation.mjs
+
+      - name: Restringir diff ao produto e derivados E2
+        shell: bash
+        run: |
+          expected_page="produto-${{ inputs.product_id }}.html"
+          mapfile -t changed < <(git diff --name-only | sort)
+          printf '%s\n' "${changed[@]}"
+          [[ ${#changed[@]} -eq 3 ]]
+          printf '%s\n' "${changed[@]}" | grep -Fx 'data/produtos-index.js'
+          printf '%s\n' "${changed[@]}" | grep -Fx 'data/produtos-mobile.js'
+          printf '%s\n' "${changed[@]}" | grep -Fx "$expected_page"
+
+      - name: Criar commit transacional
+        shell: bash
+        run: |
+          branch="central/product-mutation-${{ inputs.transaction_id }}"
+          git checkout -b "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/produtos-index.js data/produtos-mobile.js "produto-${{ inputs.product_id }}.html"
+          git commit -m "O8 ${{ inputs.action }}: ${{ inputs.product_id }}"
+
+      - name: Executar gates oficiais completos
+        run: npm run check
+
+      - name: Limpar artefatos efêmeros dos gates
+        run: git reset --hard HEAD
+
+      - name: Publicar branch transacional
+        run: git push origin "central/product-mutation-${{ inputs.transaction_id }}"
+
+      - name: Criar PR governada
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          action_label='editar'
+          if [[ '${{ inputs.action }}' == 'delete' ]]; then action_label='excluir'; fi
+          gh pr create \
+            --base main \
+            --head "central/product-mutation-${{ inputs.transaction_id }}" \
+            --title "O8 — ${action_label} produto: ${{ inputs.product_id }}" \
+            --body "Transação governada da Central. Escopo restrito ao owner canônico, derivado mobile e página do produto. CI obrigatório; merge automático somente após validação."
