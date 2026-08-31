@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
+const esc=(s='')=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const canonical=s=>norm(String(s||'').replace(/[‐‑‒–—−]/g,'-').replace(/\s+/g,' ').trim());
 const nice=s=>String(s||'').replace(/[-_]+/g,' ').toLocaleLowerCase('pt-BR').replace(/(^|[\s/])([\p{L}\p{N}])/gu,(_,sep,ch)=>sep+ch.toLocaleUpperCase('pt-BR')).replace(/\bTv\b/g,'TV').replace(/\bUsb\b/g,'USB').replace(/\bIp\b/g,'IP').replace(/\bRgb\b/g,'RGB').replace(/\bWifi\b/gi,'Wi‑Fi');
