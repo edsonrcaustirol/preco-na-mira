@@ -34,7 +34,8 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 concurrency:
   group: affiliate-integrity-${{ github.repository }}
@@ -47,6 +48,8 @@ jobs:
     steps:
       - name: Baixar o repositório
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Preparar Node.js
         uses: actions/setup-node@v4
@@ -73,6 +76,68 @@ jobs:
           PNM_AUDIT_STEP_OUTCOME: ${{ steps.audit.outcome }}
           PNM_MONITOR_SCOPE: ${{ github.event_name == 'schedule' && 'full' || inputs.scope }}
         run: node scripts/evaluate-affiliate-monitor.mjs
+
+      - name: Verificar se a FULL pode renovar o snapshot
+        if: always()
+        id: snapshot_gate
+        env:
+          PNM_REQUESTED_SCOPE: ${{ github.event_name == 'schedule' && 'full' || inputs.scope }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = `artifacts/affiliate-integrity/run-${process.env.GITHUB_RUN_ID}-attempt-${process.env.GITHUB_RUN_ATTEMPT}/history-payload.json`;
+          let eligible = false;
+          try {
+            const payload = JSON.parse(fs.readFileSync(path, 'utf8'));
+            eligible = String(process.env.PNM_REQUESTED_SCOPE || '').toLowerCase() === 'full'
+              && payload?.contract === 'pnm.central-history/v1'
+              && payload?.run?.scope === 'FULL'
+              && payload?.run?.status === 'SUCCESS'
+              && Array.isArray(payload?.results)
+              && payload.results.length > 0;
+          } catch {}
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `eligible=${eligible ? 'true' : 'false'}\n`);
+          console.log(JSON.stringify({snapshotEligible: eligible}));
+          NODE
+
+      - name: Gerar snapshot versionado da FULL saudável
+        if: steps.snapshot_gate.outputs.eligible == 'true'
+        run: node scripts/build-affiliate-health-snapshot.mjs
+
+      - name: Abrir PR do snapshot auditado
+        if: steps.snapshot_gate.outputs.eligible == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          SNAPSHOT_DIR=/tmp/pnm-affiliate-health-snapshot
+          BRANCH="central/affiliate-health-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          rm -rf "$SNAPSHOT_DIR"
+          mkdir -p "$SNAPSHOT_DIR"
+          cp central/src/generated/affiliate-history-snapshot-{1,2,3,4}.mjs "$SNAPSHOT_DIR/"
+          cp central/src/generated/affiliate-history-snapshot-meta.mjs "$SNAPSHOT_DIR/"
+
+          git fetch origin main
+          git switch --force-create "$BRANCH" origin/main
+          cp "$SNAPSHOT_DIR"/affiliate-history-snapshot-{1,2,3,4}.mjs central/src/generated/
+          cp "$SNAPSHOT_DIR"/affiliate-history-snapshot-meta.mjs central/src/generated/
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            central/src/generated/affiliate-history-snapshot-1.mjs \
+            central/src/generated/affiliate-history-snapshot-2.mjs \
+            central/src/generated/affiliate-history-snapshot-3.mjs \
+            central/src/generated/affiliate-history-snapshot-4.mjs \
+            central/src/generated/affiliate-history-snapshot-meta.mjs
+          git diff --cached --quiet && { echo "Snapshot sem mudança material."; exit 0; }
+          git commit -m "Central: atualizar snapshot da auditoria de links"
+          git push --set-upstream origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Central — Atualizar snapshot da saúde dos links" \
+            --body "Snapshot produzido automaticamente por uma auditoria FULL saudável do contrato pnm.affiliate-integrity/v1. Somente arquivos gerados de saúde dos links são alterados; merge depende do CI e do gate de escopo."
 
       - name: Publicar resultado estruturado
         if: always()
