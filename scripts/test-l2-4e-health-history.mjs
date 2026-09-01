@@ -98,7 +98,8 @@ function assertRuntimeSafety() {
   assert.doesNotMatch(adapter, /\bfetch\s*\(/);
   assert.doesNotMatch(page, /secrets\.|api\.github\.com/i);
   assert.doesNotMatch(`${adapter}\n${page}`, /newExceptions\s*=|PIOROU\s*=/);
-  assert.equal('d1_databases' in wrangler, false, 'binding remoto segue não provisionado; não inventar database_id');
+  assert.equal(Array.isArray(wrangler.d1_databases), true, 'D1 operacional deve estar declarado');
+  assert.equal(wrangler.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');
   assert.equal('routes' in wrangler, false);
   assert.equal('triggers' in wrangler, false);
 }

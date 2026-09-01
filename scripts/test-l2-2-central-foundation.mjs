@@ -39,12 +39,18 @@ function assertSeparatedWorker() {
   assert.equal(publicConfig.name, 'preco-na-mira');
   assert.equal(publicConfig.main, 'src/worker.mjs');
   assert.equal(centralConfig.name, 'preco-na-mira-central');
-  assert.equal(centralConfig.main, 'src/github-oauth-worker.mjs');
+  assert.equal(centralConfig.main, 'src/runtime-worker.mjs');
   assert.notEqual(centralConfig.name, publicConfig.name);
   assert.equal(centralConfig.workers_dev, false);
   assert.equal(centralConfig.preview_urls, false);
-  assert.equal('routes' in centralConfig, false, 'rota administrativa não deve existir antes da autenticação operacional');
-  assert.equal('d1_databases' in centralConfig, false, 'D1 não deve ser preparado como owner nesta etapa');
+  assert.equal('routes' in centralConfig, false, 'rota administrativa deve continuar fora do site público');
+  assert.equal(Array.isArray(centralConfig.d1_databases), true, 'Central deve declarar o D1 operacional');
+  assert.equal(centralConfig.d1_databases.length, 1);
+  assert.equal(centralConfig.d1_databases[0]?.binding, 'PNM_HISTORY_DB');
+  assert.equal(CENTRAL_CONTRACTS.d1.authoritativeCatalog, false, 'D1 operacional não pode virar owner do catálogo');
+  const runtimeSource = read('central/src/runtime-worker.mjs');
+  assert.match(runtimeSource, /handleGithubOauthCentralRequest/, 'runtime deve preservar a barreira GitHub OAuth');
+  assert.match(runtimeSource, /0001_operational_history\.sql/, 'runtime deve inicializar o schema operacional versionado');
 }
 
 function assertNoPublicNavigationExposure() {
@@ -295,6 +301,7 @@ console.log(JSON.stringify({
   githubMutationEnabled: false,
   productMutationEnabled: false,
   hardcodedSecrets: 0,
+  d1OperationalBinding: 'PNM_HISTORY_DB',
   d1AuthoritativeCatalog: false,
   shellAreas: CENTRAL_AREAS.map(area => area.label),
 }, null, 2));
