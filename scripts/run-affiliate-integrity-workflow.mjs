@@ -16,6 +16,7 @@ export const EXECUTOR_SCOPES = Object.freeze(['full', 'product', 'batch', 'input
 const PRODUCT_ID_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$/;
 const SHA_RE = /^[0-9a-f]{40}$/i;
 const POSITIVE_INTEGER_RE = /^[1-9][0-9]*$/;
+const OPS_FULL_AUDIT_REF_RE = /^refs\/heads\/ops\/full-affiliate-audit-[A-Za-z0-9._-]+$/;
 
 function text(value) {
   return String(value ?? '').trim();
@@ -70,9 +71,11 @@ export function buildAuditExecutionPlan(env = {}) {
   const sourceSha = text(env.GITHUB_SHA);
   if (!SHA_RE.test(sourceSha)) throw new Error('GITHUB_SHA inválido');
   const eventName = text(env.GITHUB_EVENT_NAME);
-  if (!['workflow_dispatch', 'workflow_call', 'schedule'].includes(eventName)) throw new Error('GITHUB_EVENT_NAME não permitido');
   const ref = text(env.GITHUB_REF);
   if (!ref || ref.length > 240) throw new Error('GITHUB_REF inválido');
+  const standardEvent = ['workflow_dispatch', 'workflow_call', 'schedule'].includes(eventName);
+  const isolatedOpsPush = eventName === 'push' && OPS_FULL_AUDIT_REF_RE.test(ref) && scope === 'full';
+  if (!standardEvent && !isolatedOpsPush) throw new Error('GITHUB_EVENT_NAME não permitido');
 
   const productIdRaw = text(env.PNM_AUDIT_PRODUCT_ID);
   const productIdsRaw = text(env.PNM_AUDIT_PRODUCT_IDS);
