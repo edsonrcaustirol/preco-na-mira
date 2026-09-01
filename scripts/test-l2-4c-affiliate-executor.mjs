@@ -109,7 +109,8 @@ function assertReuseAndSecurity() {
   assert.equal(config.preview_urls, false);
   assert.equal('routes' in config, false);
   assert.equal('route' in config, false);
-  assert.equal('d1_databases' in config, false);
+  assert.equal(Array.isArray(config.d1_databases), true, 'D1 operacional deve estar declarado');
+  assert.equal(config.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');
   assert.equal('triggers' in config, false);
   assert.equal(CENTRAL_CONTRACTS.catalog.owner, 'data/produtos-index.js');
   assert.equal(CENTRAL_CONTRACTS.catalog.centralDatabaseOwner, false);

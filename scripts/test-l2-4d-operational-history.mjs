@@ -70,7 +70,8 @@ function assertContracts() {
   assert.equal(CENTRAL_CONTRACTS.d1.schemaVersioned, true);
   assert.equal(CENTRAL_CONTRACTS.d1.remoteProvisioned, false);
   const wrangler = JSON.parse(read('central/wrangler.jsonc'));
-  assert.equal('d1_databases' in wrangler, false, 'não inventar database_id remoto');
+  assert.equal(Array.isArray(wrangler.d1_databases), true, 'D1 operacional deve estar declarado');
+  assert.equal(wrangler.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');
   assert.equal('routes' in wrangler, false);
   assert.equal('triggers' in wrangler, false);
 }
