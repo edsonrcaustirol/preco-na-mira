@@ -9,6 +9,7 @@ on:
       - 'ops/full-affiliate-audit-*'
     paths:
       - '.github/workflows/auditar-links.yml'
+      - 'scripts/run-affiliate-integrity-workflow.mjs'
   workflow_dispatch:
     inputs:
       scope:
