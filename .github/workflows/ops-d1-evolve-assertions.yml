@@ -30,11 +30,14 @@ jobs:
               'scripts/test-l2-4g-central-operational.mjs',
               'scripts/test-l2-4h-new-product.mjs',
           ]
-          pattern = re.compile(r"^(?P<i>\s*)assert\.equal\('d1_databases' in (?P<v>[A-Za-z_$][\w$]*), false(?:,\s*[^;]+)?\);$", re.M)
+          pattern = re.compile(r"^(?P<i>\s*)assert\.equal\(\s*['\"]d1_databases['\"]\s+in\s+(?P<v>[A-Za-z_$][\w$]*)\s*,\s*false(?:\s*,[^\n]*)?\s*\);?\s*$", re.M)
           changed = 0
           for name in files:
               path = Path(name)
               source = path.read_text()
+              matches = list(pattern.finditer(source))
+              if len(matches) != 1:
+                  raise SystemExit(f'{name}: expected 1 stale D1 assertion, found {len(matches)}')
               def repl(match):
                   global changed
                   changed += 1
@@ -43,8 +46,7 @@ jobs:
                       f"{indent}assert.equal(Array.isArray({var}.d1_databases), true, 'D1 operacional deve estar declarado');\n"
                       f"{indent}assert.equal({var}.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');"
                   )
-              updated = pattern.sub(repl, source)
-              path.write_text(updated)
+              path.write_text(pattern.sub(repl, source))
           if changed != 7:
               raise SystemExit(f'expected 7 stale assertions, changed {changed}')
           print(f'changed={changed}')
