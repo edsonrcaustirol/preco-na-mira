@@ -1,0 +1,31 @@
+name: P1 content patch
+
+on:
+  push:
+    branches:
+      - p1-trafego-caixas-som
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: p1-trafego-caixas-som
+          fetch-depth: 0
+      - name: Apply P1 patch
+        run: node scripts/p1-content-patch.mjs
+      - name: Remove temporary patch machinery
+        run: git rm scripts/p1-content-patch.mjs .github/workflows/p1-content-patch.yml
+      - name: Commit generated edits
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add guias.html guia-caixa-de-som.html caixas-de-som.html melhores-portateis.html sitemap.xml
+          git diff --cached --exit-code && exit 1 || true
+          git commit -m "P1: conectar cluster de caixas de som e sitemap"
+          git push origin HEAD:p1-trafego-caixas-som
