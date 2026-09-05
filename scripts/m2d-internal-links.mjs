@@ -28,8 +28,8 @@ export const INTERNAL_LINK_RULES = [
     source: 'guias.html',
     target: 'guia-fones',
     criterion: 'guias é o índice editorial dos guias existentes; guia-fones já é uma landing indexável de guia de compra.',
-    needle: '<a class="guide-card" href="guia-caixa-de-som"><small>ÁUDIO</small><h2>Como escolher caixa de som Bluetooth sem olhar só watts</h2><p>Portabilidade, bateria, resistência, tamanho, conexão e potência adequada ao ambiente.</p><b>LER GUIA →</b></a></div><div class="guide-callout">',
-    replacement: '<a class="guide-card" href="guia-caixa-de-som"><small>ÁUDIO</small><h2>Como escolher caixa de som Bluetooth sem olhar só watts</h2><p>Portabilidade, bateria, resistência, tamanho, conexão e potência adequada ao ambiente.</p><b>LER GUIA →</b></a><a class="guide-card" href="guia-fones"><small>ÁUDIO</small><h2>Como escolher fone de ouvido</h2><p>Formato, uso, ANC, chamadas, bateria e ecossistema antes de comparar modelos.</p><b>LER GUIA →</b></a></div><div class="guide-callout">',
+    needle: '<a class="guide-card" href="monitor-para-ps5"><small>MONITORES • CONSOLE</small><h2>Monitor para PS5: 1440p, 4K, 120 Hz e HDMI 2.1</h2><p>Entenda o que o console realmente pode aproveitar antes de pagar por especificações que ficarão ociosas.</p><b>LER GUIA →</b></a>',
+    replacement: '<a class="guide-card" href="guia-fones"><small>ÁUDIO</small><h2>Como escolher fone de ouvido</h2><p>Formato, uso, ANC, chamadas, bateria e ecossistema antes de comparar modelos.</p><b>LER GUIA →</b></a><a class="guide-card" href="monitor-para-ps5"><small>MONITORES • CONSOLE</small><h2>Monitor para PS5: 1440p, 4K, 120 Hz e HDMI 2.1</h2><p>Entenda o que o console realmente pode aproveitar antes de pagar por especificações que ficarão ociosas.</p><b>LER GUIA →</b></a>',
   },
   {
     id: 'cinema-para-setup-tv-soundbar',
