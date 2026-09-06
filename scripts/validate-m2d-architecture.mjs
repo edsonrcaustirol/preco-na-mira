@@ -13,6 +13,19 @@ function failWhen(condition, message) {
   if (condition) errors.push(message);
 }
 
+function deepestRows(field, limit = 30) {
+  return report.graph.rows
+    .filter(row => Number.isInteger(row[field]))
+    .sort((a, b) => (b[field] - a[field]) || (a.url.localeCompare(b.url, 'pt-BR')))
+    .slice(0, limit)
+    .map(row => ({
+      url: row.url,
+      type: row.type,
+      depth: row[field],
+      inbound: row.inbound,
+    }));
+}
+
 failWhen(report.summary.p0 !== 0, `P0=${report.summary.p0}; esperado 0.`);
 failWhen(report.summary.p1 !== 0, `P1=${report.summary.p1}; esperado 0.`);
 failWhen(report.orphanCandidates.length !== 0, `Candidatos a órfãos=${report.orphanCandidates.length}; esperado 0: ${report.orphanCandidates.map(row => row.url).join(', ')}`);
@@ -54,6 +67,12 @@ const result = {
   journeys: report.summary.journeys,
   products: report.summary.products,
   ownerProducts: report.summary.ownerProducts,
+  graph: {
+    maxDepthFromHome: report.graph.maxDepthFromHome,
+    maxDepthFromHubs: report.graph.maxDepthFromHubs,
+    deepestFromHome: deepestRows('fromHome'),
+    deepestFromHubs: deepestRows('fromHub'),
+  },
   productToCategory: {
     eligible: report.internalLinking.productToCategory.eligible,
     linked: report.internalLinking.productToCategory.linked,
