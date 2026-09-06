@@ -6,6 +6,8 @@ import { analyzeArchitecture } from './m2d-architecture.mjs';
 import { INTERNAL_LINK_RULES } from './m2d-internal-links.mjs';
 
 const ROOT = process.cwd();
+const MAX_DEPTH_FROM_HOME = 5;
+const MAX_DEPTH_FROM_HUBS = 4;
 const report = analyzeArchitecture(ROOT);
 const errors = [];
 
@@ -33,6 +35,8 @@ failWhen(report.summary.ownerProducts <= 0, `Owner=${report.summary.ownerProduct
 failWhen(report.summary.products !== report.summary.ownerProducts, `Páginas de produto=${report.summary.products}; esperado owner=${report.summary.ownerProducts}.`);
 failWhen(report.summary.categories !== 12, `Categorias observadas=${report.summary.categories}; esperado baseline 12.`);
 failWhen(report.summary.journeys !== 13, `Jornadas observadas=${report.summary.journeys}; esperado baseline 13.`);
+failWhen(report.graph.maxDepthFromHome > MAX_DEPTH_FROM_HOME, `Profundidade máxima da home=${report.graph.maxDepthFromHome}; guardrail <=${MAX_DEPTH_FROM_HOME}.`);
+failWhen(report.graph.maxDepthFromHubs > MAX_DEPTH_FROM_HUBS, `Profundidade máxima dos hubs=${report.graph.maxDepthFromHubs}; guardrail <=${MAX_DEPTH_FROM_HUBS}.`);
 failWhen(report.internalLinking.brokenLinks.length !== 0, `Links internos quebrados=${report.internalLinking.brokenLinks.length}.`);
 failWhen(report.internalLinking.wrongHostLinks.length !== 0, `Links internos em host errado=${report.internalLinking.wrongHostLinks.length}.`);
 failWhen(report.internalLinking.emptyAnchors.length !== 0, `Âncoras internas vazias=${report.internalLinking.emptyAnchors.length}.`);
@@ -70,6 +74,10 @@ const result = {
   graph: {
     maxDepthFromHome: report.graph.maxDepthFromHome,
     maxDepthFromHubs: report.graph.maxDepthFromHubs,
+    guardrail: {
+      maxDepthFromHome: MAX_DEPTH_FROM_HOME,
+      maxDepthFromHubs: MAX_DEPTH_FROM_HUBS,
+    },
     deepestFromHome: deepestRows('fromHome'),
     deepestFromHubs: deepestRows('fromHub'),
   },
@@ -87,6 +95,11 @@ const result = {
   internalLinkRules: INTERNAL_LINK_RULES.map(rule => ({ id: rule.id, source: rule.source, target: `/${rule.target}` })),
   errors,
 };
+
+if (process.env.GITHUB_ACTIONS === 'true') {
+  const status = errors.length ? 'FAIL' : 'PASS';
+  console.log(`::notice title=M2D architecture::status=${status}; depth_home=${report.graph.maxDepthFromHome}/${MAX_DEPTH_FROM_HOME}; depth_hubs=${report.graph.maxDepthFromHubs}/${MAX_DEPTH_FROM_HUBS}; categories=${report.summary.categories}; backlinks=${report.internalLinking.productToCategory.linked}/${report.internalLinking.productToCategory.eligible}; missing=${report.internalLinking.productToCategory.missing.length}; orphans=${report.orphanCandidates.length}; broken=${report.internalLinking.brokenLinks.length}`);
+}
 
 console.log(JSON.stringify(result, null, 2));
 if (errors.length) process.exitCode = 1;
