@@ -136,7 +136,7 @@ export function classifyPage(fileName) {
   if (/^catalogo(?:-pagina-\d+)?\.html$/i.test(fileName)) return 'CATÁLOGO';
   if (/^ofertas(?:-pagina-\d+)?\.html$/i.test(fileName)) return 'OFERTAS';
   if (/^produto-.+\.html$/i.test(fileName) && fileName !== 'produto.html') return 'PRODUTO';
-  if (/^(?:tvs|audio|notebooks|celulares|tablets|monitores|perifericos|casa|cozinha|gamer|ferramentas|obra|energia|iluminacao|seguranca|rede|armazenamento)\.html$/i.test(fileName)) return 'CATEGORIA';
+  if (/^(?:tvs|audio|notebooks|celulares|tablets|monitores|perifericos|casa|cozinha|gamer|ferramentas|obra|energia|iluminacao|seguranca|rede|armazenamento|smartphones|soundbars|projetores|fones-de-ouvido|caixas-de-som|pecas-pc|casa-inteligente)\.html$/i.test(fileName)) return 'CATEGORIA';
   if (/(?:^|[-_])(montar|projeto|jornada|ambiente)(?:[-_.]|$)|^(?:universos|casa-studio|pequenos-espacos|obra-base)\.html$/i.test(fileName)) return 'PROJETOS/JORNADAS';
   if (/^(?:sobre|quem-somos|contato|metodologia|transparencia|politica|privacidade|termos|aviso|faq)/i.test(fileName)) return 'CONTEÚDO/INSTITUCIONAL';
   return 'OUTROS';
