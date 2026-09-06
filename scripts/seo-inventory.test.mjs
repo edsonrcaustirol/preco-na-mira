@@ -33,6 +33,15 @@ test('classificação de tipos de página é determinística', () => {
   assert.equal(classifyPage('montar-casa.html'), 'PROJETOS/JORNADAS');
 });
 
+test('hubs modernos são categorias sem engolir guias e rankings', () => {
+  for (const file of ['smartphones.html', 'soundbars.html', 'projetores.html', 'fones-de-ouvido.html', 'caixas-de-som.html', 'pecas-pc.html', 'casa-inteligente.html']) {
+    assert.equal(classifyPage(file), 'CATEGORIA', file);
+  }
+  for (const file of ['melhores-smartphones.html', 'melhores-soundbars.html', 'melhores-projetores.html', 'soundbar-para-tv.html', 'projetor-para-quarto.html']) {
+    assert.equal(classifyPage(file), 'OUTROS', file);
+  }
+});
+
 test('title ausente é detectado', () => {
   const html = baseHtml().replace(/<title>[\s\S]*?<\/title>/i, '');
   const page = analyzeHtmlPage({ fileName: 'produto-fixture.html', html, sitemapSet, blockedRules: [], product });

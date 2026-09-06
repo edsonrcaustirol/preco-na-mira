@@ -39,6 +39,14 @@ export const INTERNAL_LINK_RULES = [
     needle: '<li>Compartilhe o setup para revisar depois ou mandar para outra pessoa opinar.</li>\n          </ul>',
     replacement: '<li>Compartilhe o setup para revisar depois ou mandar para outra pessoa opinar.</li>\n          </ul>\n          <p><a class="btn btn-dark" href="setup-tv-soundbar">ABRIR SETUP TV + SOUNDBAR →</a></p>',
   },
+  {
+    id: 'ipec-al4-max-para-casa-inteligente',
+    source: 'produto-ipec-al4-max.html',
+    target: 'casa-inteligente',
+    criterion: 'A própria página e o Product JSON-LD classificam o Ipec AL4 Max em Casa inteligente; o link transforma essa categoria factual em navegação rastreável.',
+    needle: '<div class="side-item"><strong>Categoria</strong>Casa inteligente</div>',
+    replacement: '<div class="side-item"><strong>Categoria</strong><a href="casa-inteligente">Casa inteligente</a></div>',
+  },
 ];
 
 function hrefPattern(target) {
@@ -59,6 +67,53 @@ export function applyRule(html, rule) {
     throw new Error(`${rule.id}: transformação não produziu link para ${rule.target}.`);
   }
   return { html: next, changed: true, state: 'inserted' };
+}
+
+function pagePath(kind, page) {
+  return page <= 1 ? kind : `${kind}-pagina-${page}`;
+}
+
+export function applyPaginationBoundaries(html, kind, label) {
+  const pattern = /<span class="pnm-seo-pages">[\s\S]*?<\/span><span class="pnm-seo-page-status">Página (\d+) de (\d+)<\/span>/;
+  const match = html.match(pattern);
+  if (!match) return { html, changed: false, state: 'no-pagination' };
+
+  const page = Number(match[1]);
+  const totalPages = Number(match[2]);
+  if (!Number.isInteger(page) || !Number.isInteger(totalPages) || page < 1 || totalPages < page) {
+    throw new Error(`${kind}: status de paginação inválido: ${match[1]} de ${match[2]}.`);
+  }
+
+  const pages = new Set([1, totalPages]);
+  for (let current = Math.max(1, page - 2); current <= Math.min(totalPages, page + 2); current += 1) pages.add(current);
+  const links = [...pages]
+    .sort((a, b) => a - b)
+    .map(current => current === page
+      ? `<strong aria-current="page">${current}</strong>`
+      : `<a href="${pagePath(kind, current)}" aria-label="${label} — página ${current}">${current}</a>`)
+    .join('');
+  const replacement = `<span class="pnm-seo-pages">${links}</span><span class="pnm-seo-page-status">Página ${page} de ${totalPages}</span>`;
+  const next = html.replace(pattern, replacement);
+  return { html: next, changed: next !== html, state: next === html ? 'already-present' : 'expanded' };
+}
+
+function applyPaginationArchitecture(root) {
+  const details = [];
+  let changedFiles = 0;
+  for (const { kind, label } of [{ kind: 'catalogo', label: 'Catálogo' }, { kind: 'ofertas', label: 'Ofertas' }]) {
+    const matcher = new RegExp(`^${kind}(?:-pagina-\\d+)?\\.html$`);
+    for (const name of fs.readdirSync(root).filter(file => matcher.test(file)).sort()) {
+      const file = path.join(root, name);
+      const original = fs.readFileSync(file, 'utf8');
+      const result = applyPaginationBoundaries(original, kind, label);
+      if (result.changed) {
+        fs.writeFileSync(file, result.html);
+        changedFiles += 1;
+      }
+      details.push({ source: name, state: result.state });
+    }
+  }
+  return { changedFiles, details };
 }
 
 export function applyInternalLinks(rootDir = ROOT) {
@@ -84,7 +139,18 @@ export function applyInternalLinks(rootDir = ROOT) {
     });
   }
 
-  return { contract: 'pnm.m2d-internal-linking/v1', changedFiles, details };
+  const pagination = applyPaginationArchitecture(root);
+  changedFiles += pagination.changedFiles;
+  return {
+    contract: 'pnm.m2d-internal-linking/v2',
+    changedFiles,
+    details,
+    pagination: {
+      changedFiles: pagination.changedFiles,
+      pages: pagination.details.length,
+      details: pagination.details,
+    },
+  };
 }
 
 const invoked = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);

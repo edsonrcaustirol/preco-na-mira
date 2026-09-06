@@ -13,18 +13,31 @@ function failWhen(condition, message) {
   if (condition) errors.push(message);
 }
 
+function deepestRows(field, limit = 30) {
+  return report.graph.rows
+    .filter(row => Number.isInteger(row[field]))
+    .sort((a, b) => (b[field] - a[field]) || (a.url.localeCompare(b.url, 'pt-BR')))
+    .slice(0, limit)
+    .map(row => ({
+      url: row.url,
+      type: row.type,
+      depth: row[field],
+      inbound: row.inbound,
+    }));
+}
+
 failWhen(report.summary.p0 !== 0, `P0=${report.summary.p0}; esperado 0.`);
 failWhen(report.summary.p1 !== 0, `P1=${report.summary.p1}; esperado 0.`);
 failWhen(report.orphanCandidates.length !== 0, `Candidatos a órfãos=${report.orphanCandidates.length}; esperado 0: ${report.orphanCandidates.map(row => row.url).join(', ')}`);
 failWhen(report.summary.ownerProducts <= 0, `Owner=${report.summary.ownerProducts}; esperado catálogo não vazio.`);
 failWhen(report.summary.products !== report.summary.ownerProducts, `Páginas de produto=${report.summary.products}; esperado owner=${report.summary.ownerProducts}.`);
-failWhen(report.summary.categories !== 5, `Categorias observadas=${report.summary.categories}; esperado baseline 5.`);
+failWhen(report.summary.categories !== 12, `Categorias observadas=${report.summary.categories}; esperado baseline 12.`);
 failWhen(report.summary.journeys !== 13, `Jornadas observadas=${report.summary.journeys}; esperado baseline 13.`);
 failWhen(report.internalLinking.brokenLinks.length !== 0, `Links internos quebrados=${report.internalLinking.brokenLinks.length}.`);
 failWhen(report.internalLinking.wrongHostLinks.length !== 0, `Links internos em host errado=${report.internalLinking.wrongHostLinks.length}.`);
 failWhen(report.internalLinking.emptyAnchors.length !== 0, `Âncoras internas vazias=${report.internalLinking.emptyAnchors.length}.`);
 failWhen(report.internalLinking.categoryToProduct.membershipViolations.length !== 0, `Violações categoria→produto=${report.internalLinking.categoryToProduct.membershipViolations.length}.`);
-failWhen(report.internalLinking.productToCategory.missing.length !== 0, `Produtos elegíveis sem link para categoria factual=${report.internalLinking.productToCategory.missing.length}.`);
+failWhen(report.internalLinking.productToCategory.missing.length !== 0, `Produtos elegíveis sem link para categoria factual=${report.internalLinking.productToCategory.missing.length}: ${report.internalLinking.productToCategory.missing.map(row => `${row.url} → ${row.categoryRoute}`).join(', ')}`);
 failWhen(report.facetedNavigation.sitemapHasParameters, 'Sitemap contém URL com parâmetros.');
 failWhen(report.related.productPages !== report.summary.ownerProducts, `Escopo related M2D=${report.related.productPages}; esperado owner=${report.summary.ownerProducts} páginas de produto.`);
 
@@ -54,10 +67,17 @@ const result = {
   journeys: report.summary.journeys,
   products: report.summary.products,
   ownerProducts: report.summary.ownerProducts,
+  graph: {
+    maxDepthFromHome: report.graph.maxDepthFromHome,
+    maxDepthFromHubs: report.graph.maxDepthFromHubs,
+    deepestFromHome: deepestRows('fromHome'),
+    deepestFromHubs: deepestRows('fromHub'),
+  },
   productToCategory: {
     eligible: report.internalLinking.productToCategory.eligible,
     linked: report.internalLinking.productToCategory.linked,
     missing: report.internalLinking.productToCategory.missing.length,
+    missingDetails: report.internalLinking.productToCategory.missing,
   },
   brokenLinks: report.internalLinking.brokenLinks.length,
   wrongHostLinks: report.internalLinking.wrongHostLinks.length,
