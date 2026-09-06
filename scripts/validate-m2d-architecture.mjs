@@ -8,6 +8,8 @@ import { INTERNAL_LINK_RULES } from './m2d-internal-links.mjs';
 const ROOT = process.cwd();
 const MAX_DEPTH_FROM_HOME = 5;
 const MAX_DEPTH_FROM_HUBS = 4;
+const EXPECTED_DIAGNOSTIC_DEPTH_FROM_HOME = 4;
+const EXPECTED_DIAGNOSTIC_DEPTH_FROM_HUBS = 3;
 const report = analyzeArchitecture(ROOT);
 const errors = [];
 
@@ -37,6 +39,8 @@ failWhen(report.summary.categories !== 12, `Categorias observadas=${report.summa
 failWhen(report.summary.journeys !== 13, `Jornadas observadas=${report.summary.journeys}; esperado baseline 13.`);
 failWhen(report.graph.maxDepthFromHome > MAX_DEPTH_FROM_HOME, `Profundidade máxima da home=${report.graph.maxDepthFromHome}; guardrail <=${MAX_DEPTH_FROM_HOME}.`);
 failWhen(report.graph.maxDepthFromHubs > MAX_DEPTH_FROM_HUBS, `Profundidade máxima dos hubs=${report.graph.maxDepthFromHubs}; guardrail <=${MAX_DEPTH_FROM_HUBS}.`);
+failWhen(report.graph.maxDepthFromHome !== EXPECTED_DIAGNOSTIC_DEPTH_FROM_HOME, `Diagnóstico temporário: profundidade máxima da home=${report.graph.maxDepthFromHome}; esperado exatamente ${EXPECTED_DIAGNOSTIC_DEPTH_FROM_HOME}.`);
+failWhen(report.graph.maxDepthFromHubs !== EXPECTED_DIAGNOSTIC_DEPTH_FROM_HUBS, `Diagnóstico temporário: profundidade máxima dos hubs=${report.graph.maxDepthFromHubs}; esperado exatamente ${EXPECTED_DIAGNOSTIC_DEPTH_FROM_HUBS}.`);
 failWhen(report.internalLinking.brokenLinks.length !== 0, `Links internos quebrados=${report.internalLinking.brokenLinks.length}.`);
 failWhen(report.internalLinking.wrongHostLinks.length !== 0, `Links internos em host errado=${report.internalLinking.wrongHostLinks.length}.`);
 failWhen(report.internalLinking.emptyAnchors.length !== 0, `Âncoras internas vazias=${report.internalLinking.emptyAnchors.length}.`);
@@ -77,6 +81,10 @@ const result = {
     guardrail: {
       maxDepthFromHome: MAX_DEPTH_FROM_HOME,
       maxDepthFromHubs: MAX_DEPTH_FROM_HUBS,
+    },
+    diagnosticExpectation: {
+      maxDepthFromHome: EXPECTED_DIAGNOSTIC_DEPTH_FROM_HOME,
+      maxDepthFromHubs: EXPECTED_DIAGNOSTIC_DEPTH_FROM_HUBS,
     },
     deepestFromHome: deepestRows('fromHome'),
     deepestFromHubs: deepestRows('fromHub'),
