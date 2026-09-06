@@ -73,6 +73,23 @@ function pagePath(kind, page) {
   return page <= 1 ? kind : `${kind}-pagina-${page}`;
 }
 
+export function paginationTargets(page, totalPages) {
+  const pages = new Set([1, totalPages]);
+
+  for (let current = Math.max(1, page - 3); current <= Math.min(totalPages, page + 3); current += 1) {
+    pages.add(current);
+  }
+
+  for (let distance = 5; distance < totalPages; distance *= 2) {
+    const backward = page - distance;
+    const forward = page + distance;
+    if (backward >= 1) pages.add(backward);
+    if (forward <= totalPages) pages.add(forward);
+  }
+
+  return [...pages].sort((a, b) => a - b);
+}
+
 export function applyPaginationBoundaries(html, kind, label) {
   const pattern = /<span class="pnm-seo-pages">[\s\S]*?<\/span><span class="pnm-seo-page-status">Página (\d+) de (\d+)<\/span>/;
   const match = html.match(pattern);
@@ -84,10 +101,7 @@ export function applyPaginationBoundaries(html, kind, label) {
     throw new Error(`${kind}: status de paginação inválido: ${match[1]} de ${match[2]}.`);
   }
 
-  const pages = new Set([1, totalPages]);
-  for (let current = Math.max(1, page - 2); current <= Math.min(totalPages, page + 2); current += 1) pages.add(current);
-  const links = [...pages]
-    .sort((a, b) => a - b)
+  const links = paginationTargets(page, totalPages)
     .map(current => current === page
       ? `<strong aria-current="page">${current}</strong>`
       : `<a href="${pagePath(kind, current)}" aria-label="${label} — página ${current}">${current}</a>`)
@@ -142,10 +156,11 @@ export function applyInternalLinks(rootDir = ROOT) {
   const pagination = applyPaginationArchitecture(root);
   changedFiles += pagination.changedFiles;
   return {
-    contract: 'pnm.m2d-internal-linking/v2',
+    contract: 'pnm.m2d-internal-linking/v3',
     changedFiles,
     details,
     pagination: {
+      strategy: 'local-radius-3-plus-exponential-jumps-5x2^n',
       changedFiles: pagination.changedFiles,
       pages: pagination.details.length,
       details: pagination.details,
