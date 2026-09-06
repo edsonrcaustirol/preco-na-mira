@@ -18,6 +18,7 @@ import {
 import { renderLinkHealthPage } from '../central/src/link-health-page.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const CENTRAL_HOST = 'central.preconamira.com.br';
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
@@ -138,10 +139,9 @@ function assertSecurityAndOwnership() {
   const config = JSON.parse(read('central/wrangler.jsonc'));
   assert.equal(config.workers_dev, false);
   assert.equal(config.preview_urls, false);
-  assert.equal('routes' in config, false);
+  assert.deepEqual(config.routes, [{ pattern: CENTRAL_HOST, custom_domain: true }]);
   assert.equal('route' in config, false);
-  assert.equal(Array.isArray(config.d1_databases), true, 'D1 operacional deve estar declarado');
-  assert.equal(config.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');
+  assert.equal('d1_databases' in config, false, 'primeiro deploy gratuito não deve depender de D1');
   assert.equal('triggers' in config, false);
 
   const worker = read('central/src/worker.mjs');
@@ -203,7 +203,7 @@ console.log(JSON.stringify({
   emptyAuditState: true,
   auditDispatchEnabled: false,
   productMutationEnabled: false,
-  d1: false,
+  d1RequiredForInitialDeploy: false,
   scheduler: false,
-  adminRoute: false,
+  adminRoute: CENTRAL_HOST,
 }, null, 2));
