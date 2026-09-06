@@ -20,6 +20,7 @@ const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const hash = p => crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, p))).digest('hex');
 const ownerPath = 'data/produtos-index.js';
 const mobilePath = 'data/produtos-mobile.js';
+const CENTRAL_HOST = 'central.preconamira.com.br';
 const ownerBefore = hash(ownerPath);
 const mobileBefore = hash(mobilePath);
 const generatedPath = path.join(ROOT, 'central/src/generated/products.mjs');
@@ -116,6 +117,7 @@ assert.match(html, /script nonce="fixtureNonce"/);
 const newProductSource = read('central/src/new-product.mjs');
 const pageSource = read('central/src/new-product-page.mjs');
 const workerSource = read('central/src/worker.mjs');
+const runtimeSource = read('central/src/runtime-worker.mjs');
 assert.doesNotMatch(newProductSource, /\bfetch\s*\(|spawnSync|validateCatalog|recordAuditHistory|\bD1\b/);
 assert.match(newProductSource, /analyzeNewProductBatch[\s\S]*analyzeNewProductInput\(entry, products\)/);
 assert.match(pageSource, /fetch\('\/api\/new-product\/transactions'/);
@@ -125,15 +127,15 @@ assert.match(workerSource, /READ_METHODS = new Set\(\['GET', 'HEAD'\]\)/);
 assert.match(workerSource, /NEW_PRODUCT_TRANSACTION_PATH = '\/api\/new-product\/transactions'/);
 assert.match(workerSource, /enforceAdministrativeBoundary/);
 assert.match(workerSource, /ORIGIN_REJECTED/);
+assert.match(runtimeSource, /handleGithubOauthCentralRequest/);
 
 const config = JSON.parse(read('central/wrangler.jsonc'));
 assert.equal(config.workers_dev, false);
 assert.equal(config.preview_urls, false);
-assert.equal('routes' in config, false);
-assert.equal(Array.isArray(config.d1_databases), true, 'D1 operacional deve estar declarado');
-assert.equal(config.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');
+assert.deepEqual(config.routes, [{ pattern: CENTRAL_HOST, custom_domain: true }]);
+assert.equal('d1_databases' in config, false, 'novo produto não deve depender de D1 no primeiro deploy gratuito');
 assert.equal('triggers' in config, false);
-assert.equal('PNM_GITHUB_TOKEN' in (config.vars || {}), false);
+assert.equal('PNM_GITHUB_TOKEN' in (config.vars || {}), false, 'token transacional deve existir somente como secret do Worker');
 
 const pkg = JSON.parse(read('package.json'));
 assert.equal(pkg.scripts['test:l2-4h-new-product'], 'node scripts/test-l2-4h-new-product.mjs');
@@ -158,5 +160,8 @@ console.log(JSON.stringify({
   ownerChanged: false,
   mobileChanged: false,
   frontendSecrets: 0,
+  d1RequiredForInitialDeploy: false,
+  adminRoute: CENTRAL_HOST,
+  activeAuthentication: 'github-oauth',
   publicationStatusPollingAutomatic: true,
 }, null, 2));
