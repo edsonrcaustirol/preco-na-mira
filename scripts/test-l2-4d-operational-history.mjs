@@ -75,7 +75,7 @@ function assertContracts() {
   assert.deepEqual(wrangler.routes, [{ pattern: CENTRAL_HOST, custom_domain: true }]);
   assert.equal('triggers' in wrangler, false);
   const runtime = read('central/src/runtime-worker.mjs');
-  assert.match(runtime, /if \(!db\) return \{ ready: false, reason: 'unbound' \}/, 'runtime deve degradar histórico para unbound sem bloquear a Central');
+  assert.match(runtime, /if \(!db \|\| typeof db\.exec !== 'function'\) return Object\.freeze\(\{ status: 'unbound' \}\)/, 'runtime deve degradar histórico para unbound sem bloquear a Central');
 }
 
 function assertGate() {
