@@ -19,6 +19,7 @@ import {
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = relativePath => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+const CENTRAL_HOST = 'central.preconamira.com.br';
 
 function report(results, selection = { all: true }) {
   return {
@@ -121,7 +122,7 @@ function assertWorkflow() {
   assert.doesNotMatch(workflow, /wrangler deploy/);
   assert.doesNotMatch(evaluator, /PROBLEMA_DE_LINK.*NÃO_COMPROVÁVEL|NÃO_COMPROVÁVEL.*PROBLEMA_DE_LINK/);
   assert.match(wrapper, /'schedule'/);
-  assert.equal('routes' in wrangler, false);
+  assert.deepEqual(wrangler.routes, [{ pattern: CENTRAL_HOST, custom_domain: true }]);
   assert.equal('triggers' in wrangler, false, 'scheduler é GitHub Actions, não cron paralelo no Worker');
   assert.equal(wrangler.workers_dev, false);
   assert.equal(wrangler.preview_urls, false);
@@ -161,5 +162,6 @@ console.log(JSON.stringify({
   factualDelta: true,
   retentionBounded: true,
   remoteD1Provisioned: false,
+  adminRoute: CENTRAL_HOST,
   manualDeploy: false,
 }, null, 2));

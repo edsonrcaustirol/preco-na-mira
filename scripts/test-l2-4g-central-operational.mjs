@@ -12,6 +12,7 @@ import { renderOperationalProductsPage } from '../central/src/products-operation
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = p => fs.readFileSync(path.join(ROOT, p), 'utf8');
+const CENTRAL_HOST = 'central.preconamira.com.br';
 const generatedPath = path.join(ROOT, 'central/src/generated/products.mjs');
 if (!fs.existsSync(generatedPath)) {
   const built = spawnSync(process.execPath, ['scripts/build-central-products.mjs'], { cwd: ROOT, stdio: 'inherit', shell: false });
@@ -62,6 +63,7 @@ assert.doesNotMatch(historyHtml, /<pre[ >]/i, 'JSON cru não deve ser UX princip
 assert.match(historyHtml, /overflow-x:hidden/);
 
 const worker = read('central/src/worker.mjs');
+const runtime = read('central/src/runtime-worker.mjs');
 const config = JSON.parse(read('central/wrangler.jsonc'));
 assert.match(worker, /renderOperationalDashboard/);
 assert.match(worker, /renderOperationalProductsPage/);
@@ -70,15 +72,28 @@ assert.match(worker, /PNM_HISTORY_DB/);
 assert.match(worker, /generated\/products\.mjs/);
 assert.match(worker, /ERR_MODULE_NOT_FOUND/);
 assert.match(worker, /verifyCloudflareAccessAssertion/);
+assert.match(runtime, /handleGithubOauthCentralRequest/);
+assert.match(runtime, /if \(!db \|\| typeof db\.exec !== 'function'\) return Object\.freeze\(\{ status: 'unbound' \}\)/);
 assert.doesNotMatch(worker, /spawnSync|auditProducts|GITHUB_TOKEN/);
 assert.equal(config.workers_dev, false);
 assert.equal(config.preview_urls, false);
-assert.equal('routes' in config, false);
-assert.equal(Array.isArray(config.d1_databases), true, 'D1 operacional deve estar declarado');
-assert.equal(config.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');
+assert.deepEqual(config.routes, [{ pattern: CENTRAL_HOST, custom_domain: true }]);
+assert.equal('d1_databases' in config, false, 'primeiro deploy gratuito deve permitir histórico unbound');
 assert.equal('triggers' in config, false);
 
 const pkg = JSON.parse(read('package.json'));
 assert.equal(pkg.scripts['test:l2-4g-central-operational'], 'node scripts/test-l2-4g-central-operational.mjs');
 for (const gate of ['test:l2-4f-link-monitor', 'test:l2-4g-central-operational', 'test:affiliate-integrity', 'test:e2-catalog-operations']) assert.ok(pkg.scripts.check.includes(gate));
-console.log(JSON.stringify({ l24gCentralOperational: 'PASS', products: expectedTotal, dashboard: true, productsHealth: true, historyUx: true, d1RemoteProvisioned: false, scheduledRunClaimRequiresEvidence: true, adminRoute: false, mobileNoHorizontalOverflow: true }, null, 2));
+console.log(JSON.stringify({
+  l24gCentralOperational: 'PASS',
+  products: expectedTotal,
+  dashboard: true,
+  productsHealth: true,
+  historyUx: true,
+  d1RemoteProvisioned: false,
+  d1RequiredForInitialDeploy: false,
+  scheduledRunClaimRequiresEvidence: true,
+  adminRoute: CENTRAL_HOST,
+  activeAuthentication: 'github-oauth',
+  mobileNoHorizontalOverflow: true,
+}, null, 2));

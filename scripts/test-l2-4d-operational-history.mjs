@@ -9,6 +9,7 @@ import { CENTRAL_HISTORY_CONTRACT, HISTORY_CLASSIFICATIONS, HISTORY_RUN_STATUSES
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = file => fs.readFileSync(path.join(ROOT, file), 'utf8');
+const CENTRAL_HOST = 'central.preconamira.com.br';
 
 class Statement {
   constructor(db, sql) { this.db = db; this.sql = sql; this.binds = []; }
@@ -70,10 +71,11 @@ function assertContracts() {
   assert.equal(CENTRAL_CONTRACTS.d1.schemaVersioned, true);
   assert.equal(CENTRAL_CONTRACTS.d1.remoteProvisioned, false);
   const wrangler = JSON.parse(read('central/wrangler.jsonc'));
-  assert.equal(Array.isArray(wrangler.d1_databases), true, 'D1 operacional deve estar declarado');
-  assert.equal(wrangler.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');
-  assert.equal('routes' in wrangler, false);
+  assert.equal('d1_databases' in wrangler, false, 'primeiro deploy gratuito deve funcionar sem provisionar D1');
+  assert.deepEqual(wrangler.routes, [{ pattern: CENTRAL_HOST, custom_domain: true }]);
   assert.equal('triggers' in wrangler, false);
+  const runtime = read('central/src/runtime-worker.mjs');
+  assert.match(runtime, /if \(!db \|\| typeof db\.exec !== 'function'\) return Object\.freeze\(\{ status: 'unbound' \}\)/, 'runtime deve degradar histórico para unbound sem bloquear a Central');
 }
 
 function assertGate() {
@@ -90,4 +92,13 @@ assertPayload();
 await assertReads();
 assertContracts();
 assertGate();
-console.log(JSON.stringify({ l24dOperationalHistory: 'PASS', contract: CENTRAL_HISTORY_CONTRACT, schemaVersioned: true, remoteD1Provisioned: false, secondOwner: false, statuses: HISTORY_RUN_STATUSES }, null, 2));
+console.log(JSON.stringify({
+  l24dOperationalHistory: 'PASS',
+  contract: CENTRAL_HISTORY_CONTRACT,
+  schemaVersioned: true,
+  remoteD1Provisioned: false,
+  d1RequiredForInitialDeploy: false,
+  adminRoute: CENTRAL_HOST,
+  secondOwner: false,
+  statuses: HISTORY_RUN_STATUSES,
+}, null, 2));

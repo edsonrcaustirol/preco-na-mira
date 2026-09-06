@@ -15,6 +15,7 @@ import {
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FIXTURE_SHA = '0123456789abcdef0123456789abcdef01234567';
+const CENTRAL_HOST = 'central.preconamira.com.br';
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
@@ -107,10 +108,9 @@ function assertReuseAndSecurity() {
   assert.doesNotMatch(worker, /affiliate-integrity-execution|spawnSync|auditProducts/);
   assert.equal(config.workers_dev, false);
   assert.equal(config.preview_urls, false);
-  assert.equal('routes' in config, false);
+  assert.deepEqual(config.routes, [{ pattern: CENTRAL_HOST, custom_domain: true }]);
   assert.equal('route' in config, false);
-  assert.equal(Array.isArray(config.d1_databases), true, 'D1 operacional deve estar declarado');
-  assert.equal(config.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');
+  assert.equal('d1_databases' in config, false, 'primeiro deploy gratuito não deve depender de D1');
   assert.equal('triggers' in config, false);
   assert.equal(CENTRAL_CONTRACTS.catalog.owner, 'data/produtos-index.js');
   assert.equal(CENTRAL_CONTRACTS.catalog.centralDatabaseOwner, false);
@@ -160,4 +160,6 @@ console.log(JSON.stringify({
   scheduleOwnedBy: 'L2.4F',
   secretsInWorkflow: false,
   productMutationEnabled: false,
+  d1RequiredForInitialDeploy: false,
+  adminRoute: CENTRAL_HOST,
 }, null, 2));

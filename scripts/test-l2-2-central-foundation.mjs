@@ -43,14 +43,15 @@ function assertSeparatedWorker() {
   assert.notEqual(centralConfig.name, publicConfig.name);
   assert.equal(centralConfig.workers_dev, false);
   assert.equal(centralConfig.preview_urls, false);
-  assert.equal('routes' in centralConfig, false, 'rota administrativa deve continuar fora do site público');
-  assert.equal(Array.isArray(centralConfig.d1_databases), true, 'Central deve declarar o D1 operacional');
-  assert.equal(centralConfig.d1_databases.length, 1);
-  assert.equal(centralConfig.d1_databases[0]?.binding, 'PNM_HISTORY_DB');
-  assert.equal(CENTRAL_CONTRACTS.d1.authoritativeCatalog, false, 'D1 operacional não pode virar owner do catálogo');
+  assert.equal(Array.isArray(centralConfig.routes), true, 'Central deve declarar somente seu Custom Domain administrativo');
+  assert.deepEqual(centralConfig.routes, [
+    { pattern: CENTRAL_HOST, custom_domain: true },
+  ]);
+  assert.equal('d1_databases' in centralConfig, false, 'primeiro deploy gratuito não deve depender de D1');
+  assert.equal(CENTRAL_CONTRACTS.d1.authoritativeCatalog, false, 'D1 operacional nunca pode virar owner do catálogo');
   const runtimeSource = read('central/src/runtime-worker.mjs');
   assert.match(runtimeSource, /handleGithubOauthCentralRequest/, 'runtime deve preservar a barreira GitHub OAuth');
-  assert.match(runtimeSource, /0001_operational_history\.sql/, 'runtime deve inicializar o schema operacional versionado');
+  assert.match(runtimeSource, /0001_operational_history\.sql/, 'runtime deve continuar pronto para inicializar D1 quando o binding existir');
 }
 
 function assertNoPublicNavigationExposure() {
@@ -166,7 +167,7 @@ function createAccessFixture() {
   };
 }
 
-async function assertCryptographicAccessValidation() {
+async function assertLegacyAccessCompatibility() {
   const fixture = createAccessFixture();
   const options = { fetchImpl: fixture.fetchImpl, nowSeconds: FIXED_NOW };
 
@@ -175,7 +176,7 @@ async function assertCryptographicAccessValidation() {
 
   const valid = fixture.token();
   const payload = await verifyCloudflareAccessAssertion(valid, fixture.env, options);
-  assert.equal(payload.sub, 'fixture-admin', 'assertion válida deve ser aceita');
+  assert.equal(payload.sub, 'fixture-admin', 'helper legado deve continuar validando assertion válida');
 
   await assert.rejects(
     () => verifyCloudflareAccessAssertion('fixture-assertion', fixture.env, options),
@@ -219,28 +220,28 @@ async function assertCryptographicAccessValidation() {
     'algoritmo diferente de RS256 deve ser rejeitado',
   );
 
-  assert.ok(fixture.getJwksFetches() >= 1, 'validação deve consultar JWKS fictício nos testes');
+  assert.ok(fixture.getJwksFetches() >= 1, 'validação legada deve consultar apenas JWKS fictício nos testes');
   return fixture;
 }
 
-async function assertFailClosedRuntime() {
+async function assertLegacyCoreFailClosed() {
   assert.deepEqual(missingAdminConfig({}), [
     'PNM_CENTRAL_ACCESS_AUD',
     'PNM_CENTRAL_ACCESS_ISSUER',
     'PNM_CENTRAL_EXPECTED_HOST',
   ]);
 
-  const fixture = await assertCryptographicAccessValidation();
+  const fixture = await assertLegacyAccessCompatibility();
   const options = { fetchImpl: fixture.fetchImpl, nowSeconds: FIXED_NOW };
   const baseRequest = new Request(`https://${CENTRAL_HOST}/`);
 
   let response = await handleCentralRequest(baseRequest, {}, options);
-  assert.equal(response.status, 503, 'configuração administrativa ausente deve falhar com 503');
+  assert.equal(response.status, 503, 'núcleo legado sem configuração deve falhar fechado');
   const configBody = await response.json();
   assert.equal('missing' in configBody, false, 'resposta não deve expor detalhes internos de configuração');
 
   response = await handleCentralRequest(baseRequest, fixture.env, options);
-  assert.equal(response.status, 403, 'sem Cloudflare Access assertion deve falhar com 403');
+  assert.equal(response.status, 403, 'núcleo legado sem assertion deve falhar fechado');
 
   response = await handleCentralRequest(new Request(`https://${CENTRAL_HOST}/`, {
     headers: { 'cf-access-jwt-assertion': 'fixture-assertion' },
@@ -252,7 +253,7 @@ async function assertFailClosedRuntime() {
 
   const validHeaders = { 'cf-access-jwt-assertion': fixture.token() };
   response = await handleCentralRequest(new Request(`https://${CENTRAL_HOST}/`, { headers: validHeaders }), fixture.env, options);
-  assert.equal(response.status, 200, 'assertion válida deve liberar a shell protegida');
+  assert.equal(response.status, 200, 'helper legado válido deve continuar funcional como compatibilidade interna');
   assert.match(await response.text(), /Central Operacional/);
 
   response = await handleCentralRequest(new Request(`https://${CENTRAL_HOST}/api/capabilities`, { headers: validHeaders }), fixture.env, options);
@@ -266,7 +267,7 @@ async function assertFailClosedRuntime() {
     method: 'POST',
     headers: validHeaders,
   }), fixture.env, options);
-  assert.equal(response.status, 405, 'POST deve permanecer bloqueado');
+  assert.equal(response.status, 405, 'POST direto no núcleo histórico deve permanecer bloqueado');
   assert.equal(response.headers.get('allow'), 'GET, HEAD');
 
   response = await handleCentralRequest(new Request('https://preconamira.com.br/', { headers: validHeaders }), fixture.env, options);
@@ -279,29 +280,25 @@ assertNoPublicNavigationExposure();
 assertReusableContracts();
 assertMutationDisabled();
 assertShellAreas();
-await assertFailClosedRuntime();
+await assertLegacyCoreFailClosed();
 
 console.log(JSON.stringify({
   centralFoundation: 'PASS',
   ownerUnchanged: true,
   publicNavigationExposure: false,
   separateAdminWorker: true,
+  customDomain: CENTRAL_HOST,
   activeAuthentication: CENTRAL_CONTRACTS.authentication.provider,
-  cloudflareAccessFallbackPrepared: true,
-  cloudflareAccessJwtVerification: 'PASS',
-  cloudflareAccessAlgorithm: 'RS256',
-  cloudflareAccessJwks: 'fixture-only-no-network',
-  issuerValidation: true,
-  audienceValidation: true,
-  expirationValidation: true,
-  fakeAssertionRejected: true,
-  invalidSignatureRejected: true,
+  d1RequiredForInitialDeploy: false,
+  cloudflareAccessRuntimeRequired: false,
+  legacyAccessHelperCompatibility: 'PASS',
+  legacyAccessJwtVerification: 'PASS',
+  legacyAccessJwks: 'fixture-only-no-network',
   e2Reusable: true,
   affiliateIntegrityReusable: true,
   githubMutationEnabled: false,
   productMutationEnabled: false,
   hardcodedSecrets: 0,
-  d1OperationalBinding: 'PNM_HISTORY_DB',
   d1AuthoritativeCatalog: false,
   shellAreas: CENTRAL_AREAS.map(area => area.label),
 }, null, 2));

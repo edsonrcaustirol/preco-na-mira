@@ -2,15 +2,17 @@
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "preco-na-mira-central",
   "main": "src/runtime-worker.mjs",
+  "account_id": "84d8de00cbfabe263c406d9a9dfca92c",
   "compatibility_date": "2026-08-23",
   "workers_dev": false,
   "preview_urls": false,
   "build": {
     "command": "node scripts/build-central-products.mjs"
   },
-  "d1_databases": [
+  "routes": [
     {
-      "binding": "PNM_HISTORY_DB"
+      "pattern": "central.preconamira.com.br",
+      "custom_domain": true
     }
   ],
   "vars": {

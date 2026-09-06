@@ -1,135 +1,175 @@
-# Central Operacional — Fundação L2.2
+# Central Operacional — modo gratuito sem cartão
 
-## Escopo desta etapa
+## Estado atual
 
-Esta fundação cria uma superfície administrativa separada e somente informativa para a futura Central Operacional do Preço na Mira.
+A Central do Preço na Mira usa um Worker administrativo separado em `central.preconamira.com.br`, autenticado diretamente pelo GitHub OAuth.
 
-Nesta etapa permanecem **desligados**:
+O Cloudflare Zero Trust / Access **não é requisito de produção**. A barreira administrativa ativa é implementada no próprio Worker por:
 
-- adicionar, editar ou remover produtos;
-- cadastro em lote;
-- mutações no GitHub;
-- merge automático;
-- correção automática de links;
-- monitor recorrente de links;
-- persistência D1.
+`central.preconamira.com.br -> GitHub OAuth + PKCE -> sessão assinada -> Central -> GitHub transacional`
 
-O catálogo continua tendo um único owner canônico:
+O catálogo continua com owner único em:
 
 `data/produtos-index.js`
 
-A Central não cria banco de produtos próprio.
+A Central não mantém uma segunda cópia autoritativa do catálogo.
 
-## Arquitetura preparada
+## Objetivo desta configuração
 
-Fluxo previsto:
+A Central deve funcionar com os componentes gratuitos já usados pelo projeto e sem cadastrar cartão de crédito:
 
-`central.preconamira.com.br -> Cloudflare Access -> Worker administrativo separado -> contratos E2/L1.1/GitHub`
+- Cloudflare Workers Free;
+- Custom Domain `central.preconamira.com.br`;
+- GitHub OAuth App;
+- GitHub Actions do repositório público;
+- GitHub como owner e executor transacional.
 
-O Worker público existente continua independente. A configuração administrativa está em `central/wrangler.jsonc` e usa outro nome e outro entrypoint.
+Nenhum plano Zero Trust é necessário.
 
-O `workers_dev` e os preview URLs da Central ficam desativados. A rota customizada para `central.preconamira.com.br` **não é adicionada nesta etapa** para impedir exposição antes da configuração do Cloudflare Access.
+## Worker e domínio
 
-## Cloudflare Access — configuração externa obrigatória antes de qualquer exposição
+A configuração está em `central/wrangler.jsonc`.
 
-Antes de adicionar a rota `central.preconamira.com.br` ao Worker administrativo:
+Regras obrigatórias:
 
-1. criar no Cloudflare Zero Trust uma aplicação Access do tipo **Self-hosted** para `central.preconamira.com.br`;
-2. criar política `Allow` apenas para o proprietário/grupo administrativo autorizado;
-3. não criar política pública, bypass ou regra que permita acesso anônimo;
-4. copiar o **Application Audience (AUD) tag** da aplicação Access para `PNM_CENTRAL_ACCESS_AUD`;
-5. configurar `PNM_CENTRAL_ACCESS_ISSUER` com o team domain oficial do Access no formato `https://<team-name>.cloudflareaccess.com`;
-6. confirmar que `PNM_CENTRAL_EXPECTED_HOST=central.preconamira.com.br`;
-7. somente depois adicionar a rota/custom domain `central.preconamira.com.br` ao Worker `preco-na-mira-central`;
-8. manter `workers_dev=false` e `preview_urls=false` enquanto a superfície administrativa depender exclusivamente do domínio protegido.
+- Worker: `preco-na-mira-central`;
+- entrypoint: `central/src/runtime-worker.mjs`;
+- `workers_dev=false`;
+- `preview_urls=false`;
+- Custom Domain: `central.preconamira.com.br`;
+- host diferente de `central.preconamira.com.br` é rejeitado pelo runtime;
+- o Worker público de `preconamira.com.br` permanece separado e não serve a Central.
 
-Variáveis obrigatórias de runtime:
+A primeira publicação não depende de D1. Sem `PNM_HISTORY_DB`, o histórico operacional fica em estado `unbound`, mas autenticação, leitura da projeção e fluxo de produto continuam independentes desse banco. D1 poderá ser conectado depois sem virar owner do catálogo.
 
-- `PNM_CENTRAL_ACCESS_AUD`: Application Audience (AUD) tag da aplicação Access;
-- `PNM_CENTRAL_ACCESS_ISSUER`: team domain/issuer oficial do Access, exclusivamente em `https://<team-name>.cloudflareaccess.com`;
-- `PNM_CENTRAL_EXPECTED_HOST`: host administrativo esperado, `central.preconamira.com.br`.
+## Autenticação GitHub OAuth
 
-Nenhum desses valores é enviado ao navegador como credencial. O AUD e o issuer identificam a aplicação/tenant; chaves privadas, tokens e secrets não são armazenados no código.
+Rotas:
 
-## Validação criptográfica do assertion
+- login: `/auth/github/login`;
+- callback: `/auth/github/callback`;
+- logout: `/auth/logout`.
 
-A presença do header `Cf-Access-Jwt-Assertion` **não é suficiente** para autenticar.
+Fluxo:
 
-Antes de servir qualquer área administrativa, o Worker:
+1. o Worker gera `state` criptograficamente aleatório;
+2. gera `code_verifier` e envia `code_challenge` SHA-256 ao GitHub (PKCE/S256);
+3. o callback exige o mesmo `state` e o `code_verifier` original;
+4. o Worker troca o `code` no backend, nunca no navegador;
+5. busca `https://api.github.com/user`;
+6. aceita somente o GitHub user ID configurado e o login configurado;
+7. descarta o token OAuth após identificar o usuário;
+8. cria sessão HMAC-SHA-256 com validade de 4 horas;
+9. grava a sessão em cookie `__Host-` com `HttpOnly`, `Secure` e `SameSite=Lax`.
 
-1. exige a configuração obrigatória;
-2. exige o host administrativo esperado;
-3. exige um JWT estruturalmente válido no header `Cf-Access-Jwt-Assertion`;
-4. aceita somente `RS256`;
-5. busca o JWKS público oficial em `PNM_CENTRAL_ACCESS_ISSUER + /cdn-cgi/access/certs`;
-6. seleciona a chave pública pelo `kid` e valida criptograficamente a assinatura;
-7. exige `iss` exatamente igual ao issuer configurado;
-8. exige que `aud` contenha exatamente o Application AUD configurado em `PNM_CENTRAL_ACCESS_AUD`;
-9. exige `exp` válido e não expirado;
-10. valida `nbf` e `iat` quando presentes.
+O token OAuth usado para identificar o administrador não é armazenado e não é usado para alterar o repositório.
 
-A consulta ao JWKS usa somente o team domain configurado e aceito sob `*.cloudflareaccess.com`; não há domínio de conta hardcoded.
+## Identidade autorizada
 
-Falhas fechadas:
+Configuração atual não secreta:
 
-- configuração obrigatória ausente ou inválida: `503 CENTRAL_CONFIG_INCOMPLETE`;
-- assertion ausente: `403 CLOUDFLARE_ACCESS_REQUIRED`;
-- JWT malformado, assinatura inválida, chave desconhecida, algoritmo incorreto, issuer incorreto, AUD incorreto ou token temporalmente inválido: `403 CLOUDFLARE_ACCESS_INVALID`.
+- `PNM_GITHUB_ALLOWED_USER_ID=315643281`;
+- `PNM_GITHUB_ALLOWED_LOGIN=edsonrcaustirol`;
+- `PNM_CENTRAL_EXPECTED_HOST=central.preconamira.com.br`;
+- `PNM_CENTRAL_AUTH_MODE=github-oauth`.
 
-A resposta HTTP não expõe o motivo criptográfico interno da rejeição.
+A autorização usa o ID numérico além do login, evitando depender apenas de um nome de usuário mutável.
 
-O Worker **não implementa usuário/senha próprio** e não armazena senha no repositório.
+## GitHub OAuth App
+
+No GitHub, em **Settings -> Developer settings -> OAuth Apps**, o aplicativo da Central deve ter:
+
+- Homepage URL: `https://central.preconamira.com.br`;
+- Authorization callback URL: `https://central.preconamira.com.br/auth/github/callback`.
+
+O `Client ID` pode ficar no `wrangler.jsonc`. O `Client Secret` nunca deve ser commitado.
+
+O login da Central não solicita escopos de repositório. Ele serve apenas para comprovar a identidade do administrador.
+
+## Secrets do Worker
+
+Os valores abaixo nunca devem aparecer no repositório:
+
+- `PNM_GITHUB_OAUTH_CLIENT_SECRET`: segredo do OAuth App;
+- `PNM_CENTRAL_SESSION_SECRET`: material aleatório com no mínimo 32 bytes usado para assinar sessões;
+- `PNM_GITHUB_TOKEN`: credencial server-side separada usada apenas pelo fluxo transacional da Central.
+
+O token transacional deve ser mínimo e restrito ao repositório `edsonrcaustirol/preco-na-mira`. Ele não é o token temporário do login OAuth.
+
+## Publicação gratuita via GitHub Actions
+
+O workflow `.github/workflows/deploy-central-free.yml` é manual (`workflow_dispatch`) para impedir deploy administrativo acidental.
+
+Antes do primeiro uso, cadastrar no repositório GitHub somente estes secrets:
+
+- `CLOUDFLARE_API_TOKEN`;
+- `PNM_GITHUB_OAUTH_CLIENT_SECRET`;
+- `PNM_GITHUB_TOKEN`.
+
+O workflow:
+
+1. executa os testes da autenticação;
+2. executa o guardrail da Central Free;
+3. faz um deploy fail-closed do Worker;
+4. sincroniza o secret do OAuth;
+5. sincroniza o token GitHub transacional;
+6. gera um novo segredo criptográfico de sessão e grava no Worker.
+
+Gerar um novo segredo de sessão em cada deploy invalida sessões administrativas antigas. Isso é intencional e não afeta catálogo, OAuth App ou GitHub.
+
+O `CLOUDFLARE_API_TOKEN` precisa apenas das permissões necessárias para publicar o Worker/Custom Domain na conta já usada pelo PNM. Não é necessário contratar Cloudflare Access.
+
+## Falhas fechadas
+
+A Central deve negar acesso quando:
+
+- configuração obrigatória estiver ausente: `503 CENTRAL_CONFIG_INCOMPLETE`;
+- o host estiver incorreto: `421 CENTRAL_HOST_REJECTED`;
+- uma API for chamada sem sessão: `401 GITHUB_OAUTH_REQUIRED`;
+- uma página for acessada sem sessão: redirecionamento para `/auth/github/login`;
+- o callback tiver `state`, PKCE, código ou backend inválido: rejeição do callback;
+- a identidade GitHub não for exatamente a permitida: `403 ADMIN_IDENTITY_REJECTED`;
+- a assinatura da sessão estiver adulterada ou expirada: sessão rejeitada.
+
+## Mutação de produtos
+
+Autenticação e publicação são responsabilidades diferentes.
+
+Depois do login, qualquer alteração real continua obedecendo ao fluxo transacional:
+
+`preflight -> owner -> sync E2 -> validação -> branch -> commit -> pull request -> CI -> merge controlado`
+
+Não existe push direto em `main` pela interface.
 
 ## Owner único e E2
 
-A Central referencia explicitamente:
+A Central referencia:
 
 - owner: `data/produtos-index.js`;
 - validação E2: `npm run validate:e2-catalog`;
 - teste de ciclo E2: `npm run test:e2-catalog-operations`;
 - módulo E2: `scripts/validar-catalogo-operacional.mjs`.
 
-Na etapa funcional futura, qualquer alteração de catálogo deverá editar somente o owner canônico e depois executar a cadeia E2 antes de criar a transação GitHub.
+D1, cookies e OAuth nunca substituem o owner canônico.
 
-## Auditoria L1.1
+## Auditoria de afiliados
 
-Contrato preparado para reaproveitar:
+A Central reutiliza o contrato existente:
 
 - comando: `npm run audit:affiliate-integrity`;
 - CLI: `scripts/audit-affiliate-integrity.mjs`;
 - contrato: `pnm.affiliate-integrity/v1`.
 
-Nenhuma auditoria automática é disparada pela Central nesta fundação.
+## Checklist de aceite
 
-## GitHub transacional
+A Central só deve ser considerada pronta quando estes pontos forem comprovados:
 
-O contrato futuro preserva:
-
-`branch -> commit -> pull request -> CI validar -> merge controlado`
-
-A flag de mutação GitHub permanece `false` nesta etapa. Não existe token GitHub, Authorization header nem chamada de escrita no Worker administrativo.
-
-## D1
-
-Nenhum binding D1 é criado nesta etapa.
-
-Quando for adicionado, D1 poderá registrar exclusivamente:
-
-- histórico;
-- auditorias;
-- eventos operacionais;
-- rastreabilidade.
-
-D1 nunca poderá ser catálogo autoritativo nem segunda cópia owner dos produtos.
-
-## Áreas da interface
-
-A shell administrativa contém:
-
-- Painel;
-- Produtos;
-- Novo Produto;
-- Saúde dos Links;
-- Histórico.
-
-Todas as áreas são informativas ou indisponíveis para escrita nesta etapa.
+- [ ] `npm run test:o4-github-oauth-auth` PASS;
+- [ ] `npm run test:p2-central-free` PASS;
+- [ ] `npm run check` PASS;
+- [ ] `https://central.preconamira.com.br/` redireciona usuário anônimo ao GitHub;
+- [ ] a conta GitHub autorizada entra e recebe sessão;
+- [ ] outra identidade é rejeitada;
+- [ ] nenhuma tela pública do PNM contém link administrativo;
+- [ ] um produto de teste percorre Central -> PR -> CI -> merge -> produção;
+- [ ] nenhum cartão/plano Zero Trust é necessário para o fluxo.
