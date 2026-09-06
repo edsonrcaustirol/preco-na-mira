@@ -213,10 +213,9 @@ function assertSecurityAndOwnership() {
   const config = JSON.parse(read('central/wrangler.jsonc'));
   assert.equal(config.workers_dev, false);
   assert.equal(config.preview_urls, false);
-  assert.equal('routes' in config, false, 'rota administrativa continua ausente');
-  assert.equal('route' in config, false, 'rota administrativa singular continua ausente');
-  assert.equal(Array.isArray(config.d1_databases), true, 'D1 operacional deve estar declarado');
-  assert.equal(config.d1_databases.some(entry => entry?.binding === 'PNM_HISTORY_DB'), true, 'binding PNM_HISTORY_DB ausente');
+  assert.deepEqual(config.routes, [{ pattern: CENTRAL_HOST, custom_domain: true }], 'Central deve expor somente seu Custom Domain administrativo');
+  assert.equal('route' in config, false, 'configuração singular de rota não deve coexistir com routes');
+  assert.equal('d1_databases' in config, false, 'primeiro deploy gratuito não deve depender de D1');
   assert.equal('triggers' in config, false, 'scheduler continua ausente');
   assert.deepEqual(config.build, { command: 'node scripts/build-central-products.mjs' });
 
@@ -301,9 +300,9 @@ console.log(JSON.stringify({
   lazyLoading: true,
   productMutationEnabled: false,
   githubMutationEnabled: false,
-  d1: false,
+  d1RequiredForInitialDeploy: false,
   scheduler: false,
-  adminRoute: false,
+  adminRoute: CENTRAL_HOST,
   workersDev: false,
   previewUrls: false,
   liveMercadoLivreCalls: 0,
