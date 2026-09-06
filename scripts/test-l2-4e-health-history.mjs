@@ -95,7 +95,7 @@ function assertRuntimeSafety() {
   assert.match(worker, /readCentralOperationalHistory\(env\.PNM_HISTORY_DB\)/);
   assert.match(worker, /historyStatus: 'unbound'/);
   assert.match(worker, /historyStatus: 'unavailable'/);
-  assert.match(runtime, /if \(!db\) return \{ ready: false, reason: 'unbound' \}/);
+  assert.match(runtime, /if \(!db \|\| typeof db\.exec !== 'function'\) return Object\.freeze\(\{ status: 'unbound' \}\)/);
   assert.match(history, /u\.status IN \('SUCCESS', 'PARTIAL'\)/);
   assert.match(history, /scope = 'FULL' AND status = 'SUCCESS'/);
   assert.doesNotMatch(adapter, /\bfetch\s*\(/);
