@@ -73,7 +73,7 @@ assert.match(worker, /generated\/products\.mjs/);
 assert.match(worker, /ERR_MODULE_NOT_FOUND/);
 assert.match(worker, /verifyCloudflareAccessAssertion/);
 assert.match(runtime, /handleGithubOauthCentralRequest/);
-assert.match(runtime, /if \(!db\) return \{ ready: false, reason: 'unbound' \}/);
+assert.match(runtime, /if \(!db \|\| typeof db\.exec !== 'function'\) return Object\.freeze\(\{ status: 'unbound' \}\)/);
 assert.doesNotMatch(worker, /spawnSync|auditProducts|GITHUB_TOKEN/);
 assert.equal(config.workers_dev, false);
 assert.equal(config.preview_urls, false);
