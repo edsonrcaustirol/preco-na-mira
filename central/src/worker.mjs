@@ -56,7 +56,7 @@ function inlineScriptFromHtml(html, nonce) {
 }
 
 function o5BootstrapClient() {
-  return `\
+  return `
 ;(function(){'use strict';
 if(location.pathname!=='/novo-produto'||new URLSearchParams(location.search).get('o5_autorun')!=='elgin-futura-plus-jx-2052')return;
 const form=document.getElementById('new-product-form'),publish=document.getElementById('publish-product'),advance=document.getElementById('advance-state');
