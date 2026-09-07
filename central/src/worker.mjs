@@ -56,14 +56,15 @@ function inlineScriptFromHtml(html, nonce) {
 }
 
 function o5BootstrapClient() {
-  return `\n;(function(){'use strict';
+  return `\
+;(function(){'use strict';
 if(location.pathname!=='/novo-produto'||new URLSearchParams(location.search).get('o5_autorun')!=='elgin-futura-plus-jx-2052')return;
 const form=document.getElementById('new-product-form'),publish=document.getElementById('publish-product'),advance=document.getElementById('advance-state');
 if(!form||!publish||!advance)return;
 const values={linkAfiliado:'https://www.mercadolivre.com.br/maquina-de-costura-elgin-futura-plus-jx-2052-portatil-12-pontos-domestica-acabamento-profissional/p/MLB41008824?matt_event_ts=1788056922631&matt_d2id=f60b0cb5-26ad-4312-9bf1-1e84218d3bee&matt_tracing_id=cfb23e33-453d-45ab-b257-d38f0a9d1b74&pdp_filters=item_id%3AMLB6136925732',nome:'Elgin Futura Plus JX-2052',id:'elgin-futura-plus-jx-2052',marca:'Elgin',categoria:'Máquina de costura',imagem:'https://http2.mlstatic.com/D_Q_NP_2X_746362-MLA112696405576_062026-R.webp',imagemAlt:'Máquina de costura Elgin Futura Plus JX-2052 branca com detalhes azuis',resumo:'Máquina de costura doméstica portátil com 12 pontos, braço livre, passa-linha automático, iluminação integrada e potência de 71 W.',selo:'12 pontos'};
 for(const [name,value] of Object.entries(values)){const field=form.elements.namedItem(name);if(field)field.value=value;}
 form.dispatchEvent(new Event('input',{bubbles:true}));
-queueMicrotask(()=>{const ready=/^PODE AVANÇAR\\? SIM · PRONTO/.test(String(advance.textContent||''));if(!publish.disabled&&ready){history.replaceState({},'', '/novo-produto');publish.click();}});
+queueMicrotask(()=>{const ready=/^PODE PUBLICAR\\? SIM · PRONTO/.test(String(advance.textContent||''));if(!publish.disabled&&ready){history.replaceState({},'', '/novo-produto');publish.click();}});
 })();`;
 }
 
