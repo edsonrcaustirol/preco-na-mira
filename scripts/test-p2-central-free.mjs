@@ -46,12 +46,16 @@ assert.match(oauth, /__Host-pnm_central_session/);
 assert.match(oauth, /HttpOnly; Secure; SameSite=Lax/);
 
 assert.match(workflow, /workflow_dispatch:/);
+assert.match(workflow, /push:\s*\n\s*branches:\s*\n\s*- main/m);
+assert.match(workflow, /data\/produtos-index\.js/);
+assert.match(workflow, /central\/\*\*/);
 assert.match(workflow, /CLOUDFLARE_API_TOKEN/);
 assert.match(workflow, /PNM_GITHUB_OAUTH_CLIENT_SECRET/);
 assert.match(workflow, /PNM_GITHUB_TOKEN/);
+assert.match(workflow, /run: npm run check/);
 assert.match(workflow, /wrangler deploy --config central\/wrangler\.jsonc/);
-assert.match(workflow, /wrangler secret put PNM_CENTRAL_SESSION_SECRET/);
-assert.equal(/schedule:|push:\s*\n/m.test(workflow), false, 'deploy administrativo deve continuar manual');
+assert.match(workflow, /if: github\.event_name == 'workflow_dispatch'[\s\S]*wrangler secret put PNM_CENTRAL_SESSION_SECRET/);
+assert.equal(/schedule:/m.test(workflow), false, 'deploy da Central não deve possuir scheduler paralelo');
 
 assert.match(docs, /GitHub OAuth \+ PKCE/);
 assert.match(docs, /Zero Trust \/ Access \*\*não é requisito de produção\*\*/);
@@ -69,5 +73,7 @@ console.log(JSON.stringify({
   d1RequiredForFirstDeploy: false,
   zeroTrustRequired: false,
   creditCardDependency: false,
-  deployMode: 'manual-fail-closed',
+  deployMode: 'main-auto-validated-plus-manual-bootstrap',
+  catalogRefreshOnMain: true,
+  sessionRotationOnManualBootstrapOnly: true,
 }, null, 2));

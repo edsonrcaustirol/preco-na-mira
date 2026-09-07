@@ -2,6 +2,18 @@ name: Publicar Central Free
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'central/**'
+      - 'data/produtos-index.js'
+      - '.github/workflows/deploy-central-free.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/build-central-products.mjs'
+      - 'scripts/test-o4-github-oauth-auth.mjs'
+      - 'scripts/test-p2-central-free.mjs'
 
 permissions:
   contents: read
@@ -16,8 +28,6 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: 84d8de00cbfabe263c406d9a9dfca92c
-      PNM_GITHUB_OAUTH_CLIENT_SECRET: ${{ secrets.PNM_GITHUB_OAUTH_CLIENT_SECRET }}
-      PNM_GITHUB_TOKEN: ${{ secrets.PNM_GITHUB_TOKEN }}
 
     steps:
       - name: Baixar o repositorio
@@ -32,37 +42,45 @@ jobs:
       - name: Instalar ferramentas travadas
         run: npm ci
 
-      - name: Exigir secrets externos
+      - name: Exigir credencial de deploy
         shell: bash
-        run: |
-          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Falta CLOUDFLARE_API_TOKEN'; exit 1; }
-          test -n "$PNM_GITHUB_OAUTH_CLIENT_SECRET" || { echo 'Falta PNM_GITHUB_OAUTH_CLIENT_SECRET'; exit 1; }
-          test -n "$PNM_GITHUB_TOKEN" || { echo 'Falta PNM_GITHUB_TOKEN'; exit 1; }
+        run: test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Falta CLOUDFLARE_API_TOKEN'; exit 1; }
+
+      - name: Validar pacote completo
+        run: npm run check
 
       - name: Gerar projecao da Central
         run: npm run build:central-products
 
-      - name: Validar GitHub OAuth
-        run: npm run test:o4-github-oauth-auth
-
-      - name: Validar modo gratuito
-        run: npm run test:p2-central-free
-
-      - name: Validar pacote do Worker
-        run: npx wrangler deploy --dry-run --config central/wrangler.jsonc
-
-      - name: Publicar Worker fail-closed
+      - name: Publicar Worker
         run: npx wrangler deploy --config central/wrangler.jsonc
 
-      - name: Sincronizar segredo OAuth
+      - name: Exigir secrets de bootstrap manual
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
+        env:
+          PNM_GITHUB_OAUTH_CLIENT_SECRET: ${{ secrets.PNM_GITHUB_OAUTH_CLIENT_SECRET }}
+          PNM_GITHUB_TOKEN: ${{ secrets.PNM_GITHUB_TOKEN }}
+        run: |
+          test -n "$PNM_GITHUB_OAUTH_CLIENT_SECRET" || { echo 'Falta PNM_GITHUB_OAUTH_CLIENT_SECRET'; exit 1; }
+          test -n "$PNM_GITHUB_TOKEN" || { echo 'Falta PNM_GITHUB_TOKEN'; exit 1; }
+
+      - name: Sincronizar segredo OAuth
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          PNM_GITHUB_OAUTH_CLIENT_SECRET: ${{ secrets.PNM_GITHUB_OAUTH_CLIENT_SECRET }}
         run: printf '%s' "$PNM_GITHUB_OAUTH_CLIENT_SECRET" | npx wrangler secret put PNM_GITHUB_OAUTH_CLIENT_SECRET --config central/wrangler.jsonc
 
       - name: Sincronizar token GitHub transacional
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
+        env:
+          PNM_GITHUB_TOKEN: ${{ secrets.PNM_GITHUB_TOKEN }}
         run: printf '%s' "$PNM_GITHUB_TOKEN" | npx wrangler secret put PNM_GITHUB_TOKEN --config central/wrangler.jsonc
 
       - name: Rotacionar segredo de sessao
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
         run: openssl rand -hex 48 | tr -d '\n' | npx wrangler secret put PNM_CENTRAL_SESSION_SECRET --config central/wrangler.jsonc
 
